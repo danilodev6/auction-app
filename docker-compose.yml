@@ -1,0 +1,16 @@
+services:
+  auction-app-db:
+    image: postgres
+    restart: always
+    container_name: auction-app-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+      # /var/lib/pgsql/data
+
+volumes:
+  postgres:
