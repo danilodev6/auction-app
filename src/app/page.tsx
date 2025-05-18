@@ -1,3 +1,4 @@
+import { ItemCard } from "@/components/ItemCard";
 import { database } from "@/db/database";
 import { items } from "@/db/schema";
 
@@ -10,11 +11,7 @@ export default async function HomePage() {
       <h2 className="text-2xl font-bold">All items</h2>
       <div className="grid grid-cols-4 my-4 gap-4">
         {allItems.map((item) => (
-          <div key={item.id} className="border p-8 rounded-xl">
-            {item.name}
-            <br />
-            Starting Price: $ {item.startingPrice / 100}
-          </div>
+          <ItemCard key={item.id} item={item} />
         ))}
       </div>
     </main>
