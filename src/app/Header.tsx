@@ -22,6 +22,15 @@ export async function Header() {
           </Link>
         </div>
         <div className="flex items-center gap-4 ml-auto">
+          {session?.user?.image && (
+            <Image
+              src={session?.user?.image}
+              width="40"
+              height="40"
+              alt="user avatar"
+              className="rounded-full"
+            />
+          )}
           {session?.user?.name}
           {session ? <SignOut /> : <SignIn />}
         </div>

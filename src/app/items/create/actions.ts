@@ -71,10 +71,10 @@ export async function CreateItemAction(formData: FormData) {
     // Insert into database with corrected column name
     await database.insert(items).values({
       name,
-      startingPrice,
+      startingPrice: parseInt(startingPrice),
       userId: user.id,
       imageURL: imageURL || null,
-      bidInterval,
+      bidInterval: parseInt(bidInterval),
     });
 
     console.log("Item created successfully in database");

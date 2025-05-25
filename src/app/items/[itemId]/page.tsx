@@ -17,9 +17,9 @@ export function formatDate(date: Date) {
 export default async function ItemPage({
   params,
 }: {
-  params: { itemId: string };
+  params: Promise<{ itemId: string }>;
 }) {
-  const { itemId } = params;
+  const { itemId } = await params;
 
   const item = await getItem(parseInt(itemId));
 
