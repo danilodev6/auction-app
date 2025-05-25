@@ -25,7 +25,7 @@ export default function RootLayout({
         )}
       >
         <Header />
-        {children}
+        <div className="container mx-auto px-4 py-8">{children}</div>
       </body>
     </html>
   );

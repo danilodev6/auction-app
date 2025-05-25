@@ -1,5 +1,8 @@
 import { Item } from "@/db/schema";
 import Image from "next/image";
+import { Button } from "./ui/button";
+import Link from "next/link";
+import { formatToDollar } from "@/util/currency";
 
 export function ItemCard({ item }: { item: Item }) {
   return (
@@ -19,10 +22,15 @@ export function ItemCard({ item }: { item: Item }) {
           </div>
         )}
       </div>
+
       <h3 className="text-lg font-semibold">{item.name}</h3>
       <p className="text-gray-700">
-        Starting Price: ${(item.startingPrice / 100).toFixed(2)}
+        Starting Price: $ {formatToDollar(item.startingPrice)}
       </p>
+
+      <Button asChild className="mt-4">
+        <Link href={`/items/${item.id}`}>See item</Link>
+      </Button>
     </div>
   );
 }

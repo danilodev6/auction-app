@@ -19,12 +19,11 @@ export async function CreateItemAction(formData: FormData) {
     throw new Error("You must be signed in to create an item");
   }
 
-  const rawPrice = formData.get("startingPrice") as string;
-  const startingPrice = Math.round(parseFloat(rawPrice) * 100); // save as cents
+  const startingPrice = formData.get("startingPrice") as string;
   const name = formData.get("name") as string;
   const file = formData.get("file") as File;
 
-  let imageURL = ""; // Changed to match schema column name (imageURL instead of imageUrl)
+  let imageURL = "";
 
   if (file && file.size > 0) {
     try {

@@ -8,7 +8,7 @@ export async function Header() {
   const session = await auth();
 
   return (
-    <div className="bg-gray-200 py-2">
+    <div className="bg-gray-200 py-2 sticky top-0">
       <div className="container flex items-center gap-10">
         <div className="flex items-center gap-4 justify-self-end">
           <Link href="/" className="flex items-center gap-1">
@@ -18,7 +18,7 @@ export async function Header() {
         </div>
         <div>
           <Link href="/items/create" className="flex items-center gap-1">
-            Publish Item
+            Create Item
           </Link>
         </div>
         <div className="flex items-center gap-4 ml-auto">
