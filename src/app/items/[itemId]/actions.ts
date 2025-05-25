@@ -25,7 +25,13 @@ export async function createBidAction(itemId: number) {
     throw new Error("Item not found");
   }
 
-  const latestBid = item.currentBid + item.bidInterval;
+  // const latestBid = item.currentBid + item.bidInterval;
+
+  // If currentBid is 0 or equals startingPrice, this is the first bid
+  const latestBid =
+    item.currentBid === 0
+      ? item.startingPrice
+      : item.currentBid + item.bidInterval;
 
   await database?.insert(bids).values({
     amount: latestBid,
