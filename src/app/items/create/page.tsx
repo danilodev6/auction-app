@@ -26,85 +26,107 @@ export default function CreatePage() {
   return (
     <main className="container mx-auto py-12">
       <h1 className="text-3xl font-bold">Post an item</h1>
-      <form
-        className="border p-4 my-4 rounded-md space-y-4 max-w-lg"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setIsSubmitting(true);
-          try {
-            const form = e.currentTarget as HTMLFormElement;
-            const formData = new FormData(form);
-            await CreateItemAction(formData);
+      <div className="grid grid-cols-2 w-full h-96">
+        <form
+          className="border p-4 mt-4 rounded-md space-y-4 max-w-lg"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setIsSubmitting(true);
+            try {
+              const form = e.currentTarget as HTMLFormElement;
+              const formData = new FormData(form);
+              await CreateItemAction(formData);
 
-            // Reset form
-            form.reset();
-            setImagePreview(null);
+              // Reset form
+              form.reset();
+              setImagePreview(null);
 
-            // Optionally redirect or show success message
-          } catch (error) {
-            console.error("Error creating item:", error);
-            // Show error message
-          } finally {
-            setIsSubmitting(false);
-          }
-        }}
-      >
-        <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Item Name
-          </label>
-          <Input
-            id="name"
-            required
-            className="mt-1"
-            name="name"
-            type="text"
-            placeholder="Name your item"
-          />
-        </div>
+              // Optionally redirect or show success message
+            } catch (error) {
+              console.error("Error creating item:", error);
+              // Show error message
+            } finally {
+              setIsSubmitting(false);
+            }
+          }}
+        >
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Item Name
+            </label>
+            <Input
+              id="name"
+              required
+              className="mt-1"
+              name="name"
+              type="text"
+              placeholder="Name your item"
+            />
+          </div>
 
-        <div>
-          <label
-            htmlFor="startingPrice"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Starting Price ($)
-          </label>
-          <Input
-            id="startingPrice"
-            required
-            className="mt-1"
-            name="startingPrice"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="Starting Price of your item"
-          />
-        </div>
+          <div>
+            <label
+              htmlFor="startingPrice"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Starting Price ($)
+            </label>
+            <Input
+              id="startingPrice"
+              required
+              className="mt-1"
+              name="startingPrice"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Starting Price of your item"
+            />
+          </div>
 
-        <div>
-          <label
-            htmlFor="file"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Item Photo
-          </label>
-          <Input
-            id="file"
-            type="file"
-            name="file"
-            accept="image/*"
-            className="mt-1"
-            onChange={handleFileChange}
-          />
-        </div>
+          <div>
+            <label
+              htmlFor="bidInterval"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Bid Interval
+            </label>
+            <Input
+              id="bidInterval"
+              type="number"
+              name="bidInterval"
+              step="100"
+              min="100"
+              placeholder="Bid Interval of your item"
+            />
+          </div>
 
+          <div>
+            <label
+              htmlFor="file"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Item Photo
+            </label>
+            <Input
+              id="file"
+              type="file"
+              name="file"
+              accept="image/*"
+              className="mt-1"
+              onChange={handleFileChange}
+            />
+          </div>
+
+          <Button className="w-full" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Posting..." : "Post Item"}
+          </Button>
+        </form>
         {/* Image Preview */}
         {imagePreview && (
-          <div className="relative w-full h-64 mt-2 border rounded-md overflow-hidden">
+          <div className="relative max-w-lg mt-4 border rounded-md overflow-hidden">
             <Image
               src={imagePreview}
               alt="Preview"
@@ -113,11 +135,7 @@ export default function CreatePage() {
             />
           </div>
         )}
-
-        <Button className="w-full" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Posting..." : "Post Item"}
-        </Button>
-      </form>
+      </div>
     </main>
   );
 }

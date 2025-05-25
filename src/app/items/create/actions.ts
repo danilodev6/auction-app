@@ -23,6 +23,8 @@ export async function CreateItemAction(formData: FormData) {
   const name = formData.get("name") as string;
   const file = formData.get("file") as File;
 
+  const bidInterval = formData.get("bidInterval") as string;
+
   let imageURL = "";
 
   if (file && file.size > 0) {
@@ -71,7 +73,8 @@ export async function CreateItemAction(formData: FormData) {
       name,
       startingPrice,
       userId: user.id,
-      imageURL: imageURL || null, // Changed to match schema column name
+      imageURL: imageURL || null,
+      bidInterval,
     });
 
     console.log("Item created successfully in database");
