@@ -33,6 +33,14 @@ export async function Header() {
           )}
         </div>
 
+        <div>
+          {isAdmin && (
+            <Link href="/items/manage" className="flex items-center gap-1">
+              Manage Items
+            </Link>
+          )}
+        </div>
+
         <div className="flex items-center gap-4 ml-auto">
           {session?.user?.image && (
             <Image

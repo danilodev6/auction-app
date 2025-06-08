@@ -1,7 +1,6 @@
 TO DO:
 
-- Add place a bib Button
-- Add starting price
+- Add place a bib Button Add starting price
 - Change style of latest bids
 - Add description under live twicht
 
