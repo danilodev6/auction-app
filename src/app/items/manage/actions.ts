@@ -4,7 +4,7 @@ import { auth, isAdmin } from "@/auth";
 import { database } from "@/db/database";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, delete } from "drizzle-orm";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
 
 export async function UpdateItemAction(itemId: number, formData: FormData) {
@@ -31,6 +31,7 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
   const bidInterval = formData.get("bidInterval") as string;
   const bidEndTime = formData.get("bidEndTime") as string;
   const auctionType = formData.get("auctionType") as string;
+  const isFeatured = formData.get("isFeatured") === "true";
 
   let imageURL: string | undefined;
 
@@ -72,6 +73,11 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
   }
 
   try {
+    // If this item is being featured, unfeatured all other items first
+    if (isFeatured && auctionType === "live") {
+      await database.update(items).set({ isFeatured: false });
+    }
+
     const updateData: any = {
       name,
       description,
@@ -79,6 +85,7 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
       bidInterval: parseInt(bidInterval),
       bidEndTime: new Date(bidEndTime || Date.now()),
       auctionType: auctionType || "regular",
+      isFeatured: isFeatured && auctionType === "live", // Only allow featuring for live auctions
     };
 
     // Only update imageURL if a new image was uploaded
@@ -90,6 +97,7 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
 
     console.log("Item updated successfully in database");
     revalidatePath("/");
+    revalidatePath("/live");
     revalidatePath("/items/manage");
   } catch (dbError) {
     console.error("Database error:", dbError);
@@ -149,6 +157,129 @@ export async function GetAllItemsAction() {
     console.error("Database error:", dbError);
     throw new Error(
       `Failed to fetch items: ${dbError instanceof Error ? dbError.message : "Unknown error"}`,
+    );
+  }
+}
+
+export async function ToggleFeaturedAction(itemId: number) {
+  const session = await auth();
+
+  if (!session) {
+    throw new Error("You must be signed in to toggle featured status");
+  }
+
+  if (!(await isAdmin(session))) {
+    throw new Error("You must be an admin to toggle featured status");
+  }
+
+  try {
+    // Get the current item
+    const currentItem = await database
+      .select()
+      .from(items)
+      .where(eq(items.id, itemId))
+      .limit(1);
+
+    if (currentItem.length === 0) {
+      throw new Error("Item not found");
+    }
+
+    const item = currentItem[0];
+
+    // Only allow featuring for live auctions
+    if (item.auctionType !== "live") {
+      throw new Error("Only live auction items can be featured");
+    }
+
+    if (!item.isFeatured) {
+      // If we're featuring this item, unfeatured all others first
+      await database.update(items).set({ isFeatured: false });
+      // Then feature this item
+      await database
+        .update(items)
+        .set({ isFeatured: true })
+        .where(eq(items.id, itemId));
+    } else {
+      // If we're unfeaturing this item
+      await database
+        .update(items)
+        .set({ isFeatured: false })
+        .where(eq(items.id, itemId));
+    }
+
+    revalidatePath("/");
+    revalidatePath("/live");
+    revalidatePath("/items/manage");
+  } catch (dbError) {
+    console.error("Database error:", dbError);
+    throw new Error(
+      `Failed to toggle featured status: ${dbError instanceof Error ? dbError.message : "Unknown error"}`,
+    );
+  }
+}
+
+export async function DeleteItemAction(itemId: number) {
+  const session = await auth();
+
+  if (!session) {
+    throw new Error("You must be signed in to delete an item");
+  }
+
+  if (!(await isAdmin(session))) {
+    throw new Error("You must be an admin to delete an item");
+  }
+
+  try {
+    // First, get the item to check if it has an image to delete from storage
+    const itemToDelete = await database
+      .select()
+      .from(items)
+      .where(eq(items.id, itemId))
+      .limit(1);
+
+    if (itemToDelete.length === 0) {
+      throw new Error("Item not found");
+    }
+
+    const item = itemToDelete[0];
+
+    // If the item has an image, delete it from Supabase storage
+    if (item.imageURL) {
+      try {
+        // Extract the file path from the public URL
+        const url = new URL(item.imageURL);
+        const pathParts = url.pathname.split("/");
+        // The file path is typically after '/storage/v1/object/public/bucket-name/'
+        const bucketIndex = pathParts.indexOf("public");
+        if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
+          const filePath = pathParts.slice(bucketIndex + 2).join("/");
+
+          const { error } = await supabase.storage
+            .from(BUCKET_NAME)
+            .remove([filePath]);
+
+          if (error) {
+            console.warn("Failed to delete image from storage:", error);
+            // Don't throw here - we still want to delete the database record
+          }
+        }
+      } catch (storageError) {
+        console.warn("Error deleting image from storage:", storageError);
+        // Don't throw here - we still want to delete the database record
+      }
+    }
+
+    // Delete the item from the database
+    await database.delete(items).where(eq(items.id, itemId));
+
+    console.log("Item deleted successfully from database");
+    revalidatePath("/");
+    revalidatePath("/live");
+    revalidatePath("/items/manage");
+  } catch (dbError) {
+    console.error("Database error:", dbError);
+    throw new Error(
+      `Failed to delete item: ${dbError instanceof Error ? dbError.message : "Unknown error"}`,
     );
   }
 }

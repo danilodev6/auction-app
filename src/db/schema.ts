@@ -6,6 +6,7 @@ import {
   serial,
   text,
   timestamp,
+  boolean, // Add this import
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
@@ -82,6 +83,7 @@ export const items = pgTable("aa_items", {
   imageURL: text("imageURL"),
   bidInterval: integer("bidInterval").notNull().default(1000),
   bidEndTime: timestamp("bidEndTime", { withTimezone: true }).notNull(),
+  isFeatured: boolean("isFeatured").notNull().default(false), // Add this field
 });
 
 export const bids = pgTable("aa_bids", {

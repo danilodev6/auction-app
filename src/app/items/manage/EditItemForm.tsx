@@ -17,6 +17,7 @@ interface Item {
   bidEndTime: Date;
   auctionType: string;
   imageURL: string | null;
+  isFeatured: boolean;
 }
 
 interface EditItemFormProps {
@@ -28,6 +29,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
     item.imageURL,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [auctionType, setAuctionType] = useState(item.auctionType);
   const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +41,10 @@ export default function EditItemForm({ item }: EditItemFormProps) {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleAuctionTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setAuctionType(e.target.value);
   };
 
   // Format date for datetime-local input
@@ -126,13 +132,39 @@ export default function EditItemForm({ item }: EditItemFormProps) {
             name="auctionType"
             required
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
-            defaultValue={item.auctionType}
+            value={auctionType}
+            onChange={handleAuctionTypeChange}
           >
             <option value="regular">Regular Auction</option>
             <option value="live">Live Auction</option>
             <option value="draft">Draft (Hidden)</option>
           </select>
         </div>
+
+        {/* Only show isFeatured option for live auctions */}
+        {auctionType === "live" && (
+          <div>
+            <label
+              htmlFor="isFeatured"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Featured on Live Stream
+            </label>
+            <select
+              id="isFeatured"
+              name="isFeatured"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
+              defaultValue={item.isFeatured ? "true" : "false"}
+            >
+              <option value="false">No</option>
+              <option value="true">Yes (Feature this item)</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Only one item can be featured at a time. Selecting "Yes" will
+              unfeatured any currently featured item.
+            </p>
+          </div>
+        )}
 
         <div>
           <label

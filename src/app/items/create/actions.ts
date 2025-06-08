@@ -5,6 +5,7 @@ import { database } from "@/db/database";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
+import { eq } from "drizzle-orm";
 
 export async function CreateItemAction(formData: FormData) {
   const session = await auth();
@@ -31,6 +32,7 @@ export async function CreateItemAction(formData: FormData) {
   const bidInterval = formData.get("bidInterval") as string;
   const bidEndTime = formData.get("bidEndTime") as string;
   const auctionType = formData.get("auctionType") as string;
+  const isFeatured = formData.get("isFeatured") === "true";
 
   let imageURL = "";
 
@@ -71,6 +73,11 @@ export async function CreateItemAction(formData: FormData) {
   }
 
   try {
+    // If this item is being featured, unfeatured all other items first
+    if (isFeatured && auctionType === "live") {
+      await database.update(items).set({ isFeatured: false });
+    }
+
     await database.insert(items).values({
       name,
       description: description,
@@ -80,10 +87,13 @@ export async function CreateItemAction(formData: FormData) {
       bidInterval: parseInt(bidInterval),
       bidEndTime: new Date(bidEndTime || Date.now()),
       auctionType: auctionType || "regular",
+      isFeatured: isFeatured && auctionType === "live", // Only allow featuring for live auctions
     });
 
     console.log("Item created successfully in database");
     revalidatePath("/");
+    revalidatePath("/live");
+    revalidatePath("/items/manage");
   } catch (dbError) {
     console.error("Database error:", dbError);
     throw new Error(

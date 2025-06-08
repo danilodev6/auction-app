@@ -10,6 +10,7 @@ import { TextArea } from "@/components/ui/textarea";
 export default function CreateItemForm() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [auctionType, setAuctionType] = useState("regular");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -22,6 +23,10 @@ export default function CreateItemForm() {
     } else {
       setImagePreview(null);
     }
+  };
+
+  const handleAuctionTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setAuctionType(e.target.value);
   };
 
   return (
@@ -47,6 +52,7 @@ export default function CreateItemForm() {
             // Reset form
             form.reset();
             setImagePreview(null);
+            setAuctionType("regular");
           } catch (error) {
             console.error("Error creating item:", error);
           } finally {
@@ -100,13 +106,39 @@ export default function CreateItemForm() {
             name="auctionType"
             required
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
-            defaultValue="regular"
+            value={auctionType}
+            onChange={handleAuctionTypeChange}
           >
             <option value="regular">Regular Auction</option>
             <option value="live">Live Auction</option>
             <option value="draft">Draft (Hidden)</option>
           </select>
         </div>
+
+        {/* Only show isFeatured option for live auctions */}
+        {auctionType === "live" && (
+          <div>
+            <label
+              htmlFor="isFeatured"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Featured on Live Stream
+            </label>
+            <select
+              id="isFeatured"
+              name="isFeatured"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
+              defaultValue="false"
+            >
+              <option value="false">No</option>
+              <option value="true">Yes (Feature this item)</option>
+            </select>
+            <p className="text-xs text-gray-500 mt-1">
+              Only one item can be featured at a time. Selecting "Yes" will
+              unfeatured any currently featured item.
+            </p>
+          </div>
+        )}
 
         <div>
           <label

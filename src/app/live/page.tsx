@@ -6,16 +6,11 @@ import Link from "next/link";
 import { Countdown } from "@/components/Countdown";
 import { Button } from "@/components/ui/button";
 import { createBidAction } from "@/app/items/[itemId]/actions";
-import AuctionSelector from "@/components/AuctionSelector";
 import ChatBox from "@/components/ChatBox";
 import { auth } from "@/auth";
 import { ADMINS } from "@/auth";
 
-export default async function LivePage({
-  searchParams,
-}: {
-  searchParams?: { item?: string };
-}) {
+export default async function LivePage() {
   const session = await auth();
   const isAdmin = ADMINS.includes(session?.user?.email ?? "");
   const isSignedIn = !!session?.user?.id;
@@ -23,33 +18,26 @@ export default async function LivePage({
   const allItems = await getAllItems();
 
   // Filter items for live streaming (only live and draft)
-  const liveItems = allItems.filter(
-    (item) => item.auctionType === "live" || item.auctionType === "draft",
-  );
+  const liveItems = allItems.filter((item) => item.auctionType === "live");
 
-  const selectedId = searchParams?.item ? Number(searchParams.item) : null;
+  // Find the featured item automatically
+  const featuredItem = liveItems.find((item) => item.isFeatured);
 
-  // Find selected item only from live items
-  const selectedItem = selectedId
-    ? liveItems.find((item) => item.id === selectedId)
-    : null;
-
-  // Get bids only if there's a selected item
-  const bids = selectedItem ? await getBids(selectedItem.id) : [];
+  // Get bids only if there's a featured item
+  const bids = featuredItem ? await getBids(featuredItem.id) : [];
   const latestBids = bids.reverse().slice(-6).reverse();
 
-  const isExpired = selectedItem
-    ? new Date(selectedItem.bidEndTime) < new Date()
+  const isExpired = featuredItem
+    ? new Date(featuredItem.bidEndTime) < new Date()
     : false;
 
   return (
-    <main className="flex flex-col w-full lg:flex-row gap-6 py-6">
-      {/* Left: Item selection and chat */}
+    <main className="flex flex-col w-full lg:flex-row gap-6">
+      {/* Left: Chat section */}
       <div className="lg:w-1/4 p-4 border-r">
         {isAdmin && (
           <div className="mb-6">
-            <h2 className="text-lg font-bold mb-4">Auction Control</h2>
-            <AuctionSelector items={liveItems} selectedId={selectedItem?.id} />
+            <h2 className="text-lg font-bold mb-4">Live Auction Status</h2>
 
             {liveItems.length === 0 && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
@@ -66,12 +54,42 @@ export default async function LivePage({
                 </p>
               </div>
             )}
+
+            {liveItems.length > 0 && !featuredItem && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-blue-800">
+                  You have {liveItems.length} live auction(s) but none are
+                  featured.{" "}
+                  <Link href="/items/manage" className="underline">
+                    Feature an item
+                  </Link>{" "}
+                  to display it on the live stream.
+                </p>
+              </div>
+            )}
+
+            {featuredItem && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-green-800">
+                  ✅ Currently featuring: <strong>{featuredItem.name}</strong>
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  <Link href="/items/manage" className="underline">
+                    Manage items
+                  </Link>{" "}
+                  to change featured auction
+                </p>
+              </div>
+            )}
           </div>
         )}
-        {selectedId ? (
+
+        {featuredItem ? (
           <ChatBox />
         ) : (
-          <p>Chat will be able during Live Auction</p>
+          <p className="text-gray-600">
+            Chat will be available during Live Auction
+          </p>
         )}
       </div>
 
@@ -86,34 +104,42 @@ export default async function LivePage({
           />
         </div>
 
-        {selectedItem ? (
+        {featuredItem ? (
           <div className="bg-gray-100 rounded-lg m-4 p-4 mb-4">
-            <p className="font-semibold">Current Auction:</p>
-            <p className="text-lg">{selectedItem.name}</p>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
+                🔴 LIVE
+              </span>
+              <p className="font-semibold">Current Auction:</p>
+              <p className="text-lg font-bold">{featuredItem.name}</p>
+            </div>
             <p className="font-semibold mt-2">Description:</p>
-            <p>{selectedItem.description}</p>
+            <p>{featuredItem.description}</p>
           </div>
         ) : (
           <div className="bg-gray-100 rounded-lg m-4 p-4 mb-4">
             <p className="text-center text-gray-600">
-              No auction currently selected for streaming
+              No auction currently featured for streaming
             </p>
             {isAdmin && liveItems.length > 0 && (
               <p className="text-center text-sm text-gray-500 mt-2">
-                Use the auction selector to choose an item to feature
+                <Link href="/items/manage" className="underline">
+                  Feature a live auction
+                </Link>{" "}
+                to display it here
               </p>
             )}
           </div>
         )}
       </div>
 
-      {/* Right: Item details (only show if item is selected) */}
-      {selectedItem ? (
+      {/* Right: Item details (only show if item is featured) */}
+      {featuredItem ? (
         <>
           <div className="lg:w-1/4 p-4">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-xl font-bold">{selectedItem.name}</h1>
-              <form action={createBidAction.bind(null, selectedItem.id)}>
+              <h1 className="text-xl font-bold">{featuredItem.name}</h1>
+              <form action={createBidAction.bind(null, featuredItem.id)}>
                 <Button size="sm" disabled={isExpired || !isSignedIn}>
                   {!isSignedIn
                     ? "Sign In to Bid"
@@ -126,13 +152,13 @@ export default async function LivePage({
 
             <div className="bg-gray-100 rounded-lg p-4 mb-4">
               <p className="font-semibold">Time Left:</p>
-              <Countdown endTime={selectedItem.bidEndTime} />
+              <Countdown endTime={featuredItem.bidEndTime} />
             </div>
 
-            {selectedItem.imageURL && (
+            {featuredItem.imageURL && (
               <Image
-                src={selectedItem.imageURL}
-                alt={selectedItem.name}
+                src={featuredItem.imageURL}
+                alt={featuredItem.name}
                 width={200}
                 height={200}
                 className="rounded-lg mb-4 mx-auto"
@@ -142,15 +168,15 @@ export default async function LivePage({
             <div className="flex flex-col gap-3 mb-4 items-center">
               <DetailCard
                 label="Current Bid"
-                value={formatToDollar(selectedItem.currentBid)}
+                value={formatToDollar(featuredItem.currentBid)}
               />
               <DetailCard
                 label="Starting Price"
-                value={formatToDollar(selectedItem.startingPrice)}
+                value={formatToDollar(featuredItem.startingPrice)}
               />
               <DetailCard
                 label="Bid Interval"
-                value={formatToDollar(selectedItem.bidInterval)}
+                value={formatToDollar(featuredItem.bidInterval)}
               />
             </div>
           </div>
@@ -176,12 +202,12 @@ export default async function LivePage({
           </div>
         </>
       ) : (
-        /* Show placeholder when no item selected */
+        /* Show placeholder when no item featured */
         <div className="lg:w-1/2 p-4 flex items-center justify-center">
           <div className="text-center text-gray-500">
             <Image
               src="/auction.svg"
-              alt="No auction selected"
+              alt="No auction featured"
               width={200}
               height={200}
               className="mx-auto mb-4 opacity-50"
@@ -189,7 +215,10 @@ export default async function LivePage({
             <p className="text-lg">No auction currently featured</p>
             {isAdmin && (
               <p className="text-sm mt-2">
-                Select an auction from the control panel to display it here
+                <Link href="/items/manage" className="underline">
+                  Feature a live auction
+                </Link>{" "}
+                to display it on the stream
               </p>
             )}
           </div>
