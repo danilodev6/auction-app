@@ -1,0 +1,231 @@
+"use client";
+
+import { useState } from "react";
+import { Countdown } from "@/components/Countdown";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { formatToDollar } from "@/util/currency";
+
+// Define types at the top
+type Item = {
+  id: number;
+  name: string;
+  imageURL: string;
+  bidEndTime: string;
+  currentBid: number;
+  startingPrice: number;
+  bidInterval: number;
+  description: string;
+  twitchChannel: string;
+};
+
+type Bid = {
+  id: number;
+  amount: number;
+  timestamp: string;
+  users: {
+    name: string;
+  };
+};
+
+export default function LivePageClient({
+  allItems,
+  createBidAction,
+}: {
+  allItems: Item[];
+  createBidAction: (itemId: number) => Promise<void>;
+}) {
+  // Local formatDate function
+  function formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  const [bids, setBids] = useState<Bid[]>([]);
+
+  const handleSelect = async (item: Item) => {
+    setSelectedItem(item);
+
+    try {
+      const res = await fetch(`/api/bids?itemId=${item.id}`);
+      const data = await res.json();
+      setBids(data);
+    } catch (error) {
+      console.error("Failed to fetch bids:", error);
+      setBids([]);
+    }
+  };
+
+  const handleBid = async (itemId: number) => {
+    try {
+      await createBidAction(itemId);
+      // Refresh bids after placing a bid
+      if (selectedItem) {
+        const res = await fetch(`/api/bids?itemId=${selectedItem.id}`);
+        const data = await res.json();
+        setBids(data);
+      }
+    } catch (error) {
+      console.error("Failed to place bid:", error);
+    }
+  };
+
+  const isExpired = selectedItem
+    ? new Date(selectedItem.bidEndTime) < new Date()
+    : false;
+  const hasBids = bids.length > 0;
+
+  return (
+    <main className="flex flex-row gap-4 py-6 container">
+      {/* Left: Item selection */}
+      <div className="flex-1 p-4 space-y-2 border-r">
+        <h2 className="text-lg font-bold">Available Items</h2>
+        <ul>
+          {allItems.map((item) => (
+            <li key={item.id}>
+              <button
+                onClick={() => handleSelect(item)}
+                className="text-blue-600 hover:underline"
+              >
+                {item.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Middle: Stream */}
+      <div className="flex-2 p-4 border-r min-w-[500px]">
+        {selectedItem ? (
+          <iframe
+            src={`https://player.twitch.tv/?channel=${selectedItem.twitchChannel}&parent=www.example.com`}
+            height="500"
+            width="100%"
+            allowFullScreen
+          />
+        ) : (
+          <p>Select an item to watch the stream.</p>
+        )}
+      </div>
+
+      {/* Right: Item details, bids, countdown */}
+      <div className="flex-1 p-4">
+        {selectedItem ? (
+          <>
+            {/* Item name + Place a bid button */}
+            <div className="flex gap-6 items-center justify-between mb-4">
+              <h1 className="text-2xl font-bold">{selectedItem.name}</h1>
+              <Button
+                disabled={isExpired}
+                onClick={() => handleBid(selectedItem.id)}
+              >
+                Place a bid
+              </Button>
+            </div>
+
+            {/* Time left */}
+            <div className="mt-3 bg-gray-100 rounded-lg p-4 mb-4">
+              <span className="font-semibold">Time Left: </span>
+              <Countdown endTime={selectedItem.bidEndTime} />
+            </div>
+
+            {/* Item photo */}
+            <Image
+              src={selectedItem.imageURL}
+              alt={selectedItem.name}
+              width={300}
+              height={300}
+              className="rounded-xl border-2 mb-4"
+            />
+
+            {/* Item details grid */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="bg-gray-100 rounded-lg p-4">
+                Current Bid:{" "}
+                <span className="font-bold">
+                  $ {formatToDollar(selectedItem.currentBid)}
+                </span>
+              </div>
+              <div className="bg-gray-100 rounded-lg p-4">
+                Starting price:{" "}
+                <span className="font-bold">
+                  $ {formatToDollar(selectedItem.startingPrice)}
+                </span>
+              </div>
+              <div className="bg-gray-100 rounded-lg p-4">
+                Bid Interval:{" "}
+                <span className="font-bold">
+                  $ {formatToDollar(selectedItem.bidInterval)}
+                </span>
+              </div>
+              <div className="bg-gray-100 rounded-lg p-4">
+                Auction Ends:{" "}
+                <span className="font-bold">
+                  {formatDate(selectedItem.bidEndTime)}
+                </span>
+              </div>
+            </div>
+
+            {/* Item description */}
+            <div className="bg-gray-100 rounded-lg p-4 mb-4">
+              Description: <br />
+              <span className="font-bold">{selectedItem.description}</span>
+            </div>
+
+            {/* h2 current bids + latest three bids */}
+            <h2 className="text-2xl font-bold mb-3">Current bids</h2>
+
+            {hasBids ? (
+              <div className="bg-gray-100 rounded-lg p-4 mb-4">
+                <ul className="flex flex-col gap-3">
+                  {[...bids]
+                    .reverse()
+                    .slice(-3)
+                    .map((bid) => (
+                      <li
+                        key={bid.id}
+                        className="flex w-full justify-between items-center py-3 bg-white rounded-lg px-4"
+                      >
+                        <div>
+                          <span className="font-bold">
+                            $ {formatToDollar(bid.amount)}
+                          </span>{" "}
+                          {" by "}
+                          <span className="font-bold">
+                            {bid.users.name}
+                          </span>{" "}
+                          {" => "}
+                          <span>{formatDate(bid.timestamp)}</span>
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="bg-gray-100 rounded-lg p-4 mb-4">
+                <p className="text-xl w-full">No bids yet</p>
+              </div>
+            )}
+
+            {/* Twitch chat */}
+            <iframe
+              className="mt-6"
+              src={`https://www.twitch.tv/embed/${selectedItem.twitchChannel}/chat?parent=yourdomain.com`}
+              height="300"
+              width="100%"
+            />
+          </>
+        ) : (
+          <p>Select an item to see details and chat.</p>
+        )}
+      </div>
+    </main>
+  );
+}

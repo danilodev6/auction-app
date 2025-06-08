@@ -8,3 +8,7 @@ export async function getItem(itemId: number) {
   });
   return item;
 }
+
+export async function getAllItems() {
+  return await database.query.items.findMany();
+}

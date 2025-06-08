@@ -3,17 +3,18 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatToDollar } from "@/util/currency";
+import { formatDate } from "@/app/items/[itemId]/page";
 
 export function ItemCard({ item }: { item: Item }) {
   return (
     <div className="flex flex-col items-center p-4 border rounded-lg shadow-md">
-      <div className="relative w-full h-48 mb-4 bg-gray-100 rounded-lg overflow-hidden">
+      <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
         {item.imageURL ? (
           <Image
             src={item.imageURL}
             alt={item.name}
             fill
-            className="object-cover"
+            className="object-contain"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
@@ -24,8 +25,11 @@ export function ItemCard({ item }: { item: Item }) {
       </div>
 
       <h3 className="text-lg font-semibold">{item.name}</h3>
-      <p className="text-gray-700">
+      <p className="text-gray-700 mt-1">
         Starting Price: $ {formatToDollar(item.startingPrice)}
+      </p>
+      <p className="text-gray-500 mt-1">
+        Ending: {formatDate(item.bidEndTime)}
       </p>
 
       <Button asChild className="mt-4">

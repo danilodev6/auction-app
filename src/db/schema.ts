@@ -75,10 +75,13 @@ export const items = pgTable("aa_items", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
+  description: text("description"),
   startingPrice: integer("startingPrice").notNull().default(0),
   currentBid: integer("currentBid").notNull().default(0),
+  auctionType: text("auctionType").notNull().default("regular"),
   imageURL: text("imageURL"),
   bidInterval: integer("bidInterval").notNull().default(1000),
+  bidEndTime: timestamp("bidEndTime", { withTimezone: true }).notNull(),
 });
 
 export const bids = pgTable("aa_bids", {

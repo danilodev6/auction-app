@@ -1,0 +1,8 @@
+import { getBids } from "@/data-access/bids";
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const itemId = Number(searchParams.get("itemId"));
+  const bids = await getBids(itemId);
+  return Response.json(bids);
+}

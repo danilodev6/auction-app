@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
+import { auth, isAdmin } from "@/auth";
 import { database } from "@/db/database";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
@@ -13,6 +13,11 @@ export async function CreateItemAction(formData: FormData) {
     throw new Error("You must be signed in to create an item");
   }
 
+  // Add admin check
+  if (!(await isAdmin(session))) {
+    throw new Error("You must be an admin to create an item");
+  }
+
   const user = session.user;
 
   if (!user || !user.id) {
@@ -22,22 +27,21 @@ export async function CreateItemAction(formData: FormData) {
   const startingPrice = formData.get("startingPrice") as string;
   const name = formData.get("name") as string;
   const file = formData.get("file") as File;
-
+  const description = formData.get("description") as string;
   const bidInterval = formData.get("bidInterval") as string;
+  const bidEndTime = formData.get("bidEndTime") as string;
+  const auctionType = formData.get("auctionType") as string;
 
   let imageURL = "";
 
   if (file && file.size > 0) {
     try {
-      // Create a unique file name
       const fileExtension = file.name.split(".").pop();
       const fileName = `${crypto.randomUUID()}.${fileExtension}`;
       const filePath = `${user.id}/${fileName}`;
 
-      // Skip bucket verification - we'll create it manually in the Supabase dashboard
       console.log(`Attempting to upload file to ${BUCKET_NAME}/${filePath}`);
 
-      // Upload the file to Supabase Storage
       const { data, error } = await supabase.storage
         .from(BUCKET_NAME)
         .upload(filePath, file, {
@@ -52,13 +56,12 @@ export async function CreateItemAction(formData: FormData) {
 
       console.log("File uploaded successfully:", data);
 
-      // Get the public URL of the uploaded file
       const {
         data: { publicUrl },
       } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath);
 
       console.log("Public URL:", publicUrl);
-      imageURL = publicUrl; // Changed to match schema column name
+      imageURL = publicUrl;
     } catch (error) {
       console.error("Error uploading file:", error);
       throw new Error(
@@ -68,13 +71,15 @@ export async function CreateItemAction(formData: FormData) {
   }
 
   try {
-    // Insert into database with corrected column name
     await database.insert(items).values({
       name,
+      description: description,
       startingPrice: parseInt(startingPrice),
       userId: user.id,
       imageURL: imageURL || null,
       bidInterval: parseInt(bidInterval),
+      bidEndTime: new Date(bidEndTime || Date.now()),
+      auctionType: auctionType || "regular",
     });
 
     console.log("Item created successfully in database");

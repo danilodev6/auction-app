@@ -50,6 +50,13 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/api/bids.ts.bak",
+    "src/app/items/live/page.tsx.bak"
+  ],
   "exclude": ["node_modules"]
 }
