@@ -6,7 +6,11 @@ import { EmptyState } from "./EmptyState";
 export default async function HomePage() {
   const allItems = await database.select().from(items);
 
-  const hasItems = allItems.length > 0;
+  const regularItems = allItems.filter(
+    (item) => item.auctionType === "regular",
+  );
+
+  const hasItems = regularItems.length > 0;
 
   return (
     <main className="container">
@@ -15,7 +19,7 @@ export default async function HomePage() {
       {hasItems ? (
         <div className="grid grid-cols-4 my-4 gap-4">
           <>
-            {allItems.map((item) => (
+            {regularItems.map((item) => (
               <ItemCard key={item.id} item={item} />
             ))}
           </>

@@ -1,16 +1,9 @@
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link";
 
 export function EmptyState() {
   return (
     <div className="container flex flex-col items-center mx-auto py-12">
       <h2 className="text-2xl font-bold text-center">Not items found</h2>
-      <Button asChild>
-        <Link href="/items/create" className="mt-4">
-          Create Item
-        </Link>
-      </Button>{" "}
       <Image
         src="/package.svg"
         alt="Empty State"
