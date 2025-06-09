@@ -9,7 +9,7 @@ import { getItem } from "@/data-access/items";
 import { Countdown } from "@/components/Countdown";
 import { auth } from "@/auth";
 
-export function formatDate(dateInput: string) {
+function formatDate(dateInput: string) {
   const parsed = new Date(dateInput);
   if (isNaN(parsed.getTime())) return "Invalid date";
   return formatDistance(parsed, new Date(), {

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatToDollar } from "@/util/currency";
-import { formatDate } from "@/app/items/[itemId]/page";
+import { formatDate } from "@/util/date";
 
 export function ItemCard({ item }: { item: Item }) {
   return (

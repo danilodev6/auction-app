@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { db } from "@/db/database";
+import { database } from "@/db/database";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -8,7 +8,7 @@ export async function GET(req: Request) {
 
   if (!itemId) return NextResponse.json([]);
 
-  const messages = await db.chatMessage.findMany({
+  const messages = await database.chatMessage.findMany({
     where: { itemId },
     include: { user: true },
     orderBy: { timestamp: "asc" },
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid request", { status: 400 });
   }
 
-  const newMessage = await db.chatMessage.create({
+  const newMessage = await database.chatMessage.create({
     data: {
       itemId: Number(itemId),
       userId: session.user.id,
