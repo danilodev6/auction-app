@@ -4,19 +4,20 @@ import { GetItemAction } from "../../manage/actions";
 import EditItemForm from "../../manage/EditItemForm";
 
 interface EditItemPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function EditItemPage({ params }: EditItemPageProps) {
+  const { id } = await params;
   const session = await auth();
 
   if (!session || !(await isAdmin(session))) {
     redirect("/");
   }
 
-  const itemId = parseInt(params.id);
+  // Fix: Use the already awaited 'id' instead of 'params.id'
+  const itemId = parseInt(id);
 
   if (isNaN(itemId)) {
     redirect("/items/manage");
