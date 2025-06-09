@@ -9,10 +9,9 @@ import { getItem } from "@/data-access/items";
 import { Countdown } from "@/components/Countdown";
 import { auth } from "@/auth";
 
-function formatDate(dateInput: string) {
-  const parsed = new Date(dateInput);
-  if (isNaN(parsed.getTime())) return "Invalid date";
-  return formatDistance(parsed, new Date(), {
+function formatDate(dateInput: Date) {
+  if (isNaN(dateInput.getTime())) return "Invalid date";
+  return formatDistance(dateInput, new Date(), {
     addSuffix: true,
     includeSeconds: true,
   });
