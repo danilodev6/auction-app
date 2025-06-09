@@ -31,6 +31,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     verificationTokensTable: verificationTokens,
   }),
   providers: [Google],
+  trustHost: true, // This fixes the UntrustedHost error for production deployment
 });
 
 export const ADMINS = process.env.ADMIN_EMAILS?.split(",") || [];
