@@ -2,10 +2,13 @@
 
 import { auth, isAdmin } from "@/auth";
 import { database } from "@/db/database";
+import { InferModel } from "drizzle-orm";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
-import { eq, del as deleteItem } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
+
+type ItemUpdate = Partial<InferModel<typeof items, "insert">>;
 
 export async function UpdateItemAction(itemId: number, formData: FormData) {
   const session = await auth();
@@ -78,14 +81,14 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
       await database.update(items).set({ isFeatured: false });
     }
 
-    const updateData: any = {
+    const updateData: ItemUpdate = {
       name,
       description,
       startingPrice: parseInt(startingPrice),
       bidInterval: parseInt(bidInterval),
       bidEndTime: new Date(bidEndTime || Date.now()),
       auctionType: auctionType || "regular",
-      isFeatured: isFeatured && auctionType === "live", // Only allow featuring for live auctions
+      isFeatured: isFeatured && auctionType === "live",
     };
 
     // Only update imageURL if a new image was uploaded
