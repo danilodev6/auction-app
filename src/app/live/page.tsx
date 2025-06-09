@@ -84,7 +84,7 @@ export default async function LivePage() {
         )}
 
         {featuredItem ? (
-          <ChatBox />
+          <ChatBox itemId={featuredItem.id} />
         ) : (
           <p className="text-gray-600">
             Chat will be available during Live Auction
