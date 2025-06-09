@@ -5,7 +5,6 @@ import { database } from "@/db/database";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
-import { eq } from "drizzle-orm";
 
 export async function CreateItemAction(formData: FormData) {
   const session = await auth();

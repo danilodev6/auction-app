@@ -16,6 +16,7 @@
 //   providers: [Google],
 // });
 
+import { Session } from "next-auth";
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
@@ -34,7 +35,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
 export const ADMINS = process.env.ADMIN_EMAILS?.split(",") || [];
 
-export async function isAdmin(session: any): Promise<boolean> {
+export async function isAdmin(session: Session | null): Promise<boolean> {
   if (!session?.user?.email) {
     return false;
   }

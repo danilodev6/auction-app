@@ -40,7 +40,7 @@ export default function DeleteItemButton({
     return (
       <div className="flex flex-col gap-2 text-center">
         <div className="text-sm text-red-800 font-medium">
-          Delete "{itemName}"?
+          Delete {itemName}?
         </div>
         <div className="flex gap-2">
           <button

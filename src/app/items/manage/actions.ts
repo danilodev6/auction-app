@@ -4,7 +4,7 @@ import { auth, isAdmin } from "@/auth";
 import { database } from "@/db/database";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
-import { eq, delete } from "drizzle-orm";
+import { eq, del as deleteItem } from "drizzle-orm";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
 
 export async function UpdateItemAction(itemId: number, formData: FormData) {

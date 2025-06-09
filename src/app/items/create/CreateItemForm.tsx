@@ -134,7 +134,7 @@ export default function CreateItemForm() {
               <option value="true">Yes (Feature this item)</option>
             </select>
             <p className="text-xs text-gray-500 mt-1">
-              Only one item can be featured at a time. Selecting "Yes" will
+              Only one item can be featured at a time. Selecting YES will
               unfeatured any currently featured item.
             </p>
           </div>
