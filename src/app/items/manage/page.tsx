@@ -122,7 +122,7 @@ export default async function ManageItemsPage() {
                       type="submit"
                       className={`px-3 py-2 rounded-lg text-sm font-medium ${
                         item.isFeatured
-                          ? "bg-purple-600 hover:bg-purple-700 text-white"
+                          ? "bg-purple-800 hover:bg-purple-700 text-white"
                           : "bg-gray-200 hover:bg-gray-300 text-gray-700"
                       }`}
                     >

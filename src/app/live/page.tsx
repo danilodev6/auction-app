@@ -7,12 +7,11 @@ import { Countdown } from "@/components/Countdown";
 import { Button } from "@/components/ui/button";
 import { createBidAction } from "@/app/items/[itemId]/actions";
 import ChatBox from "@/components/ChatBox";
-import { auth } from "@/auth";
-import { ADMINS } from "@/auth";
+import { auth, isAdmin } from "@/auth"; // Import isAdmin function instead of ADMINS
 
 export default async function LivePage() {
   const session = await auth();
-  const isAdmin = ADMINS.includes(session?.user?.email ?? "");
+  const userIsAdmin = await isAdmin(session); // Use the function
   const isSignedIn = !!session?.user?.id;
 
   const allItems = await getAllItems();
@@ -35,7 +34,7 @@ export default async function LivePage() {
     <main className="flex flex-col w-full lg:flex-row gap-6">
       {/* Left: Chat section */}
       <div className="lg:w-1/4 p-4 border-r">
-        {isAdmin && (
+        {userIsAdmin && (
           <div className="mb-6">
             <h2 className="text-lg font-bold mb-4">Live Auction Status</h2>
 
@@ -121,7 +120,7 @@ export default async function LivePage() {
             <p className="text-center text-gray-600">
               No auction currently featured for streaming
             </p>
-            {isAdmin && liveItems.length > 0 && (
+            {userIsAdmin && liveItems.length > 0 && (
               <p className="text-center text-sm text-gray-500 mt-2">
                 <Link href="/items/manage" className="underline">
                   Feature a live auction
@@ -213,7 +212,7 @@ export default async function LivePage() {
               className="mx-auto mb-4 opacity-50"
             />
             <p className="text-lg">No auction currently featured</p>
-            {isAdmin && (
+            {userIsAdmin && (
               <p className="text-sm mt-2">
                 <Link href="/items/manage" className="underline">
                   Feature a live auction

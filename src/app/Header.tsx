@@ -1,13 +1,12 @@
 import Image from "next/image";
 import SignIn from "@/components/Signin";
 import SignOut from "@/components/Signout";
-import { auth } from "@/auth";
+import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
-import { ADMINS } from "@/auth";
 
 export async function Header() {
   const session = await auth();
-  const isAdmin = ADMINS.includes(session?.user?.email ?? "");
+  const userIsAdmin = await isAdmin(session);
 
   return (
     <div className="bg-gray-200 py-2 sticky top-0">
@@ -26,7 +25,7 @@ export async function Header() {
         </div>
 
         <div>
-          {isAdmin && (
+          {userIsAdmin && (
             <Link href="/items/create" className="flex items-center gap-1">
               Create Item
             </Link>
@@ -34,7 +33,7 @@ export async function Header() {
         </div>
 
         <div>
-          {isAdmin && (
+          {userIsAdmin && (
             <Link href="/items/manage" className="flex items-center gap-1">
               Manage Items
             </Link>
