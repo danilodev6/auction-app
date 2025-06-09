@@ -151,7 +151,7 @@ export default async function LivePage() {
 
             <div className="bg-gray-100 rounded-lg p-4 mb-4">
               <p className="font-semibold">Time Left:</p>
-              <Countdown endTime={featuredItem.bidEndTime} />
+              <Countdown endTime={featuredItem.bidEndTime.toISOString()} />
             </div>
 
             {featuredItem.imageURL && (
