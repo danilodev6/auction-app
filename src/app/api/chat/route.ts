@@ -1,5 +1,7 @@
 import { auth } from "@/auth";
 import { database } from "@/db/database";
+import { chatMessage, users } from "@/db/schema"; // Import your schema
+import { eq, asc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -8,11 +10,24 @@ export async function GET(req: Request) {
 
   if (!itemId) return NextResponse.json([]);
 
-  const messages = await database.chatMessage.findMany({
-    where: { itemId },
-    include: { user: true },
-    orderBy: { timestamp: "asc" },
-  });
+  // Drizzle syntax with join
+  const messages = await database
+    .select({
+      id: chatMessage.id,
+      message: chatMessage.message,
+      timestamp: chatMessage.timestamp,
+      itemId: chatMessage.itemId,
+      userId: chatMessage.userId,
+      user: {
+        id: users.id,
+        name: users.name,
+        email: users.email,
+      },
+    })
+    .from(chatMessage)
+    .leftJoin(users, eq(chatMessage.userId, users.id))
+    .where(eq(chatMessage.itemId, itemId))
+    .orderBy(asc(chatMessage.timestamp));
 
   return NextResponse.json(messages);
 }
@@ -31,13 +46,16 @@ export async function POST(req: Request) {
     return new NextResponse("Invalid request", { status: 400 });
   }
 
-  const newMessage = await database.chatMessage.create({
-    data: {
+  // Drizzle insert syntax
+  const newMessage = await database
+    .insert(chatMessage)
+    .values({
       itemId: Number(itemId),
       userId: session.user.id,
       message,
-    },
-  });
+      timestamp: new Date(),
+    })
+    .returning();
 
-  return NextResponse.json(newMessage);
+  return NextResponse.json(newMessage[0]);
 }
