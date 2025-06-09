@@ -96,9 +96,7 @@ export default async function ItemPage({
               </div>
               <div className="mt-3 bg-gray-100 rounded-lg p-4">
                 Auction Ends:{" "}
-                <span className="font-bold">
-                  {formatDate(new Date(item.bidEndTime))}
-                </span>
+                <span className="font-bold">{formatDate(item.bidEndTime)}</span>
               </div>
             </div>
             <div className="mt-3 bg-gray-100 rounded-lg p-4">
@@ -115,7 +113,7 @@ export default async function ItemPage({
               </form>
             </div>
             <div className="mt-3 bg-gray-100 rounded-lg p-4">
-              Time Left: <Countdown endTime={item.bidEndTime} />
+              Time Left: <Countdown endTime={item.bidEndTime.toISOString()} />
             </div>
 
             {hasBids ? (
