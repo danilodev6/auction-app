@@ -13,13 +13,18 @@ services:
 
       - key: DATABASE_URL
         sync: false
-      - key: NEXTAUTH_SECRET
+
+      # Updated to match Auth.js v5 naming convention
+      - key: AUTH_SECRET
+        sync: false
+      - key: AUTH_GOOGLE_ID
+        sync: false
+      - key: AUTH_GOOGLE_SECRET
         sync: false
 
-      - key: GOOGLE_CLIENT_ID
-        sync: false
-      - key: GOOGLE_CLIENT_SECRET
-        sync: false
+      # Add the missing NEXTAUTH_URL for production
+      - key: NEXTAUTH_URL
+        value: https://auction-app-u4q7.onrender.com
 
       - key: NEXT_PUBLIC_SUPABASE_URL
         sync: false
