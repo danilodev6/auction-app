@@ -1,7 +1,16 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { ReactNode } from "react";
 
-export default function AdminOnly({ children, fallback = null }) {
+interface AdminOnlyProps {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+export default function AdminOnly({
+  children,
+  fallback = null,
+}: AdminOnlyProps) {
   const { data: session } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
 
