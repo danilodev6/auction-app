@@ -29,7 +29,9 @@ export default async function ItemPage({
 
   const item = await getItem(parseInt(itemId));
 
-  const isExpired = new Date(item?.bidEndTime) < new Date();
+  const isExpired = item?.bidEndTime
+    ? new Date(item.bidEndTime) < new Date()
+    : false;
   const isSignedIn = !!session?.user?.id;
 
   if (!item) {
