@@ -1,16 +1,18 @@
 import { database } from "@/db/database";
+import { bids } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const itemId = searchParams.get("itemId");
 
   if (!itemId) {
-    return NextResponse.json({ error: "Item ID is required" }, { status: 400 });
+    return NextResponse.json({ error: "Missing itemId" }, { status: 400 });
   }
 
-  const bids = await database.query.bids.findMany({
+  // Fix: Use a different variable name to avoid conflict with the table name
+  const itemBids = await database.query.bids.findMany({
     where: eq(bids.itemId, parseInt(itemId)),
     with: {
       users: true,
@@ -18,5 +20,5 @@ export async function GET(request: Request) {
     orderBy: (bids, { desc }) => [desc(bids.timestamp)],
   });
 
-  return NextResponse.json(bids);
+  return NextResponse.json(itemBids);
 }
