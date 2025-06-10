@@ -1,11 +1,23 @@
-// app/api/bids/route.ts
-import { getBids } from "@/data-access/bids";
+import { database } from "@/db/database";
+import { bids } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const itemId = Number(searchParams.get("itemId"));
-  if (!itemId) return new Response("Missing itemId", { status: 400 });
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const itemId = searchParams.get("itemId");
 
-  const bids = await getBids(itemId);
-  return Response.json(bids);
+  if (!itemId) {
+    return NextResponse.json({ error: "Item ID is required" }, { status: 400 });
+  }
+
+  const bids = await database.query.bids.findMany({
+    where: eq(bids.itemId, parseInt(itemId)),
+    with: {
+      users: true,
+    },
+    orderBy: (bids, { desc }) => [desc(bids.timestamp)],
+  });
+
+  return NextResponse.json(bids);
 }

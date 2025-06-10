@@ -5,15 +5,12 @@ import { database } from "@/db/database";
 import { bids, items } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { pusherServer } from "@/lib/pusher-server";
 
 export async function createBidAction(itemId: number) {
   const session = await auth();
 
-  if (!session) {
-    throw new Error("You must be signed in to create a bid");
-  }
-
-  if (!session.user || !session.user.id) {
+  if (!session || !session.user?.id) {
     throw new Error("You must be signed in to create a bid");
   }
 
@@ -25,27 +22,40 @@ export async function createBidAction(itemId: number) {
     throw new Error("Item not found");
   }
 
-  // const latestBid = item.currentBid + item.bidInterval;
-
-  // If currentBid is 0 or equals startingPrice, this is the first bid
   const latestBid =
     item.currentBid === 0
       ? item.startingPrice
       : item.currentBid + item.bidInterval;
 
-  await database?.insert(bids).values({
-    amount: latestBid,
-    itemId: itemId,
-    userId: session.user.id,
-    timestamp: new Date(),
-  });
+  // Create the bid and get the inserted record
+  const [newBid] = await database
+    .insert(bids)
+    .values({
+      amount: latestBid,
+      itemId: itemId,
+      userId: session.user.id,
+      timestamp: new Date(),
+    })
+    .returning();
 
+  // Update the item
   await database
-    ?.update(items)
+    .update(items)
     .set({
       currentBid: latestBid,
     })
     .where(eq(items.id, itemId));
+
+  // Trigger Pusher event
+  await pusherServer.trigger(`item-${itemId}`, "new-bid", {
+    bid: {
+      ...newBid,
+      users: {
+        name: session.user.name || "Anonymous",
+      },
+    },
+    currentBid: latestBid,
+  });
 
   revalidatePath(`/items/${itemId}`);
 }
