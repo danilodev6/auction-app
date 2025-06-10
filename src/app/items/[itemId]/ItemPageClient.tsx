@@ -38,8 +38,18 @@ export default function ItemPageClient({
   initialBids: Bid[];
   isSignedIn: boolean;
 }) {
-  const [item, setItem] = useState(initialItem);
-  const [bids, setBids] = useState(initialBids);
+  const [item, setItem] = useState({
+    ...initialItem,
+    bidEndTime: new Date(initialItem.bidEndTime),
+  });
+
+  const [bids, setBids] = useState(
+    initialBids.map((bid) => ({
+      ...bid,
+      timestamp: new Date(bid.timestamp),
+    })),
+  );
+
   const router = useRouter();
 
   const isExpired = new Date(item.bidEndTime) < new Date();
@@ -70,14 +80,15 @@ export default function ItemPageClient({
   }, [item.id]);
 
   function formatDate(dateInput: Date) {
-    if (isNaN(dateInput.getTime())) return "Invalid date";
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return "Invalid date";
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }).format(dateInput);
+    }).format(date);
   }
 
   const handleBid = async () => {
