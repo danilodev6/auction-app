@@ -78,7 +78,7 @@ export default function LivePage({
 
     channel.bind("new-bid", (data: { bid: Bid; currentBid: number }) => {
       // Update bids
-      setBids((prev) => [...prev, data.bid]);
+      setBids((prev) => [data.bid, ...prev]);
 
       // Update current bid
       setItems((prev) =>
@@ -113,12 +113,7 @@ export default function LivePage({
     }
   };
 
-  const latestBids = [...bids]
-    .sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    )
-    .slice(0, 6);
+  const latestBids = bids.slice(0, 6);
   const isExpired = featuredItem
     ? new Date(featuredItem.bidEndTime) < new Date()
     : false;
