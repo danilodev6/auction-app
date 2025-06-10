@@ -12,13 +12,12 @@ import Pusher from "pusher-js";
 type Item = {
   id: number;
   name: string;
-  imageURL: string;
+  imageURL: string | null;
   bidEndTime: Date;
   currentBid: number;
   startingPrice: number;
   bidInterval: number;
-  description: string;
-  twitchChannel: string;
+  description: string | null;
   auctionType: string;
   isFeatured: boolean;
 };
@@ -28,7 +27,7 @@ type Bid = {
   amount: number;
   timestamp: Date;
   users: {
-    name: string;
+    name: string | null; // Allow null
   };
 };
 
@@ -159,11 +158,13 @@ export default function LivePage({
               <p className="text-lg font-bold">{featuredItem.name}</p>
             </div>
             <p className="font-semibold mt-2">Description:</p>
-            <p>{featuredItem.description}</p>
+            <p>{featuredItem.description || "No description available"}</p>
           </div>
         ) : (
           <div className="bg-gray-100 rounded-lg m-4 p-4 mb-4">
-            {/* ... no auction message ... */}
+            <p className="text-center text-gray-600">
+              No live auction currently running
+            </p>
           </div>
         )}
       </div>
@@ -192,7 +193,7 @@ export default function LivePage({
               <Countdown endTime={featuredItem.bidEndTime.toISOString()} />
             </div>
 
-            {featuredItem.imageURL && (
+            {featuredItem.imageURL ? (
               <Image
                 src={featuredItem.imageURL}
                 alt={featuredItem.name}
@@ -200,6 +201,10 @@ export default function LivePage({
                 height={200}
                 className="rounded-lg mb-4 mx-auto"
               />
+            ) : (
+              <div className="w-48 h-48 bg-gray-200 rounded-lg mb-4 mx-auto flex items-center justify-center">
+                <span className="text-gray-500">No image available</span>
+              </div>
             )}
 
             <div className="flex flex-col gap-3 mb-4 items-center">
@@ -226,7 +231,9 @@ export default function LivePage({
                 {latestBids.map((bid) => (
                   <div key={bid.id} className="bg-white p-3 rounded-lg border">
                     <p className="font-bold">${formatToDollar(bid.amount)}</p>
-                    <p className="text-sm">by {bid.users.name}</p>
+                    <p className="text-sm">
+                      by {bid.users.name || "Anonymous"}
+                    </p>
                     <p className="text-xs text-gray-500">
                       {new Date(bid.timestamp).toLocaleTimeString()}
                     </p>
@@ -241,7 +248,12 @@ export default function LivePage({
       ) : (
         /* Show placeholder when no item featured */
         <div className="lg:w-1/2 p-4 flex items-center justify-center">
-          {/* ... placeholder UI ... */}
+          <div className="text-center">
+            <p className="text-xl text-gray-600 mb-4">
+              No live auction currently featured
+            </p>
+            <p className="text-gray-500">Check back later for live auctions!</p>
+          </div>
         </div>
       )}
     </main>
