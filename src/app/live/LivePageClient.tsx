@@ -130,6 +130,48 @@ export default function LivePage({
           <div className="mb-6">
             <h2 className="text-lg font-bold mb-4">Live Auction Status</h2>
             {/* ... admin status messages ... */}
+            {liveItems.length === 0 && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-yellow-800">
+                  No live or draft auctions available.{" "}
+                  <Link href="/items/create" className="underline">
+                    Create one
+                  </Link>{" "}
+                  or{" "}
+                  <Link href="/items/manage" className="underline">
+                    manage existing items
+                  </Link>
+                  .
+                </p>
+              </div>
+            )}
+
+            {liveItems.length > 0 && !featuredItem && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-blue-800">
+                  You have {liveItems.length} live auction(s) but none are
+                  featured.{" "}
+                  <Link href="/items/manage" className="underline">
+                    Feature an item
+                  </Link>{" "}
+                  to display it on the live stream.
+                </p>
+              </div>
+            )}
+
+            {featuredItem && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-green-800">
+                  ✅ Currently featuring: <strong>{featuredItem.name}</strong>
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  <Link href="/items/manage" className="underline">
+                    Manage items
+                  </Link>{" "}
+                  to change featured auction
+                </p>
+              </div>
+            )}
           </div>
         )}
 
