@@ -112,7 +112,12 @@ export default function LivePage({
     }
   };
 
-  const latestBids = [...bids].slice(-6).reverse();
+  const latestBids = [...bids]
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    )
+    .slice(0, 6);
   const isExpired = featuredItem
     ? new Date(featuredItem.bidEndTime) < new Date()
     : false;
