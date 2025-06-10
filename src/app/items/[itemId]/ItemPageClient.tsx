@@ -65,7 +65,7 @@ export default function ItemPageClient({
 
     channel.bind("new-bid", (data: { bid: Bid; currentBid: number }) => {
       // Update bids
-      setBids((prev) => [...prev, data.bid]);
+      setBids((prev) => [data.bid, ...prev]);
 
       // Update current bid
       setItem((prev) => ({
