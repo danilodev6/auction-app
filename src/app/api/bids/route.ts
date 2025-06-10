@@ -1,5 +1,4 @@
 import { database } from "@/db/database";
-import { bids } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 

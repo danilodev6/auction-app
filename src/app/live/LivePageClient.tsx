@@ -44,7 +44,7 @@ export default function LivePage({
   const [items, setItems] = useState(initialItems);
   const [featuredItem, setFeaturedItem] = useState<Item | null>(null);
   const [bids, setBids] = useState<Bid[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
+  // const [isConnected, setIsConnected] = useState(false);
 
   // Filter items for live streaming
   const liveItems = items.filter((item) => item.auctionType === "live");
@@ -97,7 +97,7 @@ export default function LivePage({
       );
     });
 
-    setIsConnected(true);
+    // setIsConnected(true);
 
     return () => {
       pusher.unsubscribe(`item-${featuredItem.id}`);

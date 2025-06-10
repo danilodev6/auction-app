@@ -1,7 +1,7 @@
 import { getItem } from "@/data-access/items";
 import { getBids } from "@/data-access/bids";
 import { auth } from "@/auth";
-import ItemPageClient from "./page";
+import ItemPageClient from "./ItemPageClient";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,7 +18,7 @@ export default async function ItemPageWrapper({
     return (
       <div className="container flex flex-col items-center mx-auto py-12">
         <h1 className="text-4xl font-bold">Item not found</h1>
-        <p className="mt-4">The item you're looking for doesn't exist.</p>
+        <p className="mt-4">The item you are looking for doesnt exist.</p>
         <Button asChild className="mt-4">
           <Link href="/">Browse Items</Link>
         </Button>
