@@ -170,26 +170,23 @@ export default function ItemPageClient({
           {hasBids ? (
             <div className="bg-gray-100 rounded-lg p-4 mt-4">
               <ul className="flex flex-col gap-3">
-                {[...bids]
-                  .reverse()
-                  .slice(0, 3)
-                  .map((bid) => (
-                    <li
-                      key={bid.id}
-                      className="flex w-full justify-between items-center py-3 bg-white rounded-lg px-4"
-                    >
-                      <div>
-                        <span className="font-bold">
-                          $ {formatToDollar(bid.amount)}
-                        </span>{" "}
-                        by{" "}
-                        <span className="font-bold">
-                          {bid.users.name || "Anonymous"}
-                        </span>{" "}
-                        at <span>{formatDate(bid.timestamp)}</span>
-                      </div>
-                    </li>
-                  ))}
+                {[...bids].slice(0, 6).map((bid) => (
+                  <li
+                    key={bid.id}
+                    className="flex w-full justify-between items-center py-3 bg-white rounded-lg px-4"
+                  >
+                    <div>
+                      <span className="font-bold">
+                        $ {formatToDollar(bid.amount)}
+                      </span>{" "}
+                      by{" "}
+                      <span className="font-bold">
+                        {bid.users.name || "Anonymous"}
+                      </span>{" "}
+                      at <span>{formatDate(bid.timestamp)}</span>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
           ) : (

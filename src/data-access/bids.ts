@@ -5,7 +5,7 @@ import { bids } from "@/db/schema";
 export async function getBids(itemId: number) {
   const allBids = await database.query.bids.findMany({
     where: eq(bids.itemId, itemId),
-    orderBy: desc(bids.id),
+    orderBy: desc(bids.timestamp),
     with: {
       users: {
         columns: {
