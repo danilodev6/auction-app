@@ -4,9 +4,10 @@ import LivePage from "./LivePageClient";
 
 export default async function LivePageWrapper() {
   const session = await auth();
-  const userIsAdmin = session?.user?.email
-    ? process.env.ADMIN_EMAILS?.split(",").includes(session.user.email)
-    : false;
+  const userIsAdmin =
+    session?.user?.email && process.env.ADMIN_EMAILS
+      ? process.env.ADMIN_EMAILS.split(",").includes(session.user.email)
+      : false;
 
   const isSignedIn = !!session?.user?.id;
   const allItems = await getAllItems();
