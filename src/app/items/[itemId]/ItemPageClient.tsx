@@ -25,7 +25,7 @@ type Bid = {
   amount: number;
   timestamp: Date;
   users: {
-    name: string;
+    name: string | null;
   };
 };
 
@@ -171,7 +171,10 @@ export default function ItemPageClient({
                         <span className="font-bold">
                           $ {formatToDollar(bid.amount)}
                         </span>{" "}
-                        by <span className="font-bold">{bid.users.name}</span>{" "}
+                        by{" "}
+                        <span className="font-bold">
+                          {bid.users.name || "Anonymous"}
+                        </span>{" "}
                         at <span>{formatDate(bid.timestamp)}</span>
                       </div>
                     </li>
