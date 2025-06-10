@@ -12,12 +12,12 @@ import { createBidAction } from "./actions";
 type Item = {
   id: number;
   name: string;
-  imageURL: string;
+  imageURL: string | null;
   bidEndTime: Date;
   currentBid: number;
   startingPrice: number;
   bidInterval: number;
-  description: string;
+  description: string | null;
 };
 
 type Bid = {
@@ -96,13 +96,22 @@ export default function ItemPageClient({
       <div className="flex gap-28 w-full justify-center">
         <div>
           <p className="text-2xl font-bold">Details</p>
-          <Image
-            className="m-auto rounded-xl border-2"
-            src={item.imageURL}
-            alt={item.name}
-            width={300}
-            height={300}
-          />
+          {item.imageURL ? (
+            <Image
+              className="m-auto rounded-xl border-2"
+              src={item.imageURL}
+              alt={item.name}
+              width={300}
+              height={300}
+            />
+          ) : (
+            <div
+              className="m-auto rounded-xl border-2 bg-gray-200 flex items-center justify-center"
+              style={{ width: 300, height: 300 }}
+            >
+              <span className="text-gray-500">No image available</span>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4 ">
             <div className="mt-3 bg-gray-100 rounded-lg p-4">
@@ -130,7 +139,9 @@ export default function ItemPageClient({
           </div>
           <div className="mt-3 bg-gray-100 rounded-lg p-4">
             Description: <br />
-            <span className="font-bold">{item.description}</span>
+            <span className="font-bold">
+              {item.description || "No description available"}
+            </span>
           </div>
         </div>
 
