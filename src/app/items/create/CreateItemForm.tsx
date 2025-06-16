@@ -109,8 +109,9 @@ export default function CreateItemForm() {
             value={auctionType}
             onChange={handleAuctionTypeChange}
           >
-            <option value="regular">Regular Auction</option>
-            <option value="live">Live Auction</option>
+            <option value="regular">Regular</option>
+            <option value="live">Live</option>
+            <option value="direct">Directa</option>
             <option value="draft">Draft (Hidden)</option>
           </select>
         </div>

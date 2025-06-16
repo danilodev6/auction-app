@@ -5,8 +5,10 @@ import { database } from "@/db/database";
 import { InferModel } from "drizzle-orm";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
+import { bids } from "@/db/schema";
+import { users } from "@/db/schema";
 
 type ItemUpdate = Partial<InferModel<typeof items, "insert">>;
 
@@ -283,6 +285,77 @@ export async function DeleteItemAction(itemId: number) {
     console.error("Database error:", dbError);
     throw new Error(
       `Failed to delete item: ${dbError instanceof Error ? dbError.message : "Unknown error"}`,
+    );
+  }
+}
+
+export async function GetAllItemsWithBidsAction() {
+  const session = await auth();
+
+  if (!session) {
+    throw new Error("You must be signed in to view items");
+  }
+
+  if (!(await isAdmin(session))) {
+    throw new Error("You must be an admin to view all items");
+  }
+
+  try {
+    // First get all items
+    const allItems = await database.select().from(items);
+
+    // Then for each item, get the latest bid info
+    const itemsWithBids = await Promise.all(
+      allItems.map(async (item) => {
+        // Get the latest bid for this item
+        const latestBid = await database
+          .select({
+            amount: bids.amount,
+            userId: bids.userId,
+            timestamp: bids.timestamp,
+          })
+          .from(bids)
+          .where(eq(bids.itemId, item.id))
+          .orderBy(desc(bids.timestamp))
+          .limit(1);
+
+        // Get total bid count for this item
+        const bidCount = await database
+          .select({ count: count() })
+          .from(bids)
+          .where(eq(bids.itemId, item.id));
+
+        let bidderInfo = null;
+        if (latestBid.length > 0) {
+          // Get bidder information
+          const bidder = await database
+            .select({
+              name: users.name,
+              email: users.email,
+            })
+            .from(users)
+            .where(eq(users.id, latestBid[0].userId))
+            .limit(1);
+
+          bidderInfo = bidder.length > 0 ? bidder[0] : null;
+        }
+
+        return {
+          ...item,
+          currentBid: latestBid.length > 0 ? latestBid[0].amount : null,
+          bidTime: latestBid.length > 0 ? latestBid[0].timestamp : null,
+          bidderName: bidderInfo?.name || null,
+          bidderEmail: bidderInfo?.email || null,
+          totalBids: bidCount[0].count,
+        };
+      }),
+    );
+
+    return itemsWithBids;
+  } catch (dbError) {
+    console.error("Database error:", dbError);
+    throw new Error(
+      `Failed to fetch items with bids: ${dbError instanceof Error ? dbError.message : "Unknown error"}`,
     );
   }
 }
