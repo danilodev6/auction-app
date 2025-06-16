@@ -6,7 +6,8 @@ import {
   serial,
   text,
   timestamp,
-  boolean, // Add this import
+  boolean,
+  varchar,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
@@ -15,6 +16,7 @@ export const users = pgTable("aa_user", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name"),
+  role: varchar("role", { length: 20 }).notNull().default("user"),
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),

@@ -13,6 +13,7 @@
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",
     "@radix-ui/react-slot": "^1.2.2",
+    "@radix-ui/react-switch": "^1.2.5",
     "@supabase/supabase-js": "^2.49.4",
     "@t3-oss/env-nextjs": "^0.13.4",
     "@tailwindcss/postcss": "^4.1.7",
@@ -20,7 +21,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "drizzle-kit": "^0.31.1",
     "drizzle-orm": "^0.43.1",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
@@ -41,7 +41,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.1",
+    "eslint_d": "^14.3.0",
     "tailwindcss": "^4.1.7",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

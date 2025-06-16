@@ -1,6 +1,6 @@
 services:
   auction-app-db:
-    image: postgres
+    image: postgres:15-alpine
     restart: always
     container_name: auction-app-db
     ports:

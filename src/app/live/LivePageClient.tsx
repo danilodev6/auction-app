@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Countdown } from "@/components/Countdown";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { formatToDollar } from "@/util/currency";
 import { createBidAction } from "@/app/items/[itemId]/actions";
 import ChatBox from "@/components/ChatBox";
 import Pusher from "pusher-js";
+import { Switch } from "@/components/ui/switch";
 
 type Item = {
   id: number;
@@ -28,7 +28,7 @@ type Bid = {
   amount: number;
   timestamp: Date;
   users: {
-    name: string | null; // Allow null
+    name: string | null;
   };
 };
 
@@ -44,27 +44,28 @@ export default function LivePage({
   const [items, setItems] = useState(initialItems);
   const [featuredItem, setFeaturedItem] = useState<Item | null>(null);
   const [bids, setBids] = useState<Bid[]>([]);
+  const [isAvailable, setIsAvailable] = useState(true);
   // const [isConnected, setIsConnected] = useState(false);
 
   // Filter items for live streaming
   const liveItems = items.filter((item) => item.auctionType === "live");
 
   useEffect(() => {
-    // Find the featured item
     const featured = liveItems.find((item) => item.isFeatured) || null;
     setFeaturedItem(featured);
+  }, [liveItems]); // this one only sets the featured item once
 
-    if (featured) {
-      // Fetch initial bids
-      const fetchBids = async () => {
-        const response = await fetch(`/api/bids?itemId=${featured.id}`);
-        const data = await response.json();
-        setBids(data);
-      };
+  useEffect(() => {
+    if (!featuredItem) return;
 
-      fetchBids();
-    }
-  }, [items, liveItems]);
+    const fetchBids = async () => {
+      const response = await fetch(`/api/bids?itemId=${featuredItem.id}`);
+      const data = await response.json();
+      setBids(data);
+    };
+
+    fetchBids();
+  }, [featuredItem]); // this one runs only when featuredItem is updated
 
   useEffect(() => {
     if (!featuredItem) return;
@@ -78,7 +79,10 @@ export default function LivePage({
 
     channel.bind("new-bid", (data: { bid: Bid; currentBid: number }) => {
       // Update bids
-      setBids((prev) => [data.bid, ...prev]);
+      setBids((prev) => {
+        const exists = prev.some((b) => b.id === data.bid.id);
+        return exists ? prev : [data.bid, ...prev];
+      });
 
       // Update current bid
       setItems((prev) =>
@@ -217,24 +221,29 @@ export default function LivePage({
         <>
           <div className="lg:w-1/4 p-4">
             <div className="flex justify-between items-center mb-4">
-              <h1 className="text-xl font-bold">{featuredItem.name}</h1>
+              {userIsAdmin && (
+                <Switch
+                  checked={isAvailable}
+                  onCheckedChange={setIsAvailable}
+                />
+              )}
               <Button
                 onClick={handleBid}
                 size="sm"
-                disabled={isExpired || !isSignedIn}
+                disabled={!isAvailable || !isSignedIn}
               >
                 {!isSignedIn
                   ? "Sign In to Bid"
-                  : isExpired
+                  : !isAvailable
                     ? "Auction Ended"
                     : "Place Bid"}
               </Button>
             </div>
 
-            <div className="bg-gray-100 rounded-lg p-4 mb-4">
-              <p className="font-semibold">Time Left:</p>
-              <Countdown endTime={featuredItem.bidEndTime.toISOString()} />
-            </div>
+            {/* <div className="bg-gray-100 rounded-lg p-4 mb-4"> */}
+            {/*   <p className="font-semibold">Time Left:</p> */}
+            {/*   <Countdown endTime={featuredItem.bidEndTime.toISOString()} /> */}
+            {/* </div> */}
 
             {featuredItem.imageURL ? (
               <Image
@@ -268,6 +277,7 @@ export default function LivePage({
 
           {/* Bids */}
           <div className="lg:w-1/4 p-4">
+            <h1 className="text-xl font-bold">{featuredItem.name}</h1>
             <h3 className="font-bold mb-2">Latest Bids</h3>
             {latestBids.length > 0 ? (
               <div className="space-y-2">

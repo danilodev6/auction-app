@@ -10,20 +10,27 @@ export default async function HomePage() {
     (item) => item.auctionType === "regular",
   );
 
+  const liveItems = allItems.filter((item) => item.auctionType === "live");
+
   const hasItems = regularItems.length > 0;
 
   return (
     <main className="container">
-      <h1 className="text-3xl font-bold">Auction</h1>
-      <h2 className="text-2xl font-bold">All items</h2>
+      <h1 className="text-3xl font-bold m-4">Subastas regulares</h1>
       {hasItems ? (
-        <div className="grid grid-cols-4 my-4 gap-4">
-          <>
+        <>
+          <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(100px,250px))] gap-4">
             {regularItems.map((item) => (
               <ItemCard key={item.id} item={item} />
             ))}
-          </>
-        </div>
+          </div>
+          <h2 className="text-2xl font-bold m-4">Venta directa</h2>
+          <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(100px,250px))] gap-4">
+            {liveItems.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        </>
       ) : (
         <EmptyState />
       )}

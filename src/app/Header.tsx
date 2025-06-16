@@ -1,5 +1,5 @@
 import Image from "next/image";
-import SignIn from "@/components/Signin";
+import UnifiedSignInModal from "@/components/SigninUnified";
 import SignOut from "@/components/Signout";
 import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
@@ -51,7 +51,13 @@ export async function Header() {
             />
           )}
           {session?.user?.name}
-          {session ? <SignOut /> : <SignIn />}
+          {session ? (
+            <SignOut />
+          ) : (
+            <div className="flex items-center gap-2">
+              <UnifiedSignInModal />
+            </div>
+          )}
         </div>
       </div>
     </div>
