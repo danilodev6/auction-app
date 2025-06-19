@@ -26,12 +26,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  trustHost: true, // This fixes the UntrustedHost error for production deployment
-  async session({ session, user }) {
-    if (session.user && user) {
-      session.user.role = user.role;
-    }
-    return session;
+  trustHost: true,
+  callbacks: {
+    async session({ session, user }) {
+      if (session.user && user) {
+        session.user.role = user.role;
+      }
+      return session;
+    },
   },
 });
 
