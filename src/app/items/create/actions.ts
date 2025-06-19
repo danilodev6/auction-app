@@ -13,7 +13,6 @@ export async function CreateItemAction(formData: FormData) {
     throw new Error("You must be signed in to create an item");
   }
 
-  // Add admin check
   if (!(await isAdmin(session))) {
     throw new Error("You must be an admin to create an item");
   }

@@ -32,7 +32,7 @@ export default function CreateItemForm() {
   return (
     <div className="grid grid-cols-2 w-full h-96">
       <form
-        className="border p-4 mt-4 rounded-md space-y-4 max-w-lg"
+        className="border p-4 mt-2 rounded-md space-y-4 max-w-lg"
         onSubmit={async (e) => {
           e.preventDefault();
           setIsSubmitting(true);
@@ -86,7 +86,7 @@ export default function CreateItemForm() {
           </label>
           <TextArea
             id="description"
-            rows={3}
+            rows={2}
             required
             className="mt-1"
             name="description"
@@ -135,8 +135,7 @@ export default function CreateItemForm() {
               <option value="true">Yes (Feature this item)</option>
             </select>
             <p className="text-xs text-gray-500 mt-1">
-              Only one item can be featured at a time. Selecting YES will
-              unfeatured any currently featured item.
+              Only one item can be featured at a time.
             </p>
           </div>
         )}

@@ -9,7 +9,7 @@ export async function Header() {
   const userIsAdmin = await isAdmin(session);
 
   return (
-    <div className="bg-gray-200 py-2 sticky top-0 z-10">
+    <div className="bg-gray-200 py-2 sticky top-0 z-50">
       <div className="container flex items-center gap-5">
         <div className="flex items-center gap-4 justify-self-end">
           <Link href="/" className="flex items-center gap-1">

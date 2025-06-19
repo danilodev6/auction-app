@@ -10,8 +10,8 @@ export default async function CreatePage() {
   }
 
   return (
-    <main className="container mx-auto py-3">
-      <h1 className="text-3xl font-bold">Post an item</h1>
+    <main className="container mx-auto">
+      <h1 className="text-2xl font-bold">Crear Items</h1>
       <CreateItemForm />
     </main>
   );
