@@ -1,15 +1,17 @@
+services
 services:
   - type: web
     name: auction-app
     env: node
     plan: free
     buildCommand: npm install && npm run db:push && npm run build
-    startCommand: npm run start
-    branch: main
-    autoDeploy: true
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
+    buildEnvVars:
+      - key: NODE_ENV
+        value: development
 
       - key: DATABASE_URL
         sync: false
