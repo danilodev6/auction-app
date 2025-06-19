@@ -6,7 +6,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { database } from "@/db/database";
 import { accounts, sessions, users, verificationTokens } from "./db/schema";
 import { eq } from "drizzle-orm";
-import { DefaultSession } from "next-auth"; // Only import DefaultSession
+import { DefaultSession } from "next-auth";
 
 // Extend NextAuth types to include role
 declare module "next-auth" {
@@ -19,6 +19,15 @@ declare module "next-auth" {
   interface User {
     role: string;
   }
+}
+
+// Define a custom user type with role property
+interface CustomUser {
+  id: string;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+  role: string;
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -44,8 +53,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
-        // Add role to session
-        session.user.role = (user as any).role;
+        // Use type assertion to CustomUser
+        session.user.role = (user as CustomUser).role;
       }
       return session;
     },
@@ -71,7 +80,6 @@ export async function isAdmin(session: Session | null): Promise<boolean> {
     return false;
   }
 }
-
 // import { Session } from "next-auth";
 // import NextAuth from "next-auth";
 // import Google from "next-auth/providers/google";
