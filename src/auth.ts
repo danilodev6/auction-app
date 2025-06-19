@@ -6,6 +6,20 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { database } from "@/db/database";
 import { accounts, sessions, users, verificationTokens } from "./db/schema";
 import { eq } from "drizzle-orm";
+import { DefaultSession, DefaultUser } from "next-auth";
+
+// Extend NextAuth types to include role
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user?: {
+      role: string;
+    } & DefaultSession["user"];
+  }
+
+  interface User extends DefaultUser {
+    role: string;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(database, {
@@ -29,7 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   callbacks: {
     async session({ session, user }) {
-      if (session.user && user) {
+      if (session.user) {
         session.user.role = user.role;
       }
       return session;
@@ -43,7 +57,6 @@ export async function isAdmin(session: Session | null): Promise<boolean> {
   }
 
   try {
-    // Query the database to get the current user's role
     const user = await database.query.users.findFirst({
       where: eq(users.email, session.user.email),
       columns: {
@@ -57,6 +70,7 @@ export async function isAdmin(session: Session | null): Promise<boolean> {
     return false;
   }
 }
+
 // import { Session } from "next-auth";
 // import NextAuth from "next-auth";
 // import Google from "next-auth/providers/google";
