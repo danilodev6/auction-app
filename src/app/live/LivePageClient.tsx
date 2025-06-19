@@ -118,9 +118,9 @@ export default function LivePage({
   };
 
   const latestBids = bids.slice(0, 6);
-  const isExpired = featuredItem
-    ? new Date(featuredItem.bidEndTime) < new Date()
-    : false;
+  // const isExpired = featuredItem
+  //   ? new Date(featuredItem.bidEndTime) < new Date()
+  //   : false;
 
   return (
     <main className="flex flex-col w-full lg:flex-row gap-6">

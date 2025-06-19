@@ -13,6 +13,19 @@ import BulkDeleteManager, {
 
 type AuctionType = "regular" | "live" | "draft" | "direct";
 
+interface Item {
+  id: number;
+  name: string;
+  description: string | null;
+  startingPrice: number;
+  currentBid: number | null;
+  bidInterval: number;
+  bidEndTime: Date;
+  auctionType: string;
+  imageURL: string | null;
+  isFeatured: boolean;
+}
+
 interface PageProps {
   searchParams: Promise<{
     type?: string;
@@ -79,7 +92,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     );
   };
 
-  const getBidStatusInfo = (item: any) => {
+  const getBidStatusInfo = (item: Item) => {
     if (!item.currentBid) {
       return {
         display: "Sin pujas",
