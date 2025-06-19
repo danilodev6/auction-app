@@ -24,6 +24,10 @@ interface Item {
   auctionType: string;
   imageURL: string | null;
   isFeatured: boolean;
+  totalBids: number;
+  bidderName: string | null;
+  bidderEmail: string | null;
+  bidTime: Date | null;
 }
 
 interface PageProps {
@@ -105,8 +109,8 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
       display: `${item.totalBids} puja${item.totalBids > 1 ? "s" : ""}`,
       amount: formatToDollar(item.currentBid),
       color: "text-green-600",
-      biddername: item.bidderName || item.bidderEmail,
-      bidderemail: item.bidderEmail,
+      biddername: item.bidderName || item.bidderEmail || "Unknown",
+      bidderemail: item.bidderEmail || "No email",
       bidTime: item.bidTime,
     };
   };
