@@ -6,7 +6,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { database } from "@/db/database";
 import { accounts, sessions, users, verificationTokens } from "./db/schema";
 import { eq } from "drizzle-orm";
-import { DefaultSession, DefaultUser } from "next-auth";
+import { DefaultSession } from "next-auth"; // Only import DefaultSession
 
 // Extend NextAuth types to include role
 declare module "next-auth" {
@@ -16,7 +16,7 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 
-  interface User extends DefaultUser {
+  interface User {
     role: string;
   }
 }
@@ -44,7 +44,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
-        session.user.role = user.role;
+        // Add role to session
+        session.user.role = (user as any).role;
       }
       return session;
     },
