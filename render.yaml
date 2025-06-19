@@ -30,8 +30,8 @@ services:
 
       # Add the missing NEXTAUTH_URL for production
       - key: NEXTAUTH_URL
-        value: http://localshost:3000
-        # value: https://auction-app-u4q7.onrender.com
+        # value: http://localshost:3000
+        value: https://auction-app-u4q7.onrender.com
 
       - key: NEXT_PUBLIC_SUPABASE_URL
         sync: false
