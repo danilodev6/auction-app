@@ -13,6 +13,7 @@ export async function CreateItemAction(formData: FormData) {
     throw new Error("You must be signed in to create an item");
   }
 
+  // Add admin check
   if (!(await isAdmin(session))) {
     throw new Error("You must be an admin to create an item");
   }
@@ -82,7 +83,9 @@ export async function CreateItemAction(formData: FormData) {
       startingPrice: parseInt(startingPrice),
       userId: user.id,
       imageURL: imageURL || null,
-      bidInterval: parseInt(bidInterval),
+      // For direct sales, set bidInterval to 0 or a default value
+      bidInterval:
+        auctionType === "direct" ? 0 : parseInt(bidInterval || "1000"),
       bidEndTime: new Date(bidEndTime || Date.now()),
       auctionType: auctionType || "regular",
       isFeatured: isFeatured && auctionType === "live", // Only allow featuring for live auctions
@@ -96,6 +99,49 @@ export async function CreateItemAction(formData: FormData) {
     console.error("Database error:", dbError);
     throw new Error(
       `Failed to create item in database: ${dbError instanceof Error ? dbError.message : "Unknown error"}`,
+    );
+  }
+}
+
+// New action for purchasing direct sale items
+export async function purchaseItemAction(itemId: number) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    throw new Error("You must be signed in to purchase an item");
+  }
+
+  try {
+    // Get the item to verify it's a direct sale
+    const item = await database.query.items.findFirst({
+      where: (items, { eq }) => eq(items.id, itemId),
+    });
+
+    if (!item) {
+      throw new Error("Item not found");
+    }
+
+    if (item.auctionType !== "direct") {
+      throw new Error("This item is not available for direct purchase");
+    }
+
+    await database
+      .update(items)
+      .set({
+        status: "sold",
+        soldTo: session.user.id,
+        soldAt: new Date(),
+      })
+      .where({ id: itemId });
+    revalidatePath(`/item/${itemId}`);
+    revalidatePath(`/item/${itemId}`);
+    revalidatePath("/");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Purchase error:", error);
+    throw new Error(
+      `Failed to purchase item: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }

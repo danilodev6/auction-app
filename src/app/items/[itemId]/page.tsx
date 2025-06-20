@@ -9,10 +9,10 @@ import Image from "next/image";
 export default async function ItemPageWrapper({
   params,
 }: {
-  params: Promise<{ itemId: string }>; // Updated type for Next.js 15
+  params: Promise<{ itemId: string }>;
 }) {
   const session = await auth();
-  const { itemId } = await params; // Await params in Next.js 15
+  const { itemId } = await params;
   const item = await getItem(parseInt(itemId));
 
   if (!item) {
@@ -43,6 +43,7 @@ export default async function ItemPageWrapper({
       initialItem={{
         ...item,
         bidEndTime: new Date(item.bidEndTime),
+        status: item.status,
       }}
       initialBids={initialBids.map((bid) => ({
         ...bid,

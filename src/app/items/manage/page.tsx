@@ -28,6 +28,7 @@ interface Item {
   bidderName: string | null;
   bidderEmail: string | null;
   bidTime: Date | null;
+  status: string;
 }
 
 interface PageProps {
@@ -65,15 +66,17 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     auctionType: string,
     endTime: Date,
     isFeatured: boolean,
+    status: string,
   ) => {
     const now = new Date();
     const isExpired = now > new Date(endTime);
+    const statusSale = status;
 
     let statusText = auctionType;
     let statusColor = "bg-gray-500";
 
     if (auctionType === "draft") {
-      statusColor = "bg-yellow-500";
+      statusColor = "bg-gray-500";
     } else if (auctionType === "live") {
       if (isFeatured) {
         statusColor = "bg-purple-700";
@@ -86,7 +89,9 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
       statusColor = isExpired ? "bg-red-900" : "bg-blue-800";
       statusText = isExpired ? "regular (ended)" : "regular (active)";
     } else if (auctionType === "direct") {
-      statusColor = "bg-indigo-600";
+      statusColor = statusSale === "active" ? "bg-yellow-500" : "bg-red-900";
+      statusText =
+        statusSale === "active" ? "direct (active)" : "direct (sold)";
     }
 
     return (
@@ -195,6 +200,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                           item.auctionType,
                           item.bidEndTime,
                           item.isFeatured,
+                          item.status,
                         )}
                         <span className="text-xs mr-4">
                           Ends: {formatDate(item.bidEndTime)}

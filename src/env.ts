@@ -25,8 +25,8 @@ export const env = createEnv({
     AUTH_SECRET: z.string().min(1),
     AUTH_GOOGLE_ID: z.string().min(1),
     AUTH_GOOGLE_SECRET: z.string().min(1),
-    AUTH_FACEBOOK_ID: z.string().min(1),
-    AUTH_FACEBOOK_SECRET: z.string().min(1),
+    AUTH_FACEBOOK_ID: z.string().min(1).optional(),
+    AUTH_FACEBOOK_SECRET: z.string().min(1).optional(),
     NEXTAUTH_URL: z.string().url().optional(),
   },
   client: {

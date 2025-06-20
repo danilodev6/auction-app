@@ -29,6 +29,9 @@ export default function CreateItemForm() {
     setAuctionType(e.target.value);
   };
 
+  const isDirectSale = auctionType === "direct";
+  const isLiveAuction = auctionType === "live";
+
   return (
     <div className="grid grid-cols-2 w-full h-96">
       <form
@@ -40,11 +43,18 @@ export default function CreateItemForm() {
             const form = e.currentTarget as HTMLFormElement;
             const formData = new FormData(form);
 
-            const localDateStr = formData.get("bidEndTime")?.toString();
-            if (localDateStr) {
-              const localDate = new Date(localDateStr);
-              const isoString = localDate.toISOString();
-              formData.set("bidEndTime", isoString);
+            // For direct sales, we don't need an end time, but we'll set it far in the future
+            if (isDirectSale || isLiveAuction) {
+              const futureDate = new Date();
+              futureDate.setFullYear(futureDate.getFullYear() + 10);
+              formData.set("bidEndTime", futureDate.toISOString());
+            } else {
+              const localDateStr = formData.get("bidEndTime")?.toString();
+              if (localDateStr) {
+                const localDate = new Date(localDateStr);
+                const isoString = localDate.toISOString();
+                formData.set("bidEndTime", isoString);
+              }
             }
 
             await CreateItemAction(formData);
@@ -99,7 +109,7 @@ export default function CreateItemForm() {
             htmlFor="auctionType"
             className="block text-sm font-medium text-gray-700"
           >
-            Auction Type
+            Sale Type
           </label>
           <select
             id="auctionType"
@@ -109,9 +119,9 @@ export default function CreateItemForm() {
             value={auctionType}
             onChange={handleAuctionTypeChange}
           >
-            <option value="regular">Regular</option>
-            <option value="live">Live</option>
-            <option value="direct">Directa</option>
+            <option value="regular">Regular Auction</option>
+            <option value="live">Live Auction</option>
+            <option value="direct">Direct Sale</option>
             <option value="draft">Draft (Hidden)</option>
           </select>
         </div>
@@ -145,7 +155,7 @@ export default function CreateItemForm() {
             htmlFor="startingPrice"
             className="block text-sm font-medium text-gray-700"
           >
-            Starting Price ($)
+            {isDirectSale ? "Sale Price ($)" : "Starting Price ($)"}
           </label>
           <Input
             id="startingPrice"
@@ -155,26 +165,33 @@ export default function CreateItemForm() {
             type="number"
             step="0.01"
             min="0"
-            placeholder="Starting Price of your item"
+            placeholder={
+              isDirectSale
+                ? "Price for direct sale"
+                : "Starting Price of your item"
+            }
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="bidInterval"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Bid Interval
-          </label>
-          <Input
-            id="bidInterval"
-            type="number"
-            name="bidInterval"
-            step="100"
-            min="100"
-            placeholder="Bid Interval of your item"
-          />
-        </div>
+        {/* Only show bid interval for auction types */}
+        {!isDirectSale && (
+          <div>
+            <label
+              htmlFor="bidInterval"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Bid Interval
+            </label>
+            <Input
+              id="bidInterval"
+              type="number"
+              name="bidInterval"
+              step="100"
+              min="100"
+              placeholder="Bid Interval of your item"
+            />
+          </div>
+        )}
 
         <div>
           <label
@@ -193,21 +210,24 @@ export default function CreateItemForm() {
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="bidEndTime"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Auction End Date
-          </label>
-          <Input
-            id="bidEndTime"
-            required
-            className="mt-1"
-            name="bidEndTime"
-            type="datetime-local"
-          />
-        </div>
+        {/* Only show end time for auction types */}
+        {!isDirectSale && !isLiveAuction && (
+          <div>
+            <label
+              htmlFor="bidEndTime"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Auction End Date
+            </label>
+            <Input
+              id="bidEndTime"
+              required
+              className="mt-1"
+              name="bidEndTime"
+              type="datetime-local"
+            />
+          </div>
+        )}
 
         <Button className="w-full" type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Posting..." : "Post Item"}

@@ -27,7 +27,11 @@ export function ItemCard({ item }: { item: Item }) {
       {/* <p className="text-gray-700 mt-1"> */}
       {/*   Starting Price: $ {formatToDollar(item.startingPrice)} */}
       {/* </p> */}
-      <p className="text-gray-500">Finaliza: {formatDate(item.bidEndTime)}</p>
+      {item.auctionType === "direct" ? (
+        ""
+      ) : (
+        <p className="text-gray-500">Finaliza: {formatDate(item.bidEndTime)}</p>
+      )}
 
       <Button asChild className="m-2">
         <Link href={`/items/${item.id}`}>See item</Link>

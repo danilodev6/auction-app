@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth, isAdmin } from "@/auth";
 import { GetItemAction } from "../../manage/actions";
-import EditItemForm from "../../manage/EditItemForm";
+import EditItemForm from "./EditItemForm";
 
 interface EditItemPageProps {
   params: Promise<{ id: string }>;

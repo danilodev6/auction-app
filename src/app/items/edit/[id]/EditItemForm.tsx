@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UpdateItemAction } from "./actions";
+import { UpdateItemAction } from "../../manage/actions";
 import { useState } from "react";
 import Image from "next/image";
 import { TextArea } from "@/components/ui/textarea";

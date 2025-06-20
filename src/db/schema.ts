@@ -81,11 +81,14 @@ export const items = pgTable("aa_items", {
   description: text("description"),
   startingPrice: integer("startingPrice").notNull().default(0),
   currentBid: integer("currentBid").notNull().default(0),
-  auctionType: text("auctionType").notNull().default("regular"),
+  auctionType: text("auctionType").notNull().default("regular"), // regular, live, draft, direct
   imageURL: text("imageURL"),
   bidInterval: integer("bidInterval").notNull().default(1000),
   bidEndTime: timestamp("bidEndTime", { withTimezone: true }).notNull(),
   isFeatured: boolean("isFeatured").notNull().default(false),
+  status: text("status").notNull().default("active"),
+  soldTo: text("soldTo").references(() => users.id),
+  soldAt: timestamp("soldAt", { withTimezone: true }),
 });
 
 export const bids = pgTable("aa_bids", {
