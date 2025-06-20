@@ -340,12 +340,28 @@ export async function GetAllItemsWithBidsAction() {
           bidderInfo = bidder.length > 0 ? bidder[0] : null;
         }
 
+        let soldToInfo = null;
+        if (item.auctionType === "direct" && item.soldTo) {
+          const soldToUser = await database
+            .select({
+              name: users.name,
+              email: users.email,
+            })
+            .from(users)
+            .where(eq(users.id, item.soldTo))
+            .limit(1);
+
+          soldToInfo = soldToUser.length > 0 ? soldToUser[0] : null;
+        }
+
         return {
           ...item,
           currentBid: latestBid.length > 0 ? latestBid[0].amount : null,
           bidTime: latestBid.length > 0 ? latestBid[0].timestamp : null,
           bidderName: bidderInfo?.name || null,
           bidderEmail: bidderInfo?.email || null,
+          soldToName: soldToInfo?.name || null,
+          soldToEmail: soldToInfo?.email || null,
           totalBids: bidCount[0].count,
         };
       }),

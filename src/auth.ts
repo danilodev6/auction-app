@@ -1,7 +1,6 @@
 import { Session } from "next-auth";
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import Facebook from "next-auth/providers/facebook";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { database } from "@/db/database";
 import { accounts, sessions, users, verificationTokens } from "./db/schema";
@@ -37,23 +36,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }),
-  providers: [
-    Google,
-    Facebook({
-      clientId: process.env.AUTH_FACEBOOK_ID!,
-      clientSecret: process.env.AUTH_FACEBOOK_SECRET!,
-      authorization: {
-        params: {
-          scope: "email",
-        },
-      },
-    }),
-  ],
-  trustHost: true,
+  providers: [Google],
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
-        // Use type assertion to CustomUser
         session.user.role = (user as CustomUser).role;
       }
       return session;
@@ -80,6 +66,7 @@ export async function isAdmin(session: Session | null): Promise<boolean> {
     return false;
   }
 }
+
 // import { Session } from "next-auth";
 // import NextAuth from "next-auth";
 // import Google from "next-auth/providers/google";

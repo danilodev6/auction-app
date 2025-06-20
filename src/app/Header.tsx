@@ -1,8 +1,8 @@
 import Image from "next/image";
-import UnifiedSignInModal from "@/components/SigninUnified";
 import SignOut from "@/components/Signout";
 import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
+import SignIn from "@/components/Signin";
 
 export async function Header() {
   const session = await auth();
@@ -14,7 +14,7 @@ export async function Header() {
         <div className="flex items-center gap-4 justify-self-end">
           <Link href="/" className="flex items-center gap-1">
             <Image src="/logo.png" width="60" height="60" alt="logo" />
-            Auction App
+            Home
           </Link>
         </div>
 
@@ -55,7 +55,7 @@ export async function Header() {
             <SignOut />
           ) : (
             <div className="flex items-center gap-2">
-              <UnifiedSignInModal />
+              <SignIn />
             </div>
           )}
         </div>

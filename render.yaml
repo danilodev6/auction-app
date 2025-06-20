@@ -22,12 +22,6 @@ services:
       - key: AUTH_GOOGLE_SECRET
         sync: false
 
-      # Facebook OAuth credentials
-      - key: AUTH_FACEBOOK_ID
-        sync: false
-      - key: AUTH_FACEBOOK_SECRET
-        sync: false
-
       # Add the missing NEXTAUTH_URL for production
       - key: NEXTAUTH_URL
         # value: http://localshost:3000

@@ -29,6 +29,9 @@ interface Item {
   bidderEmail: string | null;
   bidTime: Date | null;
   status: string;
+  soldTo?: string;
+  soldToName?: string | null;
+  soldToEmail?: string | null;
 }
 
 interface PageProps {
@@ -234,12 +237,20 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                         {item.auctionType !== "direct" &&
                           bidInfo.bidderemail && (
                             <>
-                              <span className="font-medium mr-4 text-green-600">
+                              <span className="font-medium mr-4 text-blue-600">
                                 Ganador: {bidInfo.biddername}
                               </span>
                               <span>Contacto: {bidInfo.bidderemail}</span>
                             </>
                           )}
+                        {item.auctionType === "direct" && item.soldToEmail && (
+                          <>
+                            <span className="font-medium mr-4 text-blue-600">
+                              Vendido a: {item.soldToName || item.soldToEmail}
+                            </span>
+                            <span>Contacto: {item.soldToEmail}</span>
+                          </>
+                        )}
                       </div>
                     </div>
 
