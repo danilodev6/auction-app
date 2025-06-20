@@ -82,8 +82,8 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
         statusColor = "bg-purple-700";
         statusText = "🔴 FEATURED LIVE";
       } else {
-        statusColor = isExpired ? "bg-red-900" : "bg-green-900";
-        statusText = isExpired ? "live (ended)" : "live (active)";
+        statusColor = "bg-green-900";
+        statusText = "live";
       }
     } else if (auctionType === "regular") {
       statusColor = isExpired ? "bg-red-900" : "bg-blue-800";
@@ -102,11 +102,19 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   };
 
   const getBidStatusInfo = (item: Item) => {
+    if (item.auctionType === "direct") {
+      return {
+        display: "-",
+        amount: formatToDollar(item.startingPrice),
+        color: "text-green-600",
+      };
+    }
+
     if (!item.currentBid) {
       return {
         display: "Sin pujas",
         amount: formatToDollar(item.startingPrice),
-        color: "text-gray-500",
+        color: "text-green-600",
       };
     }
 
@@ -213,22 +221,25 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                         <span className="mr-4">
                           Starting: ${item.startingPrice}
                         </span>
-                        <span className="mr-4">
-                          Interval: ${item.bidInterval}
-                        </span>
+                        {item.auctionType !== "direct" && (
+                          <span className="mr-4">
+                            Interval: ${item.bidInterval}
+                          </span>
+                        )}
                         <span className="font-medium">Precio actual: $ </span>
                         <span className={`mr-4 font-semibold ${bidInfo.color}`}>
                           {bidInfo.amount}
                         </span>
                         <span className="mr-4">{bidInfo.display}</span>
-                        {bidInfo.bidderemail && (
-                          <>
-                            <span className="font-medium mr-4">
-                              Ganador: {bidInfo.biddername}
-                            </span>
-                            <span>Contacto: {bidInfo.bidderemail}</span>
-                          </>
-                        )}
+                        {item.auctionType !== "direct" &&
+                          bidInfo.bidderemail && (
+                            <>
+                              <span className="font-medium mr-4 text-green-600">
+                                Ganador: {bidInfo.biddername}
+                              </span>
+                              <span>Contacto: {bidInfo.bidderemail}</span>
+                            </>
+                          )}
                       </div>
                     </div>
 
