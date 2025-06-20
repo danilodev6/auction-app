@@ -40,7 +40,13 @@ export async function Header() {
           )}
         </div>
 
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="ml-auto">
+          <Link href="/terms" className="flex items-center gap-1">
+            Términos y condiciones
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-4">
           {session?.user?.image && (
             <Image
               src={session?.user?.image}
