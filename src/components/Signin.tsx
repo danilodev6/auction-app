@@ -9,7 +9,12 @@ export default function SignIn() {
         await signIn("google");
       }}
     >
-      <Button type="submit">Iniciar sesión</Button>
+      <Button
+        type="submit"
+        className="m-2 bg-accent text-primary px-4 py-1 rounded hover:bg-secondary hover:text-accent"
+      >
+        Iniciar sesión
+      </Button>
     </form>
   );
 }

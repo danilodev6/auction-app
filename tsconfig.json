@@ -56,7 +56,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/api/bids.ts.bak",
-    "src/app/items/live/page.tsx.bak"
+    "src/app/items/live/page.tsx.bak",
+    "src/components/SigninFacebook.tsx.bak"
   ],
   "exclude": ["node_modules"]
 }

@@ -6,7 +6,7 @@ import { formatDate } from "@/util/date";
 
 export function ItemCard({ item }: { item: Item }) {
   return (
-    <div className="flex flex-col items-center border rounded-lg shadow-md">
+    <div className="flex flex-col items-center rounded shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-full h-48 rounded-lg overflow-hidden z-10 mt-2">
         {item.imageURL ? (
           <Image
@@ -33,7 +33,10 @@ export function ItemCard({ item }: { item: Item }) {
         <p className="text-gray-500">Finaliza: {formatDate(item.bidEndTime)}</p>
       )}
 
-      <Button asChild className="m-2">
+      <Button
+        asChild
+        className="m-2 bg-primary text-primary-foreground px-4 py-1 rounded hover:bg-accent hover:text-accent-foreground"
+      >
         <Link href={`/items/${item.id}`}>See item</Link>
       </Button>
     </div>
