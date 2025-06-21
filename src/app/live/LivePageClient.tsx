@@ -45,6 +45,7 @@ export default function LivePage({
   const [featuredItem, setFeaturedItem] = useState<Item | null>(null);
   const [bids, setBids] = useState<Bid[]>([]);
   const [isAvailable, setIsAvailable] = useState(true);
+  const [isBidding, setIsBidding] = useState(false);
   // const [isConnected, setIsConnected] = useState(false);
 
   // Filter items for live streaming
@@ -109,11 +110,16 @@ export default function LivePage({
   }, [featuredItem]);
 
   const handleBid = async () => {
+    setIsBidding(true);
     if (!featuredItem) return;
     try {
       await createBidAction(featuredItem.id);
     } catch (error) {
       console.error("Failed to place bid:", error);
+    } finally {
+      setTimeout(() => {
+        setIsBidding(false);
+      }, 4000);
     }
   };
 
@@ -230,13 +236,15 @@ export default function LivePage({
               <Button
                 onClick={handleBid}
                 size="sm"
-                disabled={!isAvailable || !isSignedIn}
+                disabled={isBidding || !isAvailable || !isSignedIn}
               >
                 {!isSignedIn
                   ? "Sign In to Bid"
                   : !isAvailable
                     ? "Auction Ended"
-                    : "Place Bid"}
+                    : isBidding
+                      ? "Bid Placed..."
+                      : "Place Bid"}
               </Button>
             </div>
 

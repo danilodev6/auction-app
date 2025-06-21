@@ -54,6 +54,7 @@ export default function ItemPageClient({
   );
 
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isBidding, setIsBidding] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const router = useRouter();
 
@@ -101,12 +102,17 @@ export default function ItemPageClient({
   }
 
   const handleBid = async () => {
+    setIsBidding(true);
     try {
       await createBidAction(item.id);
       // Refresh data after placing bid
       router.refresh();
     } catch (error) {
       console.error("Failed to place bid:", error);
+    } finally {
+      setTimeout(() => {
+        setIsBidding(false);
+      }, 4000);
     }
   };
 
@@ -228,7 +234,7 @@ export default function ItemPageClient({
                   : isPurchasing
                     ? "Processing..."
                     : isSignedIn
-                      ? `Buy Now - ${formatToDollar(item.startingPrice)}`
+                      ? `Buy Now`
                       : "Sign in to buy"}
               </Button>
             </div>
@@ -236,8 +242,17 @@ export default function ItemPageClient({
             <>
               <div className="flex gap-6 items-center">
                 <h2 className="text-2xl font-bold">Current bids</h2>
-                <Button onClick={handleBid} disabled={isExpired || !isSignedIn}>
-                  {isSignedIn ? "Place a bid" : "Sign in to bid"}
+                <Button
+                  onClick={handleBid}
+                  disabled={isBidding || isExpired || !isSignedIn}
+                >
+                  {isExpired
+                    ? "Auction Ended"
+                    : isBidding
+                      ? "Bid Placed..."
+                      : isSignedIn
+                        ? "Place a bid"
+                        : "Sign in to bid"}
                 </Button>
               </div>
               <div className="mt-3 bg-gray-100 rounded-lg p-4">
