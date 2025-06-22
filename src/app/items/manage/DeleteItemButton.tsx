@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteItemAction } from "./actions";
+import { Button } from "@/components/ui/button";
 
 interface DeleteItemButtonProps {
   itemId: number;
@@ -43,31 +44,31 @@ export default function DeleteItemButton({
           Delete {itemName}?
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-red-800 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-1 rounded-lg text-sm"
+            className="bg-red-800 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-1 rounded text-sm"
           >
             {isDeleting ? "Deleting..." : "Yes, Delete"}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleCancel}
             disabled={isDeleting}
-            className="bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm"
+            className="bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <button
+    <Button
       onClick={() => setShowConfirm(true)}
-      className="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+      className="bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded text-sm"
     >
       Delete
-    </button>
+    </Button>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DeleteItemAction } from "./actions";
+import { Button } from "@/components/ui/button";
 
 interface BulkDeleteManagerProps {
   children: React.ReactNode;
@@ -101,7 +102,7 @@ export default function BulkDeleteManager({
   };
 
   const bulkDeleteComponent = hasSelection ? (
-    <div className="mb-1 p-2 bg-red-50 border border-red-200 rounded-lg">
+    <div className="mb-1 p-2 bg-red-50 border border-red-200 rounded">
       <div className="flex items-center justify-between">
         <span className="text-red-800 font-medium">
           {selectedItems.size} item{selectedItems.size > 1 ? "s" : ""} selected
@@ -109,18 +110,18 @@ export default function BulkDeleteManager({
 
         {!showConfirm ? (
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => setSelectedItems(new Set())}
-              className="text-gray-600 hover:text-gray-800 text-sm underline"
+              className=" rounded text-sm"
             >
               Clear selection
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setShowConfirm(true)}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium"
             >
               Delete Selected ({selectedItems.size})
-            </button>
+            </Button>
           </div>
         ) : (
           <div className="flex items-center gap-3">
@@ -128,20 +129,20 @@ export default function BulkDeleteManager({
               Are you sure you want to delete {selectedItems.size} items?
             </span>
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={handleBulkDelete}
                 disabled={isDeleting}
                 className="bg-red-800 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-1 rounded text-sm"
               >
                 {isDeleting ? "Deleting..." : "Yes, Delete"}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowConfirm(false)}
                 disabled={isDeleting}
                 className="bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -163,7 +164,7 @@ export function SelectAllCheckbox({ itemCount }: { itemCount: number }) {
     useBulkSelection();
 
   return (
-    <div className="mb-2 flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+    <div className="mb-2 flex items-center gap-3 p-2 bg-white rounded border">
       <input
         type="checkbox"
         checked={isAllSelected}

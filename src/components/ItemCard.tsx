@@ -6,14 +6,14 @@ import { formatDate } from "@/util/date";
 
 export function ItemCard({ item }: { item: Item }) {
   return (
-    <div className="flex flex-col items-center rounded shadow-md bg-card text-card-foreground border-border">
-      <div className="relative w-full h-48 rounded-lg overflow-hidden z-10 mt-2">
+    <div className="flex flex-col px-3 items-center rounded shadow-md bg-card text-card-foreground border-border">
+      <div className="relative w-48 h-48 rounded overflow-hidden z-10 mt-2">
         {item.imageURL ? (
           <Image
             src={item.imageURL}
             alt={item.name}
             fill
-            className="object-contain"
+            className="object-fit rounded"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
@@ -28,7 +28,7 @@ export function ItemCard({ item }: { item: Item }) {
       {/*   Starting Price: $ {formatToDollar(item.startingPrice)} */}
       {/* </p> */}
       {item.auctionType === "direct" ? (
-        ""
+        <p className="text-gray-500">Ingresa para comprar</p>
       ) : (
         <p className="text-gray-500">Finaliza: {formatDate(item.bidEndTime)}</p>
       )}

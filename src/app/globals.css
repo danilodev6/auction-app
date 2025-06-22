@@ -122,10 +122,22 @@
 }
 
 .container {
-  padding-right: 2rem;
-  padding-left: 2rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
   margin-right: auto;
   margin-left: auto;
+}
+
+.header {
+  background: linear-gradient(
+    to bottom,
+    oklch(0.28 0.03 260) 0%,
+    oklch(0.4 0.02 260) 40%,
+    oklch(0.7 0.015 260) 80%,
+    oklch(0.98 0.01 260) 100%
+  );
+  border-bottom: none;
+  box-shadow: none;
 }
 
 @layer utilities {
@@ -150,5 +162,18 @@
 
   .hover-underline:hover::after {
     transform: scaleX(1);
+  }
+
+  @keyframes loading-bar {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-loading-bar {
+    animation: loading-bar 1.2s ease-in-out infinite;
   }
 }

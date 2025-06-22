@@ -332,6 +332,7 @@ export async function GetAllItemsWithBidsAction() {
             .select({
               name: users.name,
               email: users.email,
+              phone: users.phone,
             })
             .from(users)
             .where(eq(users.id, latestBid[0].userId))
@@ -360,6 +361,7 @@ export async function GetAllItemsWithBidsAction() {
           bidTime: latestBid.length > 0 ? latestBid[0].timestamp : null,
           bidderName: bidderInfo?.name || null,
           bidderEmail: bidderInfo?.email || null,
+          bidderPhone: bidderInfo?.phone || null,
           soldToName: soldToInfo?.name || null,
           soldToEmail: soldToInfo?.email || null,
           totalBids: bidCount[0].count,

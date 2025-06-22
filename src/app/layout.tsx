@@ -3,6 +3,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Header } from "@/app/Header";
 import { Barlow } from "next/font/google";
+import PhoneCheckWrapper from "@/components/PhoneCheckWrapper";
+import { SessionProvider } from "next-auth/react";
 
 const fontSans = Barlow({
   subsets: ["latin"],
@@ -32,7 +34,11 @@ export default function RootLayout({
         )}
       >
         <Header />
-        <div className="mx-auto px-4 py-4">{children}</div>
+        <SessionProvider>
+          <PhoneCheckWrapper>
+            <div className="mx-auto px-4 py-4">{children}</div>
+          </PhoneCheckWrapper>
+        </SessionProvider>
       </body>
     </html>
   );

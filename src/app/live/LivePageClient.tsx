@@ -102,8 +102,6 @@ export default function LivePage({
       );
     });
 
-    // setIsConnected(true);
-
     return () => {
       pusher.unsubscribe(`item-${featuredItem.id}`);
     };
@@ -124,9 +122,6 @@ export default function LivePage({
   };
 
   const latestBids = bids.slice(0, 6);
-  // const isExpired = featuredItem
-  //   ? new Date(featuredItem.bidEndTime) < new Date()
-  //   : false;
 
   return (
     <main className="flex flex-col w-full lg:flex-row gap-6">

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { GetAllItemsWithBidsAction, ToggleFeaturedAction } from "./actions";
 import DeleteItemButton from "./DeleteItemButton";
 import { formatToDollar } from "@/util/currency";
@@ -27,6 +28,7 @@ interface Item {
   totalBids: number;
   bidderName: string | null;
   bidderEmail: string | null;
+  bidderPhone: string | null;
   bidTime: Date | null;
   status: string;
   soldTo?: string;
@@ -128,6 +130,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
       biddername: item.bidderName || item.bidderEmail || "Unknown",
       bidderemail: item.bidderEmail || "No email",
       bidTime: item.bidTime,
+      bidderphone: item.bidderPhone || "No phone",
     };
   };
 
@@ -140,12 +143,9 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     <main className="container mx-auto">
       <div className="flex justify-between items-center mb-3">
         <h1 className="text-3xl font-bold">Manage Items</h1>
-        <Link
-          href="/items/create"
-          className="bg-blue-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          Crear nuevo Item
-        </Link>
+        <Button className="m-2 bg-primary text-primary-foreground px-4 py-1 rounded hover:bg-accent hover:text-accent-foreground">
+          <Link href="/items/create">Crear nuevo item</Link>
+        </Button>
       </div>
 
       {/* Client Component for filtering */}
@@ -172,14 +172,14 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
             {/* Select All Header */}
             <SelectAllCheckbox itemCount={filteredItems.length} />
 
-            <div className="grid gap-1">
+            <div className="grid gap-1 bg-white">
               {filteredItems.map((item) => {
                 const bidInfo = getBidStatusInfo(item);
 
                 return (
                   <div
                     key={item.id}
-                    className={`border rounded-lg py-1 px-2 flex items-center gap-4 ${
+                    className={`border rounded py-1 px-2 flex items-center gap-4 ${
                       item.isFeatured ? "border-purple-400 bg-purple-50" : ""
                     }`}
                   >
@@ -240,7 +240,12 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                               <span className="font-medium mr-4 text-blue-600">
                                 Ganador: {bidInfo.biddername}
                               </span>
-                              <span>Contacto: {bidInfo.bidderemail}</span>
+                              <span className="mr-4">
+                                Contacto: {bidInfo.bidderemail}
+                              </span>
+                              <span className="mr-4">
+                                Cel: {bidInfo.bidderphone || "No phone"}
+                              </span>
                             </>
                           )}
                         {item.auctionType === "direct" && item.soldToEmail && (
@@ -258,22 +263,22 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                       {/* Only show feature toggle for live auctions */}
                       {item.auctionType === "live" && (
                         <form action={ToggleFeaturedAction.bind(null, item.id)}>
-                          <button
+                          <Button
                             type="submit"
-                            className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                            className={`px-3 py-2 rounded text-sm font-medium ${
                               item.isFeatured
                                 ? "bg-purple-800 hover:bg-purple-700 text-white"
                                 : "bg-gray-200 hover:bg-gray-300 text-gray-700"
                             }`}
                           >
                             {item.isFeatured ? "Unfeatured" : "Feature"}
-                          </button>
+                          </Button>
                         </form>
                       )}
 
                       <Link
                         href={`/items/edit/${item.id}`}
-                        className="bg-green-800 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm flex items-center"
+                        className="bg-green-800 hover:bg-green-700 text-white px-4 py-2 rounded text-sm flex items-center"
                       >
                         Edit
                       </Link>
