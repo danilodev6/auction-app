@@ -12,7 +12,7 @@ export default function SignOut() {
       }}
     >
       <Button
-        className="m-2 bg-accent text-primary px-4 py-1 rounded hover:bg-secondary hover:text-accent"
+        className="m-2 bg-accent text-primary px-4 py-1 rounded hover:bg-secondary"
         type="submit"
       >
         Cerrar sesión

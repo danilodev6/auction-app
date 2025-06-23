@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="es" className="scroll-smooth">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-secondary font-sans antialiased",
           fontSans.variable,
         )}
       >

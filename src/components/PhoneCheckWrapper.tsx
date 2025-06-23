@@ -66,9 +66,8 @@ export default function PhoneCheckWrapper({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          {/* <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto"></div> */}
           <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden mx-auto">
-            <div className="h-full bg-indigo-600 animate-loading-bar w-1/2 rounded-full"></div>
+            <div className="h-full bg-primary animate-loading-bar w-1/2 rounded-full"></div>
           </div>
 
           <p className="mt-4 text-gray-600">Cargando...</p>

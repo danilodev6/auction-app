@@ -104,6 +104,11 @@ export const bids = pgTable("aa_bids", {
   timestamp: timestamp("timestamp", { mode: "date" }).notNull(),
 });
 
+export const settings = pgTable("aa_nextlive", {
+  id: serial("id").primaryKey(),
+  nextLive: timestamp("next_live", { mode: "date" }),
+});
+
 export const usersRelations = relations(bids, ({ one }) => ({
   users: one(users, {
     fields: [bids.userId],

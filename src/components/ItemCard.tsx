@@ -6,8 +6,8 @@ import { formatDate } from "@/util/date";
 
 export function ItemCard({ item }: { item: Item }) {
   return (
-    <div className="flex flex-col px-3 items-center rounded shadow-md bg-card text-card-foreground border-border">
-      <div className="relative w-48 h-48 rounded overflow-hidden z-10 mt-2">
+    <div className="flex flex-col h-[295px] px-3 items-center rounded shadow-md bg-card text-card-foreground border-border">
+      <div className="relative w-48 h-48 rounded overflow-hidden z-10 mt-1.5">
         {item.imageURL ? (
           <Image
             src={item.imageURL}
@@ -23,14 +23,13 @@ export function ItemCard({ item }: { item: Item }) {
         )}
       </div>
 
-      <h3 className="text-lg font-semibold">{item.name}</h3>
-      {/* <p className="text-gray-700 mt-1"> */}
-      {/*   Starting Price: $ {formatToDollar(item.startingPrice)} */}
-      {/* </p> */}
+      <p className="text-lg font-semibold">{item.name}</p>
       {item.auctionType === "direct" ? (
-        <p className="text-gray-500">Ingresa para comprar</p>
+        <p className="text-sm text-gray-500">Ingresa para comprar</p>
       ) : (
-        <p className="text-gray-500">Finaliza: {formatDate(item.bidEndTime)}</p>
+        <p className="text-sm text-gray-500">
+          Finaliza: {formatDate(item.bidEndTime)}
+        </p>
       )}
 
       <Button asChild className="m-2">
