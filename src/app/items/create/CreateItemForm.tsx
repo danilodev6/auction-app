@@ -33,9 +33,9 @@ export default function CreateItemForm() {
   const isLiveAuction = auctionType === "live";
 
   return (
-    <div className="grid grid-cols-2 w-full h-96">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full mx-auto px-4 items-stretch">
       <form
-        className="border p-4 mt-2 bg-white rounded space-y-4 max-w-lg"
+        className="border p-4 bg-white rounded-md space-y-4 w-full h-full"
         onSubmit={async (e) => {
           e.preventDefault();
           setIsSubmitting(true);
@@ -80,7 +80,7 @@ export default function CreateItemForm() {
           <Input
             id="name"
             required
-            className="mt-1 rounded"
+            className="mt-1 rounded-md"
             name="name"
             type="text"
             placeholder="Name your item"
@@ -98,7 +98,7 @@ export default function CreateItemForm() {
             id="description"
             rows={2}
             required
-            className="mt-1 rounded"
+            className="mt-1 rounded-md"
             name="description"
             placeholder="Describe your item"
           />
@@ -115,7 +115,7 @@ export default function CreateItemForm() {
             id="auctionType"
             name="auctionType"
             required
-            className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
+            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
             value={auctionType}
             onChange={handleAuctionTypeChange}
           >
@@ -138,7 +138,7 @@ export default function CreateItemForm() {
             <select
               id="isFeatured"
               name="isFeatured"
-              className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
               defaultValue="false"
             >
               <option value="false">No</option>
@@ -160,7 +160,7 @@ export default function CreateItemForm() {
           <Input
             id="startingPrice"
             required
-            className="mt-1 rounded"
+            className="mt-1 rounded-md"
             name="startingPrice"
             type="number"
             step="0.01"
@@ -186,7 +186,7 @@ export default function CreateItemForm() {
               id="bidInterval"
               type="number"
               name="bidInterval"
-              className="mt-1 rounded"
+              className="mt-1 rounded-md"
               step="100"
               min="100"
               placeholder="Bid Interval of your item"
@@ -206,7 +206,7 @@ export default function CreateItemForm() {
             type="file"
             name="file"
             accept="image/*"
-            className="mt-1 rounded"
+            className="mt-1 rounded-md"
             onChange={handleFileChange}
           />
         </div>
@@ -223,30 +223,33 @@ export default function CreateItemForm() {
             <Input
               id="bidEndTime"
               required
-              className="mt-1 rounded"
+              className="mt-1 rounded-md"
               name="bidEndTime"
               type="datetime-local"
             />
           </div>
         )}
 
-        <Button
-          className="w-full rounded bg-primary text-white hover:bg-accent hover:text-primary"
-          type="submit"
-          disabled={isSubmitting}
-        >
+        <Button className="w-full" type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Posting..." : "Post Item"}
         </Button>
       </form>
 
       {imagePreview && (
-        <div className="relative max-w-lg mt-4 bg-white border rounded overflow-hidden">
-          <Image
-            src={imagePreview}
-            alt="Preview"
-            fill
-            className="object-contain"
-          />
+        <div className="flex items-center justify-center w-full h-full bg-white border rounded-md">
+          <div className="relative w-full h-full">
+            <Image
+              src={imagePreview}
+              alt="Preview"
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
+      )}
+      {!imagePreview && (
+        <div className="flex items-center justify-center w-full h-full bg-gray-100 border rounded-md text-gray-400">
+          Vista previa de la imagen
         </div>
       )}
     </div>

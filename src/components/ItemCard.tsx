@@ -33,10 +33,7 @@ export function ItemCard({ item }: { item: Item }) {
         <p className="text-gray-500">Finaliza: {formatDate(item.bidEndTime)}</p>
       )}
 
-      <Button
-        asChild
-        className="m-2 bg-primary text-primary-foreground px-4 py-1 rounded hover:bg-accent hover:text-accent-foreground"
-      >
+      <Button asChild className="m-2">
         <Link href={`/items/${item.id}`}>See item</Link>
       </Button>
     </div>

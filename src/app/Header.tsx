@@ -1,8 +1,8 @@
 import Image from "next/image";
-import SignOut from "@/components/Signout";
-import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
+import SignOut from "@/components/Signout";
 import SignIn from "@/components/Signin";
+import { auth, isAdmin } from "@/auth";
 import { FeaturedIndicator } from "@/components/FeaturedIndicator";
 
 export async function Header() {
@@ -10,87 +10,68 @@ export async function Header() {
   const userIsAdmin = await isAdmin(session);
 
   return (
-    <div className="bg-primary text-white py-2 sticky top-0 z-50">
-      <div className="container flex items-center gap-7">
-        <div className="flex items-center gap-2 p-1">
-          <Image src="/logotb2.png" width="75" height="75" alt="logo" />
-          <p className="text-accent bold text-sm/4.5 mr-8 cursor-default">
-            Teresita
-            <br />
-            Bogliacino <br />
-            Subastas
-          </p>
+    <header className="sticky top-0 z-50 bg-transparent pt-4 px-4">
+      <div className="relative max-w-screen-2xl mx-auto flex items-center justify-between h-14">
+        {/* Logo + Brand capsule */}
+        <div className="flex items-center gap-2 bg-primary text-accent px-9 h-14 rounded-md shadow">
+          <Image src="/logotb2.png" width={43} height={43} alt="Logo" />
+          <div className="leading-tight font-semibold text-sm">
+            <span className="block text-[15px]">T. Bogliacino</span>
+            <span className="block text-sm">Subastas</span>
+          </div>
         </div>
-        <div>
-          <Link
-            href="/"
-            className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
-          >
+
+        {/* Navigation capsule (centered absolutely) */}
+        <nav className="absolute left-1/2 -translate-x-1/2 bg-primary text-white px-9 h-14 rounded-md shadow flex items-center space-x-9 text-sm sm:text-base">
+          <Link href="/" className="hover:text-accent hover-nav-link px-3 py-2">
             Home
           </Link>
-        </div>
-
-        <div className="relative">
-          <Link
-            href="/live"
-            className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
-          >
-            Live
-          </Link>
-          <FeaturedIndicator />
-        </div>
-
-        <div>
-          {userIsAdmin && (
+          <div className="relative">
             <Link
-              href="/items/create"
-              className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
+              href="/live"
+              className="hover:text-accent hover-nav-link px-3 py-2"
             >
-              Create Item
+              Live
             </Link>
-          )}
-        </div>
-
-        <div>
+            <FeaturedIndicator />
+          </div>
           {userIsAdmin && (
-            <Link
-              href="/items/manage"
-              className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
-            >
-              Manage Items
-            </Link>
+            <>
+              <Link
+                href="/items/create"
+                className="hover:text-accent hover-nav-link px-3 py-2"
+              >
+                Crear
+              </Link>
+              <Link
+                href="/items/manage"
+                className="hover:text-accent hover-nav-link px-3 py-2"
+              >
+                Admin
+              </Link>
+            </>
           )}
-        </div>
+        </nav>
 
-        <div className="ml-auto">
-          <Link
-            href="/terms"
-            className="flex items-center gap-1 hover:text-accent hover-underline"
-          >
-            Términos y condiciones
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-4">
+        {/* User Info capsule */}
+        <div className="flex items-center gap-3 bg-primary text-white px-9 h-14 rounded-md shadow">
           {session?.user?.image && (
             <Image
-              src={session?.user?.image}
-              width="40"
-              height="40"
-              alt="user avatar"
+              src={session.user.image}
+              alt="User Avatar"
+              width={36}
+              height={36}
               className="rounded-full"
             />
           )}
-          {session?.user?.name}
-          {session ? (
-            <SignOut />
+          {session?.user?.name ? (
+            <span>{session.user.name}</span>
           ) : (
-            <div className="flex items-center gap-2">
-              <SignIn />
-            </div>
+            <span>Tu nombre</span>
           )}
+          {session ? <SignOut /> : <SignIn />}
         </div>
       </div>
-    </div>
+    </header>
   );
 }

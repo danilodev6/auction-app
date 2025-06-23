@@ -1,0 +1,85 @@
+import Image from "next/image";
+import SignOut from "@/components/Signout";
+import { auth, isAdmin } from "@/auth";
+import Link from "next/link";
+import SignIn from "@/components/Signin";
+import { FeaturedIndicator } from "@/components/FeaturedIndicator";
+
+export async function Header() {
+  const session = await auth();
+  const userIsAdmin = await isAdmin(session);
+
+  return (
+    <div className="bg-primary h-16 text-white py-0.5 sticky top-0 z-50">
+      <div className="container flex items-center gap-7">
+        <div className="flex items-center gap-2 p-1">
+          <Image src="/logotb2.png" width="48" height="48" alt="logo" />
+          <div className="leading-tight text-accent font-semibold text-[13px] sm:text-sm mr-8 cursor-default flex flex-col justify-center">
+            <span className="text-[15px] leading-tight">T. Bogliacino</span>
+            <span>Subastas</span>
+          </div>
+        </div>
+        <div>
+          <Link
+            href="/"
+            className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
+          >
+            Home
+          </Link>
+        </div>
+
+        <div className="relative">
+          <Link
+            href="/live"
+            className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
+          >
+            Live
+          </Link>
+          <FeaturedIndicator />
+        </div>
+
+        <div>
+          {userIsAdmin && (
+            <Link
+              href="/items/create"
+              className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
+            >
+              Create Item
+            </Link>
+          )}
+        </div>
+
+        <div>
+          {userIsAdmin && (
+            <Link
+              href="/items/manage"
+              className="flex text-lg items-center gap-1 hover:text-accent hover-underline"
+            >
+              Manage Items
+            </Link>
+          )}
+        </div>
+
+        <div className="flex items-center ml-auto gap-4">
+          {session?.user?.image && (
+            <Image
+              src={session?.user?.image}
+              width="40"
+              height="40"
+              alt="user avatar"
+              className="rounded-full"
+            />
+          )}
+          {session?.user?.name}
+          {session ? (
+            <SignOut />
+          ) : (
+            <div className="flex items-center gap-2">
+              <SignIn />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

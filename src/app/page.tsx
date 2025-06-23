@@ -13,7 +13,7 @@ export default async function HomePage() {
 
   return (
     <main className="container flex flex-col place-items-center">
-      <h1 className="text-3xl font-bold mx-4 my-3">Subastas regulares</h1>
+      <h1 className="text-3xl font-bold mx-4 mb-2">Subastas regulares</h1>
       {regularItems.length === 0 && (
         <p className="text-gray-500 m-4">
           No hay items en subasta regular en este momento
@@ -26,7 +26,7 @@ export default async function HomePage() {
           ))}
         </div>
       </div>
-      <h2 className="text-2xl font-bold mx-4 my-3">Venta directa</h2>
+      <h2 className="text-2xl font-bold mx-4 mt-3 mb-2">Venta directa</h2>
       {directItems.length === 0 && (
         <p className="text-gray-500 m-4">
           No hay items en venta directa en este momento

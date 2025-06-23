@@ -16,7 +16,9 @@ export async function FeaturedIndicator() {
     }
 
     return (
-      <div className="absolute top-2.5 -right-4 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+      <>
+        <div className="absolute top-1.5 -right-3.5 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+      </>
     );
   } catch (error) {
     console.error("Error checking featured items:", error);
