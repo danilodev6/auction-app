@@ -5,6 +5,7 @@ import { auth, isAdmin } from "@/auth";
 import { settings } from "@/db/schema";
 import { ItemCarousel } from "@/components/ItemCarousel";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function HomePage() {
   const session = await auth();
@@ -27,11 +28,13 @@ export default async function HomePage() {
 
   return (
     <main className="container flex flex-col place-items-center">
-      <div className="flex place-items-center">
+      <div className="relative flex place-items-center">
         <h1 className="text-3xl font-bold mx-4 mb-2">Subastas regulares</h1>
-        <Button size={"sm"} className="text-xs">
-          ver todo
-        </Button>
+        <Link href="/reg-auct" className="absolute -right-13">
+          <Button size={"sm"} className="text-xs">
+            ver todo
+          </Button>
+        </Link>
       </div>
       {regularItems.length === 0 && (
         <p className="text-gray-500 m-4">
@@ -41,11 +44,13 @@ export default async function HomePage() {
 
       <ItemCarousel items={regularItems} />
 
-      <div className="flex place-items-center mt-3">
+      <div className="flex relative place-items-center mt-3">
         <h2 className="text-3xl font-bold mx-4 mb-2">Venta directa</h2>
-        <Button size={"sm"} className="text-xs">
-          ver todo
-        </Button>
+        <Link href="/direct" className="absolute -right-13">
+          <Button size={"sm"} className="text-xs">
+            ver todo
+          </Button>
+        </Link>
       </div>
       {directItems.length === 0 && (
         <p className="text-gray-500 m-4">
