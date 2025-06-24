@@ -31,9 +31,10 @@ interface Item {
   bidderPhone: string | null;
   bidTime: Date | null;
   status: string;
-  soldTo?: string;
+  soldTo: string | null;
   soldToName?: string | null;
   soldToEmail?: string | null;
+  soldToPhone?: string | null;
 }
 
 interface PageProps {
@@ -253,7 +254,12 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                             <span className="font-medium mr-4 text-blue-600">
                               Vendido a: {item.soldToName || item.soldToEmail}
                             </span>
-                            <span>Contacto: {item.soldToEmail}</span>
+                            <span className="mr-4">
+                              Contacto: {item.soldToEmail}
+                            </span>
+                            <span className="mr-4">
+                              Cel: {item.soldToPhone || "No phone"}
+                            </span>
                           </>
                         )}
                       </div>

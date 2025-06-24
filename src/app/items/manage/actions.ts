@@ -9,6 +9,7 @@ import { eq, desc, count } from "drizzle-orm";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
 import { bids } from "@/db/schema";
 import { users } from "@/db/schema";
+import { pusherServer } from "@/lib/pusher-server";
 
 type ItemUpdate = Partial<InferModel<typeof items, "insert">>;
 
@@ -196,29 +197,53 @@ export async function ToggleFeaturedAction(itemId: number) {
       throw new Error("Only live auction items can be featured");
     }
 
+    let updatedItem = null;
+
     if (!item.isFeatured) {
-      // If we're featuring this item, unfeatured all others first
-      await database.update(items).set({ isFeatured: false });
-      // Then feature this item
+      // Unfeature all others
+      await database
+        .update(items)
+        .set({ isFeatured: false })
+        .where(eq(items.auctionType, "live"));
+
+      // Feature this item
       await database
         .update(items)
         .set({ isFeatured: true })
         .where(eq(items.id, itemId));
+
+      updatedItem = await database
+        .select()
+        .from(items)
+        .where(eq(items.id, itemId))
+        .limit(1);
     } else {
-      // If we're unfeaturing this item
+      // Unfeature this item
       await database
         .update(items)
         .set({ isFeatured: false })
         .where(eq(items.id, itemId));
+
+      updatedItem = [{ ...item, isFeatured: false }];
     }
 
+    // Push to clients
+    if (updatedItem[0]) {
+      await pusherServer.trigger("live-auction", "featured-changed", {
+        item: updatedItem[0],
+      });
+    }
+
+    // Revalidate paths
     revalidatePath("/");
     revalidatePath("/live");
     revalidatePath("/items/manage");
   } catch (dbError) {
     console.error("Database error:", dbError);
     throw new Error(
-      `Failed to toggle featured status: ${dbError instanceof Error ? dbError.message : "Unknown error"}`,
+      `Failed to toggle featured status: ${
+        dbError instanceof Error ? dbError.message : "Unknown error"
+      }`,
     );
   }
 }
@@ -347,6 +372,7 @@ export async function GetAllItemsWithBidsAction() {
             .select({
               name: users.name,
               email: users.email,
+              phone: users.phone,
             })
             .from(users)
             .where(eq(users.id, item.soldTo))
@@ -364,6 +390,7 @@ export async function GetAllItemsWithBidsAction() {
           bidderPhone: bidderInfo?.phone || null,
           soldToName: soldToInfo?.name || null,
           soldToEmail: soldToInfo?.email || null,
+          soldToPhone: soldToInfo?.phone || null,
           totalBids: bidCount[0].count,
         };
       }),

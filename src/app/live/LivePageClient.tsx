@@ -46,7 +46,6 @@ export default function LivePage({
   const [bids, setBids] = useState<Bid[]>([]);
   const [isAvailable, setIsAvailable] = useState(true);
   const [isBidding, setIsBidding] = useState(false);
-  // const [isConnected, setIsConnected] = useState(false);
 
   // Filter items for live streaming
   const liveItems = items.filter((item) => item.auctionType === "live");
@@ -69,9 +68,43 @@ export default function LivePage({
   }, [featuredItem]); // this one runs only when featuredItem is updated
 
   useEffect(() => {
-    if (!featuredItem) return;
+    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+    });
 
-    // Set up Pusher
+    const channel = pusher.subscribe("live-auction");
+
+    channel.bind("featured-changed", (data: { item: Item }) => {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === data.item.id
+            ? { ...data.item }
+            : { ...item, isFeatured: false },
+        ),
+      );
+      setFeaturedItem(data.item); // <- this triggers bid refetch
+    });
+
+    return () => {
+      pusher.unsubscribe("live-auction");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!featuredItem?.id) return;
+
+    const fetchBids = async () => {
+      const response = await fetch(`/api/bids?itemId=${featuredItem.id}`);
+      const data = await response.json();
+      setBids(data);
+    };
+
+    fetchBids();
+  }, [featuredItem?.id]);
+
+  useEffect(() => {
+    if (!featuredItem?.id) return;
+
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
     });
@@ -79,13 +112,11 @@ export default function LivePage({
     const channel = pusher.subscribe(`item-${featuredItem.id}`);
 
     channel.bind("new-bid", (data: { bid: Bid; currentBid: number }) => {
-      // Update bids
       setBids((prev) => {
         const exists = prev.some((b) => b.id === data.bid.id);
         return exists ? prev : [data.bid, ...prev];
       });
 
-      // Update current bid
       setItems((prev) =>
         prev.map((item) =>
           item.id === featuredItem.id
@@ -94,7 +125,6 @@ export default function LivePage({
         ),
       );
 
-      // Update featured item if needed
       setFeaturedItem((prev) =>
         prev && prev.id === featuredItem.id
           ? { ...prev, currentBid: data.currentBid }
@@ -105,13 +135,17 @@ export default function LivePage({
     return () => {
       pusher.unsubscribe(`item-${featuredItem.id}`);
     };
-  }, [featuredItem]);
+  }, [featuredItem?.id]);
 
-  const handleBid = async () => {
+  const handleBid = async (multiplier: number = 1) => {
     setIsBidding(true);
     if (!featuredItem) return;
+
+    const bidAmount =
+      featuredItem.currentBid + featuredItem.bidInterval * multiplier;
+
     try {
-      await createBidAction(featuredItem.id);
+      await createBidAction(featuredItem.id, bidAmount);
     } catch (error) {
       console.error("Failed to place bid:", error);
     } finally {
@@ -120,6 +154,20 @@ export default function LivePage({
       }, 4000);
     }
   };
+
+  const getBidAmounts = () => {
+    if (!featuredItem) return [];
+
+    const interval = featuredItem.bidInterval;
+
+    return [
+      { multiplier: 1, amount: interval },
+      { multiplier: 2, amount: interval * 2 },
+      { multiplier: 3, amount: interval * 3 },
+    ];
+  };
+
+  const bidAmounts = getBidAmounts();
 
   const latestBids = bids.slice(0, 6);
 
@@ -221,32 +269,47 @@ export default function LivePage({
       {featuredItem ? (
         <>
           <div className="lg:w-1/4 p-4">
+            {userIsAdmin && (
+              <Switch checked={isAvailable} onCheckedChange={setIsAvailable} />
+            )}
             <div className="flex justify-between items-center mb-4">
-              {userIsAdmin && (
-                <Switch
-                  checked={isAvailable}
-                  onCheckedChange={setIsAvailable}
-                />
-              )}
-              <Button
-                onClick={handleBid}
-                size="sm"
-                disabled={isBidding || !isAvailable || !isSignedIn}
-              >
-                {!isSignedIn
-                  ? "Sign In to Bid"
-                  : !isAvailable
-                    ? "Auction Ended"
-                    : isBidding
-                      ? "Bid Placed..."
-                      : "Place Bid"}
-              </Button>
+              <div className="mb-4">
+                <h3 className="font-semibold mb-2 text-center">
+                  Place Your Bid
+                </h3>
+                <div className="flex gap-2">
+                  {bidAmounts.map((bid, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => handleBid(bid.multiplier)}
+                      size="sm"
+                      disabled={isBidding || !isAvailable || !isSignedIn}
+                    >
+                      {!isSignedIn
+                        ? "Sign In to Bid"
+                        : !isAvailable
+                          ? "Auction Ended"
+                          : isBidding
+                            ? "Bid Placed..."
+                            : `Bid $${formatToDollar(bid.amount)}`}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              {/* <Button */}
+              {/*   onClick={handleBid} */}
+              {/*   size="sm" */}
+              {/*   disabled={isBidding || !isAvailable || !isSignedIn} */}
+              {/* > */}
+              {/*   {!isSignedIn */}
+              {/*     ? "Sign In to Bid" */}
+              {/*     : !isAvailable */}
+              {/*       ? "Auction Ended" */}
+              {/*       : isBidding */}
+              {/*         ? "Bid Placed..." */}
+              {/*         : "Place Bid"} */}
+              {/* </Button> */}
             </div>
-
-            {/* <div className="bg-gray-100 rounded-lg p-4 mb-4"> */}
-            {/*   <p className="font-semibold">Time Left:</p> */}
-            {/*   <Countdown endTime={featuredItem.bidEndTime.toISOString()} /> */}
-            {/* </div> */}
 
             {featuredItem.imageURL ? (
               <Image

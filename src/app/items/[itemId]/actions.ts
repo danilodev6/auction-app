@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { pusherServer } from "@/lib/pusher-server";
 
-export async function createBidAction(itemId: number) {
+export async function createBidAction(itemId: number, customAmount?: number) {
   const session = await auth();
 
   if (!session || !session.user?.id) {
@@ -22,16 +22,28 @@ export async function createBidAction(itemId: number) {
     throw new Error("Item not found");
   }
 
-  const latestBid =
-    item.currentBid === 0
-      ? item.startingPrice
-      : item.currentBid + item.bidInterval;
+  // const latestBid =
+  //   item.currentBid === 0
+  //     ? item.startingPrice
+  //     : item.currentBid + item.bidInterval;
+
+  let bidAmount: number;
+  if (customAmount) {
+    // Validate that custom amount is valid (higher than current bid)
+    if (customAmount <= item.currentBid) {
+      throw new Error("Bid amount must be higher than current bid");
+    }
+    bidAmount = customAmount;
+  } else {
+    // Use default increment (current bid + bid interval)
+    bidAmount = item.currentBid + item.bidInterval;
+  }
 
   // Create the bid and get the inserted record
   const [newBid] = await database
     .insert(bids)
     .values({
-      amount: latestBid,
+      amount: bidAmount,
       itemId: itemId,
       userId: session.user.id,
       timestamp: new Date(),
@@ -42,7 +54,7 @@ export async function createBidAction(itemId: number) {
   await database
     .update(items)
     .set({
-      currentBid: latestBid,
+      currentBid: bidAmount,
     })
     .where(eq(items.id, itemId));
 
@@ -54,7 +66,7 @@ export async function createBidAction(itemId: number) {
         name: session.user.name || "Anonymous",
       },
     },
-    currentBid: latestBid,
+    currentBid: bidAmount,
   });
 
   revalidatePath(`/items/${itemId}`);
@@ -100,4 +112,3 @@ export async function purchaseItemAction(itemId: number) {
     );
   }
 }
-

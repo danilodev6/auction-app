@@ -83,7 +83,7 @@ export default function CompleteProfile() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Hola {session.user?.name}, necesitamos tu número de teléfono para
-            completar tu registro
+            completar tu registro por ser tu primera subasta.
           </p>
         </div>
 
@@ -109,8 +109,8 @@ export default function CompleteProfile() {
               />
             </div>
             <p className="mt-4 text-xs text-gray-500">
-              Este número será visible para los administradores si ganas una
-              subasta
+              Este número será visible solo para los administradores si ganas
+              una subasta
             </p>
           </div>
 
@@ -124,16 +124,7 @@ export default function CompleteProfile() {
               disabled={isLoading}
               className="group mt-4 relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded text-white bg-primary hover:bg-accent hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (
-                <>
-                  <div className="w-full mt-4 h-1 bg-indigo-200 rounded overflow-hidden absolute top-0 left-0">
-                    <div className="h-full bg-indigo-600 animate-loading-bar w-1/2"></div>
-                  </div>
-                  Guardando...
-                </>
-              ) : (
-                "Continuar"
-              )}
+              {isLoading ? "Guardando..." : "Continuar"}
             </Button>
           </div>
         </form>
