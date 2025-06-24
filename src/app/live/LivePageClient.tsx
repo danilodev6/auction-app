@@ -7,8 +7,9 @@ import Image from "next/image";
 import { formatToDollar } from "@/util/currency";
 import { createBidAction } from "@/app/items/[itemId]/actions";
 import ChatBox from "@/components/ChatBox";
-import Pusher from "pusher-js";
 import { Switch } from "@/components/ui/switch";
+import { usePusherClient } from "@/hooks/usePusherClient";
+import { useClientOnly } from "@/hooks/useClientOnly";
 
 type Item = {
   id: number;
@@ -47,30 +48,37 @@ export default function LivePage({
   const [isAvailable, setIsAvailable] = useState(true);
   const [isBidding, setIsBidding] = useState(false);
 
+  // Use the custom hooks
+  const isClient = useClientOnly();
+  const { pusher, isReady } = usePusherClient();
+
   // Filter items for live streaming
   const liveItems = items.filter((item) => item.auctionType === "live");
 
   useEffect(() => {
     const featured = liveItems.find((item) => item.isFeatured) || null;
     setFeaturedItem(featured);
-  }, [liveItems]); // this one only sets the featured item once
+  }, [liveItems]);
 
   useEffect(() => {
-    if (!featuredItem) return;
+    if (!featuredItem || !isClient) return;
 
     const fetchBids = async () => {
-      const response = await fetch(`/api/bids?itemId=${featuredItem.id}`);
-      const data = await response.json();
-      setBids(data);
+      try {
+        const response = await fetch(`/api/bids?itemId=${featuredItem.id}`);
+        const data = await response.json();
+        setBids(data);
+      } catch (error) {
+        console.error("Failed to fetch bids:", error);
+      }
     };
 
     fetchBids();
-  }, [featuredItem]); // this one runs only when featuredItem is updated
+  }, [featuredItem, isClient]);
 
+  // Pusher for featured item changes
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
-    });
+    if (!pusher || !isReady) return;
 
     const channel = pusher.subscribe("live-auction");
 
@@ -82,32 +90,17 @@ export default function LivePage({
             : { ...item, isFeatured: false },
         ),
       );
-      setFeaturedItem(data.item); // <- this triggers bid refetch
+      setFeaturedItem(data.item);
     });
 
     return () => {
       pusher.unsubscribe("live-auction");
     };
-  }, []);
+  }, [pusher, isReady]);
 
+  // Pusher for bids
   useEffect(() => {
-    if (!featuredItem?.id) return;
-
-    const fetchBids = async () => {
-      const response = await fetch(`/api/bids?itemId=${featuredItem.id}`);
-      const data = await response.json();
-      setBids(data);
-    };
-
-    fetchBids();
-  }, [featuredItem?.id]);
-
-  useEffect(() => {
-    if (!featuredItem?.id) return;
-
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
-    });
+    if (!featuredItem?.id || !pusher || !isReady) return;
 
     const channel = pusher.subscribe(`item-${featuredItem.id}`);
 
@@ -135,7 +128,7 @@ export default function LivePage({
     return () => {
       pusher.unsubscribe(`item-${featuredItem.id}`);
     };
-  }, [featuredItem?.id]);
+  }, [featuredItem?.id, pusher, isReady]);
 
   const handleBid = async (multiplier: number = 1) => {
     setIsBidding(true);
@@ -168,8 +161,26 @@ export default function LivePage({
   };
 
   const bidAmounts = getBidAmounts();
-
   const latestBids = bids.slice(0, 6);
+
+  // Show loading state during hydration
+  if (!isClient) {
+    return (
+      <main className="flex flex-col w-full lg:flex-row gap-6">
+        <div className="lg:w-1/4 p-4 border-r">
+          <p className="text-gray-600">Loading chat...</p>
+        </div>
+        <div className="lg:w-4/4 p-4">
+          <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
+            <p className="text-gray-600">Loading stream...</p>
+          </div>
+        </div>
+        <div className="lg:w-1/2 p-4 flex items-center justify-center">
+          <p className="text-gray-600">Loading auction details...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex flex-col w-full lg:flex-row gap-6">
@@ -178,7 +189,6 @@ export default function LivePage({
         {userIsAdmin && (
           <div className="mb-6">
             <h2 className="text-lg font-bold mb-4">Live Auction Status</h2>
-            {/* ... admin status messages ... */}
             {liveItems.length === 0 && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
                 <p className="text-sm text-yellow-800">
@@ -291,24 +301,11 @@ export default function LivePage({
                           ? "Auction Ended"
                           : isBidding
                             ? "Bid Placed..."
-                            : `Bid $${formatToDollar(bid.amount)}`}
+                            : `$ ${formatToDollar(bid.amount)}`}
                     </Button>
                   ))}
                 </div>
               </div>
-              {/* <Button */}
-              {/*   onClick={handleBid} */}
-              {/*   size="sm" */}
-              {/*   disabled={isBidding || !isAvailable || !isSignedIn} */}
-              {/* > */}
-              {/*   {!isSignedIn */}
-              {/*     ? "Sign In to Bid" */}
-              {/*     : !isAvailable */}
-              {/*       ? "Auction Ended" */}
-              {/*       : isBidding */}
-              {/*         ? "Bid Placed..." */}
-              {/*         : "Place Bid"} */}
-              {/* </Button> */}
             </div>
 
             {featuredItem.imageURL ? (

@@ -5,6 +5,9 @@ import Link from "next/link";
 import { formatDate } from "@/util/date";
 
 export function ItemCard({ item }: { item: Item }) {
+  const isDirectSale = item.auctionType === "direct";
+  const isSold = isDirectSale && item.status !== "active"; // Adjust if your sold logic differs
+
   return (
     <div className="flex flex-col h-[295px] px-3 items-center rounded shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-48 h-48 rounded overflow-hidden z-10 mt-1.5">
@@ -21,18 +24,26 @@ export function ItemCard({ item }: { item: Item }) {
             No image available
           </div>
         )}
+
+        {isSold && (
+          <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
+            SOLD
+          </div>
+        )}
       </div>
 
       <p className="text-lg font-semibold">{item.name}</p>
-      {item.auctionType === "direct" ? (
-        <p className="text-sm text-gray-500">Ingresa para comprar</p>
+      {isDirectSale ? (
+        <p className="text-sm text-gray-500">
+          {isSold ? "Producto vendido" : "Ingresa para comprar"}
+        </p>
       ) : (
         <p className="text-sm text-gray-500">
           Finaliza: {formatDate(item.bidEndTime)}
         </p>
       )}
 
-      <Button asChild className="m-2">
+      <Button asChild className="m-2" disabled={isSold}>
         <Link href={`/items/${item.id}`}>See item</Link>
       </Button>
     </div>
