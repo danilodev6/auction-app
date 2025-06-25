@@ -2,7 +2,6 @@
 
 import { auth, isAdmin } from "@/auth";
 import { database } from "@/db/database";
-import { InferModel } from "drizzle-orm";
 import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { eq, desc, count } from "drizzle-orm";
@@ -10,8 +9,6 @@ import { supabase, BUCKET_NAME } from "@/lib/supabase";
 import { bids } from "@/db/schema";
 import { users } from "@/db/schema";
 import { pusherServer } from "@/lib/pusher-server";
-
-type ItemUpdate = Partial<InferModel<typeof items, "insert">>;
 
 export async function UpdateItemAction(itemId: number, formData: FormData) {
   const session = await auth();

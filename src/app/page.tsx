@@ -6,9 +6,11 @@ import { settings } from "@/db/schema";
 import { ItemCarousel } from "@/components/ItemCarousel";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { requireNotBlocked } from "@/lib/auth-helpers";
 
 export default async function HomePage() {
   const session = await auth();
+  await requireNotBlocked();
   const userIsAdmin = await isAdmin(session);
 
   const allItems = await database.select().from(items);

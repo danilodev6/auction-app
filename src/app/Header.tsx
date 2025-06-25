@@ -13,13 +13,15 @@ export async function Header() {
     <header className="sticky top-0 z-50 bg-transparent pt-4 px-4">
       <div className="relative max-w-screen-2xl mx-auto flex items-center justify-between h-14">
         {/* Logo + Brand capsule */}
-        <div className="flex items-center gap-2 bg-primary text-accent px-9 h-14 rounded-md shadow">
-          <Image src="/logotb2.png" width={43} height={43} alt="Logo" />
-          <div className="leading-tight font-semibold text-sm">
-            <span className="block text-[15px]">T. Bogliacino</span>
-            <span className="block text-sm">Subastas</span>
+        <Link href="/">
+          <div className="flex items-center gap-2 bg-primary text-accent px-9 h-14 rounded-md shadow">
+            <Image src="/logotb2.png" width={43} height={43} alt="Logo" />
+            <div className="leading-tight font-semibold text-sm">
+              <span className="block text-[15px]">T. Bogliacino</span>
+              <span className="block text-sm">Subastas</span>
+            </div>
           </div>
-        </div>
+        </Link>
 
         {/* Navigation capsule (centered absolutely) */}
         <nav className="absolute left-1/2 -translate-x-1/2 bg-primary text-white px-9 h-14 rounded-md shadow flex items-center space-x-9 text-sm sm:text-base">
@@ -48,6 +50,12 @@ export async function Header() {
                 className="hover:text-accent hover-nav-link px-3 py-2"
               >
                 Admin
+              </Link>
+              <Link
+                href="/admin/users"
+                className="hover:text-accent hover-nav-link px-3 py-2"
+              >
+                Users
               </Link>
             </>
           )}

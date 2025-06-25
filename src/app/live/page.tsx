@@ -1,9 +1,12 @@
 import { getAllItems } from "@/data-access/items";
 import { auth } from "@/auth";
 import LivePage from "./LivePageClient";
+import { requireNotBlocked } from "@/lib/auth-helpers";
 
 export default async function LivePageWrapper() {
   const session = await auth();
+  await requireNotBlocked();
+
   const userIsAdmin =
     session?.user?.email && process.env.ADMIN_EMAILS
       ? process.env.ADMIN_EMAILS.split(",").includes(session.user.email)

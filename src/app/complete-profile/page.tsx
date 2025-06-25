@@ -129,7 +129,7 @@ export default function CompleteProfile() {
           </div>
         </form>
 
-        <div className="text-center mt-4">
+        <div className="text-center my-4">
           <p className="text-xs text-gray-500">
             Al continuar, aceptas que este número sea usado para contactarte
             sobre tus subastas

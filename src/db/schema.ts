@@ -11,6 +11,8 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
+export type User = typeof users.$inferSelect;
+
 export const users = pgTable("aa_user", {
   id: text("id")
     .primaryKey()
