@@ -144,9 +144,6 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     <main className="container mx-auto">
       <div className="flex justify-between items-center mb-3">
         <h1 className="text-3xl font-bold">Manage Items</h1>
-        <Button className="m-2 bg-primary text-primary-foreground px-4 py-1 rounded hover:bg-accent hover:text-accent-foreground">
-          <Link href="/items/create">Crear nuevo item</Link>
-        </Button>
       </div>
 
       {/* Client Component for filtering */}

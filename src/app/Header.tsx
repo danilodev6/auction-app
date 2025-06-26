@@ -49,7 +49,7 @@ export async function Header() {
                 href="/items/manage"
                 className="hover:text-accent hover-nav-link px-3 py-2"
               >
-                Admin
+                Items
               </Link>
               <Link
                 href="/admin/users"

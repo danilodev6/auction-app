@@ -11,7 +11,7 @@ export default async function CreatePage() {
 
   return (
     <main className="container mx-auto">
-      <div className="flex flex-col justify-between items-center my-3">
+      <div className="flex flex-col justify-between items-center mb-3">
         <h1 className="text-3xl font-bold my-3">Manage Users</h1>
         <ManageUsersPage />
       </div>

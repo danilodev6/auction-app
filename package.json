@@ -7,8 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "npx drizzle-kit push --config=drizzle.config.ts --force",
-    "db:studio": "drizzle-kit studio --config=drizzle.config.ts"
+    "db:push": "drizzle-kit push --config=drizzle.config.ts --force",
+    "db:studio": "drizzle-kit studio --config=drizzle.config.ts",
+    "db:generate": "npx drizzle-kit generate --config=drizzle.config.ts",
+    "db:migrate": "npx drizzle-kit migrate --config=drizzle.config.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.9.1",
@@ -29,7 +31,7 @@
     "next": "15.3.2",
     "next-auth": "^5.0.0-beta.28",
     "postcss": "^8.5.3",
-    "postgres": "^3.4.5",
+    "postgres": "^3.4.7",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0",
     "react": "^19.0.0",
@@ -42,6 +44,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^8.0.0",
     "drizzle-kit": "^0.31.1",
     "eslint_d": "^14.3.0",
     "tailwindcss": "^4.1.7",
