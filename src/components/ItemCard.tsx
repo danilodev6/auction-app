@@ -2,11 +2,11 @@ import { Item } from "@/db/schema";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { formatDate } from "@/util/date";
+import { formatSimpleDate } from "@/util/date2";
 
 export function ItemCard({ item }: { item: Item }) {
   const isDirectSale = item.auctionType === "direct";
-  const isSold = isDirectSale && item.status !== "active"; // Adjust if your sold logic differs
+  const isSold = isDirectSale && item.status !== "active";
 
   return (
     <div className="flex flex-col h-[295px] px-3 items-center rounded shadow-md bg-card text-card-foreground border-border">
@@ -27,7 +27,7 @@ export function ItemCard({ item }: { item: Item }) {
 
         {isSold && (
           <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow">
-            SOLD
+            VENDIDO
           </div>
         )}
       </div>
@@ -39,12 +39,12 @@ export function ItemCard({ item }: { item: Item }) {
         </p>
       ) : (
         <p className="text-sm text-gray-500">
-          Finaliza: {formatDate(item.bidEndTime)}
+          Finaliza: {formatSimpleDate(item.bidEndTime)}
         </p>
       )}
 
       <Button asChild className="m-2" disabled={isSold}>
-        <Link href={`/items/${item.id}`}>See item</Link>
+        <Link href={`/items/${item.id}`}>Ver item</Link>
       </Button>
     </div>
   );

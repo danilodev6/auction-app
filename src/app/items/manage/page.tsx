@@ -88,14 +88,14 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
         statusColor = "bg-purple-700";
         statusText = "🔴 FEATURED LIVE";
       } else {
-        statusColor = "bg-green-900";
+        statusColor = "bg-yellow-500";
         statusText = "live";
       }
     } else if (auctionType === "regular") {
       statusColor = isExpired ? "bg-red-900" : "bg-blue-800";
       statusText = isExpired ? "regular (ended)" : "regular (active)";
     } else if (auctionType === "direct") {
-      statusColor = statusSale === "active" ? "bg-yellow-500" : "bg-red-900";
+      statusColor = statusSale === "active" ? "bg-green-900" : "bg-red-900";
       statusText =
         statusSale === "active" ? "direct (active)" : "direct (sold)";
     }
@@ -125,7 +125,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     }
 
     return {
-      display: `${item.totalBids} puja${item.totalBids > 1 ? "s" : ""}`,
+      display: `- ${item.totalBids} puja${item.totalBids > 1 ? "s -" : " -"}`,
       amount: formatToDollar(item.currentBid),
       color: "text-green-600",
       biddername: item.bidderName || item.bidderEmail || "Unknown",
@@ -212,22 +212,22 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                           item.status,
                         )}
                         <span className="text-xs mr-4">
-                          Ends: {formatDate(item.bidEndTime)}
+                          Finaliza: {formatDate(item.bidEndTime)}
                         </span>
                       </div>
                       <p className="text-gray-600 text-sm mb-1">
-                        Descripcion: {item.description}
+                        Descripción: {item.description}
                       </p>
                       <div className="text-sm text-gray-500">
                         <span className="mr-4">
-                          Starting: ${item.startingPrice}
+                          Precio inicio: ${item.startingPrice}
                         </span>
                         {item.auctionType !== "direct" && (
                           <span className="mr-4">
-                            Interval: ${item.bidInterval}
+                            Intervalo: ${item.bidInterval}
                           </span>
                         )}
-                        <span className="font-medium">Precio actual: $ </span>
+                        <span className="font-medium">Precio venta: $ </span>
                         <span className={`mr-4 font-semibold ${bidInfo.color}`}>
                           {bidInfo.amount}
                         </span>

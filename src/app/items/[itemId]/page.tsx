@@ -1,7 +1,7 @@
 import { getItem } from "@/data-access/items";
 import { getBids } from "@/data-access/bids";
 import { auth } from "@/auth";
-import ItemPageClient from "./ItemPageClient"; // Fixed import path
+import ItemPageClient from "./ItemPageClient";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";

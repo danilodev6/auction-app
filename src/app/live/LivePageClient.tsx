@@ -245,12 +245,11 @@ export default function LivePage({
 
       {/* Middle: Twitch Stream */}
       <div className="lg:w-4/4 p-4">
-        <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
+        <div className="w-full max-w-[960px] mx-auto aspect-video bg-gray-200 rounded-lg overflow-hidden">
           <iframe
-            src={`https://player.twitch.tv/?channel=rubius&parent=localhost`}
-            width="100%"
-            height="100%"
+            src="https://player.twitch.tv/?channel=tbsubastas2&parent=localhost"
             allowFullScreen
+            className="w-full h-full"
           />
         </div>
 
@@ -315,6 +314,7 @@ export default function LivePage({
                 width={200}
                 height={200}
                 className="rounded-lg mb-4 mx-auto"
+                priority
               />
             ) : (
               <div className="w-48 h-48 bg-gray-200 rounded-lg mb-4 mx-auto flex items-center justify-center">

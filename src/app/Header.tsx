@@ -15,7 +15,13 @@ export async function Header() {
         {/* Logo + Brand capsule */}
         <Link href="/">
           <div className="flex items-center gap-2 bg-primary text-accent px-9 h-14 rounded-md shadow">
-            <Image src="/logotb2.png" width={43} height={43} alt="Logo" />
+            <Image
+              src="/logotb.png"
+              width={60}
+              height={60}
+              alt="Logo"
+              priority
+            />
             <div className="leading-tight font-semibold text-sm">
               <span className="block text-[15px]">T. Bogliacino</span>
               <span className="block text-sm">Subastas</span>

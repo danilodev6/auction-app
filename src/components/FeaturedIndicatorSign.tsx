@@ -51,7 +51,7 @@ export function FeaturedIndicatorSign({
   return (
     <div className="fixed bottom-25 right-25 z-50 rounded-md bg-primary shadow-lg p-3">
       <p className="text-lg text-center font-semibold text-white">
-        El próximo vivo es:
+        El próximo VIVO es:
       </p>
 
       {userIsAdmin ? (
