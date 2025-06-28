@@ -135,7 +135,9 @@ export default function LivePage({
     if (!featuredItem) return;
 
     const bidAmount =
-      featuredItem.currentBid + featuredItem.bidInterval * multiplier;
+      featuredItem.currentBid === 0
+        ? featuredItem.startingPrice
+        : featuredItem.currentBid + featuredItem.bidInterval * multiplier;
 
     try {
       await createBidAction(featuredItem.id, bidAmount);
@@ -144,7 +146,7 @@ export default function LivePage({
     } finally {
       setTimeout(() => {
         setIsBidding(false);
-      }, 4000);
+      }, 1500);
     }
   };
 
@@ -237,9 +239,7 @@ export default function LivePage({
         {featuredItem ? (
           <ChatBox itemId={featuredItem.id} />
         ) : (
-          <p className="text-gray-600">
-            Chat will be available during Live Auction
-          </p>
+          <p className="text-gray-600">Chat will be available during Live</p>
         )}
       </div>
 
@@ -282,28 +282,35 @@ export default function LivePage({
               <Switch checked={isAvailable} onCheckedChange={setIsAvailable} />
             )}
             <div className="flex justify-between items-center mb-4">
-              <div className="mb-4">
-                <h3 className="font-semibold mb-2 text-center">
-                  Place Your Bid
-                </h3>
-                <div className="flex gap-2">
-                  {bidAmounts.map((bid, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => handleBid(bid.multiplier)}
-                      size="sm"
-                      disabled={isBidding || !isAvailable || !isSignedIn}
-                    >
-                      {!isSignedIn
-                        ? "Sign In to Bid"
-                        : !isAvailable
-                          ? "Auction Ended"
-                          : isBidding
-                            ? "Bid Placed..."
-                            : `$ ${formatToDollar(bid.amount)}`}
-                    </Button>
-                  ))}
-                </div>
+              <div className="flex gap-2 w-full">
+                {featuredItem.currentBid === 0 ? (
+                  <Button
+                    className="w-full"
+                    onClick={() => handleBid(0)}
+                    disabled={isBidding || !isAvailable || !isSignedIn}
+                  >
+                    Pujar a $ {formatToDollar(featuredItem.startingPrice)}
+                  </Button>
+                ) : (
+                  <>
+                    {bidAmounts.map((bid, index) => (
+                      <Button
+                        key={index}
+                        onClick={() => handleBid(bid.multiplier)}
+                        size="sm"
+                        disabled={isBidding || !isAvailable || !isSignedIn}
+                      >
+                        {!isSignedIn
+                          ? "Inicia sesión para pujar"
+                          : !isAvailable
+                            ? "Finalizada"
+                            : isBidding
+                              ? `$ ${formatToDollar(bid.amount)}`
+                              : `$ ${formatToDollar(bid.amount)}`}
+                      </Button>
+                    ))}
+                  </>
+                )}
               </div>
             </div>
 
@@ -311,8 +318,8 @@ export default function LivePage({
               <Image
                 src={featuredItem.imageURL}
                 alt={featuredItem.name}
-                width={200}
-                height={200}
+                width={220}
+                height={220}
                 className="rounded-lg mb-4 mx-auto"
                 priority
               />
@@ -324,15 +331,15 @@ export default function LivePage({
 
             <div className="flex flex-col gap-3 mb-4 items-center">
               <DetailCard
-                label="Current Bid"
+                label="Precio Actual"
                 value={formatToDollar(featuredItem.currentBid)}
               />
               <DetailCard
-                label="Starting Price"
+                label="Precio Inicial"
                 value={formatToDollar(featuredItem.startingPrice)}
               />
               <DetailCard
-                label="Bid Interval"
+                label="Intervalo"
                 value={formatToDollar(featuredItem.bidInterval)}
               />
             </div>
@@ -341,15 +348,13 @@ export default function LivePage({
           {/* Bids */}
           <div className="lg:w-1/4 p-4">
             <h1 className="text-xl font-bold">{featuredItem.name}</h1>
-            <h3 className="font-bold mb-2">Latest Bids</h3>
+            <h3 className="font-bold mb-2">Lista de pujas</h3>
             {latestBids.length > 0 ? (
               <div className="space-y-2">
                 {latestBids.map((bid) => (
                   <div key={bid.id} className="bg-white p-3 rounded-lg border">
                     <p className="font-bold">${formatToDollar(bid.amount)}</p>
-                    <p className="text-sm">
-                      by {bid.users.name || "Anonymous"}
-                    </p>
+                    <p className="text-sm">{bid.users.name || "Anonymous"}</p>
                     <p className="text-xs text-gray-500">
                       {new Date(bid.timestamp).toLocaleTimeString()}
                     </p>
@@ -357,7 +362,7 @@ export default function LivePage({
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500">No bids yet</p>
+              <p className="text-gray-500">No hay pujas por el momento</p>
             )}
           </div>
         </>

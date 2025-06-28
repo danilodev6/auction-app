@@ -27,8 +27,8 @@ export default async function EditItemPage({ params }: EditItemPageProps) {
     const item = await GetItemAction(itemId);
 
     return (
-      <main className="container mx-auto py-3">
-        <h1 className="text-3xl font-bold">Edit Item: {item.name}</h1>
+      <main className="container mx-auto">
+        <h1 className="text-2xl font-bold">Editar Item: {item.name}</h1>
         <EditItemForm item={item} />
       </main>
     );

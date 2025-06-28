@@ -42,7 +42,7 @@ export default function ChatBox({ itemId }: { itemId: number }) {
     <div className="mt-6 pt-4">
       <h3 className="font-bold mb-2">Live Chat</h3>
 
-      <div className="h-104 overflow-y-auto bg-white p-3 rounded border text-sm">
+      <div className="h-104 overflow-y-auto bg-white p-3 rounded-md border text-sm">
         {[...messages].reverse().map((msg, idx) => (
           <div key={idx} className="mb-2">
             <div>
@@ -56,14 +56,14 @@ export default function ChatBox({ itemId }: { itemId: number }) {
         ))}
       </div>
 
-      <div className="flex gap-2 mt-2">
+      <div className="flex place-items-center gap-2 mt-2">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
-          className="border p-2 flex-1 rounded"
+          className="bg-white p-2 flex-1 rounded-md"
         />
-        <Button onClick={sendMessage}>Send</Button>
+        <Button onClick={sendMessage}>Enviar</Button>
       </div>
     </div>
   );

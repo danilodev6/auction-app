@@ -101,7 +101,9 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     }
 
     return (
-      <span className={`px-2 py-1 rounded text-white text-xs ${statusColor}`}>
+      <span
+        className={`px-2 py-1 rounded-md text-white text-xs ${statusColor}`}
+      >
         {statusText}
       </span>
     );
@@ -118,7 +120,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
     if (!item.currentBid) {
       return {
-        display: "Sin pujas",
+        display: "- Sin pujas -",
         amount: formatToDollar(item.startingPrice),
         color: "text-green-600",
       };
@@ -170,14 +172,14 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
             {/* Select All Header */}
             <SelectAllCheckbox itemCount={filteredItems.length} />
 
-            <div className="grid gap-1 bg-white">
+            <div className="grid gap-1">
               {filteredItems.map((item) => {
                 const bidInfo = getBidStatusInfo(item);
 
                 return (
                   <div
                     key={item.id}
-                    className={`border rounded py-1 px-2 flex items-center gap-4 ${
+                    className={`bg-white rounded-md py-1 px-2 flex items-center gap-4 ${
                       item.isFeatured ? "border-purple-400 bg-purple-50" : ""
                     }`}
                   >
@@ -191,10 +193,10 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                           alt={item.name}
                           width={80}
                           height={80}
-                          className="object-cover rounded block"
+                          className="object-cover rounded-md block"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center">
+                        <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
                           <span className="text-gray-400 text-xs">
                             No Image
                           </span>
@@ -268,7 +270,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                         <form action={ToggleFeaturedAction.bind(null, item.id)}>
                           <Button
                             type="submit"
-                            className={`px-3 py-2 rounded text-sm font-medium ${
+                            className={`px-3 py-2 text-sm font-medium ${
                               item.isFeatured
                                 ? "bg-purple-800 hover:bg-purple-700 text-white"
                                 : "bg-gray-200 hover:bg-gray-300 text-gray-700"
@@ -281,7 +283,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
                       <Link
                         href={`/items/edit/${item.id}`}
-                        className="bg-green-800 hover:bg-green-700 text-white px-4 py-2 rounded text-sm flex items-center"
+                        className="bg-green-800 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm flex items-center"
                       >
                         Edit
                       </Link>

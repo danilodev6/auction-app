@@ -23,8 +23,12 @@ export async function Header() {
               priority
             />
             <div className="leading-tight font-semibold text-sm">
-              <span className="block text-[15px]">T. Bogliacino</span>
-              <span className="block text-sm">Subastas</span>
+              <Image
+                src="/namelogo.png"
+                alt="name logo"
+                width={110}
+                height={60}
+              />
             </div>
           </div>
         </Link>

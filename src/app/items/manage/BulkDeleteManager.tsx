@@ -164,7 +164,7 @@ export function SelectAllCheckbox({ itemCount }: { itemCount: number }) {
     useBulkSelection();
 
   return (
-    <div className="mb-2 flex items-center gap-3 p-2 bg-white rounded border">
+    <div className="mb-2 flex items-center gap-3 p-2 bg-white rounded-md">
       <input
         type="checkbox"
         checked={isAllSelected}

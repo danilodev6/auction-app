@@ -35,7 +35,7 @@ export default function CreateItemForm() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full mx-auto px-4 items-stretch">
       <form
-        className="border p-4 bg-white rounded-md space-y-4 w-full h-full"
+        className="p-4 bg-primary rounded-md space-y-4 w-full h-full"
         onSubmit={async (e) => {
           e.preventDefault();
           setIsSubmitting(true);
@@ -43,7 +43,7 @@ export default function CreateItemForm() {
             const form = e.currentTarget as HTMLFormElement;
             const formData = new FormData(form);
 
-            // For direct sales, we don't need an end time, but we'll set it far in the future
+            // For direct sales and live auctions, we don't need an end time, but we'll set it far in the future
             if (isDirectSale || isLiveAuction) {
               const futureDate = new Date();
               futureDate.setFullYear(futureDate.getFullYear() + 10);
@@ -73,9 +73,9 @@ export default function CreateItemForm() {
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-white"
           >
-            Item Name
+            Item Nombre
           </label>
           <Input
             id="name"
@@ -83,45 +83,45 @@ export default function CreateItemForm() {
             className="mt-1 rounded-md"
             name="name"
             type="text"
-            placeholder="Name your item"
+            placeholder="Nombra tu item"
           />
         </div>
 
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-white"
           >
-            Item Description
+            Descripción
           </label>
           <TextArea
             id="description"
             rows={2}
             required
-            className="mt-1 rounded-md"
+            className="mt-1 rounded-md bg-white"
             name="description"
-            placeholder="Describe your item"
+            placeholder="Describe tu item"
           />
         </div>
 
         <div>
           <label
             htmlFor="auctionType"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-white"
           >
-            Sale Type
+            Tipo
           </label>
           <select
             id="auctionType"
             name="auctionType"
             required
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
+            className="mt-1 block w-full rounded-md bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
             value={auctionType}
             onChange={handleAuctionTypeChange}
           >
-            <option value="regular">Regular Auction</option>
-            <option value="live">Live Auction</option>
-            <option value="direct">Direct Sale</option>
+            <option value="regular">Regular Virtual</option>
+            <option value="live">Live</option>
+            <option value="direct">Venta Directa</option>
             <option value="draft">Draft (Hidden)</option>
           </select>
         </div>
@@ -131,21 +131,21 @@ export default function CreateItemForm() {
           <div>
             <label
               htmlFor="isFeatured"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
               Featured on Live Stream
             </label>
             <select
               id="isFeatured"
               name="isFeatured"
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1"
+              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
               defaultValue="false"
             >
               <option value="false">No</option>
               <option value="true">Yes (Feature this item)</option>
             </select>
-            <p className="text-xs text-gray-500 mt-1">
-              Only one item can be featured at a time.
+            <p className="text-xs text-gray-200 mt-1">
+              Solo un item puede ser Featured a la vez.
             </p>
           </div>
         )}
@@ -153,9 +153,9 @@ export default function CreateItemForm() {
         <div>
           <label
             htmlFor="startingPrice"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-white"
           >
-            {isDirectSale ? "Sale Price ($)" : "Starting Price ($)"}
+            {isDirectSale ? "Precio de venta" : "Precio inicial"}
           </label>
           <Input
             id="startingPrice"
@@ -167,8 +167,8 @@ export default function CreateItemForm() {
             min="0"
             placeholder={
               isDirectSale
-                ? "Price for direct sale"
-                : "Starting Price of your item"
+                ? "Precio de venta directa"
+                : "Precio inicial de tu item"
             }
           />
         </div>
@@ -178,9 +178,9 @@ export default function CreateItemForm() {
           <div>
             <label
               htmlFor="bidInterval"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
-              Bid Interval
+              Intervalo
             </label>
             <Input
               id="bidInterval"
@@ -189,7 +189,7 @@ export default function CreateItemForm() {
               className="mt-1 rounded-md"
               step="100"
               min="100"
-              placeholder="Bid Interval of your item"
+              placeholder="Intervalo de puja de tu item"
             />
           </div>
         )}
@@ -197,7 +197,7 @@ export default function CreateItemForm() {
         <div>
           <label
             htmlFor="file"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium text-white"
           >
             Item Photo
           </label>
@@ -216,9 +216,9 @@ export default function CreateItemForm() {
           <div>
             <label
               htmlFor="bidEndTime"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-white"
             >
-              Auction End Date
+              Finaliza la subasta
             </label>
             <Input
               id="bidEndTime"
@@ -230,8 +230,13 @@ export default function CreateItemForm() {
           </div>
         )}
 
-        <Button className="w-full" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Posting..." : "Post Item"}
+        <Button
+          className="w-full"
+          type="submit"
+          variant="secondary"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Creando..." : "Crear Item"}
         </Button>
       </form>
 

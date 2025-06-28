@@ -60,7 +60,10 @@ export function FeaturedIndicatorSign({
             {nextLiveDate ? formatSimpleDate(nextLiveDate) : "No programado"}
           </p>
 
-          <label htmlFor="nextLive" className="block text-md text-accent">
+          <label
+            htmlFor="nextLive"
+            className="block text-center text-md text-accent"
+          >
             Seleccionar fecha
           </label>
           <Input

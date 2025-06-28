@@ -118,7 +118,7 @@ export default function ItemPageClient({
     } finally {
       setTimeout(() => {
         setIsBidding(false);
-      }, 4000);
+      }, 2000);
     }
   };
 
@@ -196,7 +196,7 @@ export default function ItemPageClient({
                 {isSold
                   ? "VENDIDO"
                   : isPurchasing
-                    ? "Processing..."
+                    ? "Procesando..."
                     : isSignedIn
                       ? `Comprar ahora por $ ${item.startingPrice}`
                       : "Inicia sesión para comprar"}
@@ -212,7 +212,7 @@ export default function ItemPageClient({
                 {isExpired
                   ? "Subasta Finalizada"
                   : isBidding
-                    ? "Bid Placed..."
+                    ? "Procesando..."
                     : isSignedIn
                       ? `Pujar a $ ${formatToDollar(item.currentBid === 0 ? item.startingPrice : item.currentBid + item.bidInterval)}`
                       : "Inicia sesión para pujar"}
@@ -282,8 +282,8 @@ export default function ItemPageClient({
                   </ul>
                 </div>
               ) : (
-                <div className="bg-gray-100 rounded-md p-4 mt-4">
-                  <p className="text-xl w-full">No bids yet</p>
+                <div className="bg-white w-full text-center rounded-md p-4">
+                  <p className="text-xl w-full">No hay pujas por el momento</p>
                 </div>
               )}
             </div>

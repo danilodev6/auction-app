@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DeleteItemAction } from "./actions";
+import { deleteUserById } from "./actions"; // your server action
 import { Button } from "@/components/ui/button";
 
-interface DeleteItemButtonProps {
-  itemId: number;
-  itemName: string;
+interface DeleteUserButtonProps {
+  userId: string;
+  userName: string;
 }
 
-export default function DeleteItemButton({
-  itemId,
-  itemName,
-}: DeleteItemButtonProps) {
+export default function DeleteUserButton({
+  userId,
+  userName,
+}: DeleteUserButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
@@ -21,12 +21,11 @@ export default function DeleteItemButton({
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await DeleteItemAction(itemId);
-      // The action already handles revalidation, so we just need to refresh
-      router.refresh();
+      await deleteUserById(userId);
+      router.refresh(); // Refresh list
     } catch (error) {
-      console.error("Error deleting item:", error);
-      alert("Error deleting item. Please try again.");
+      console.error("Error deleting user:", error);
+      alert("Error deleting user. Please try again.");
     } finally {
       setIsDeleting(false);
       setShowConfirm(false);
@@ -41,13 +40,14 @@ export default function DeleteItemButton({
     return (
       <div className="flex flex-col gap-2 text-center">
         <div className="text-sm text-red-800 font-medium">
-          Delete {itemName}?
+          Delete: {userName}?
         </div>
         <div className="flex gap-2">
           <Button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-red-800 hover:bg-red-700 hover:text-white disabled:bg-red-400 text-white px-3 py-1 rounded-md text-sm"
+            className="disabled:bg-red-400 text-white px-3 py-1 rounded-md text-sm"
+            variant="destructive"
           >
             {isDeleting ? "Deleting..." : "Yes, Delete"}
           </Button>
@@ -66,7 +66,8 @@ export default function DeleteItemButton({
   return (
     <Button
       onClick={() => setShowConfirm(true)}
-      className="bg-red-800 hover:bg-red-700 hover:text-white text-white px-4 py-2 rounded-md text-sm"
+      className="px-4 py-2 rounded-md text-sm"
+      variant="destructive"
     >
       Delete
     </Button>
