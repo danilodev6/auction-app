@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { deleteUserById } from "./actions"; // your server action
+import { deleteUserById } from "./actions";
 import { Button } from "@/components/ui/button";
 
 interface DeleteUserButtonProps {
@@ -38,26 +38,30 @@ export default function DeleteUserButton({
 
   if (showConfirm) {
     return (
-      <div className="flex flex-col gap-2 text-center">
-        <div className="text-sm text-red-800 font-medium">
-          Delete: {userName}?
-        </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="disabled:bg-red-400 text-white px-3 py-1 rounded-md text-sm"
-            variant="destructive"
-          >
-            {isDeleting ? "Deleting..." : "Yes, Delete"}
-          </Button>
-          <Button
-            onClick={handleCancel}
-            disabled={isDeleting}
-            className="bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm"
-          >
-            Cancel
-          </Button>
+      <div className="w-full">
+        <div className="flex flex-col gap-2 text-center">
+          <div className="text-sm text-red-800 font-medium">
+            Delete: {userName}?
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="flex-1 disabled:bg-red-400 text-white px-3 py-1 rounded-md text-sm"
+              variant="destructive"
+              size="sm"
+            >
+              {isDeleting ? "Deleting..." : "Yes"}
+            </Button>
+            <Button
+              onClick={handleCancel}
+              disabled={isDeleting}
+              className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm"
+              size="sm"
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -66,8 +70,9 @@ export default function DeleteUserButton({
   return (
     <Button
       onClick={() => setShowConfirm(true)}
-      className="px-4 py-2 rounded-md text-sm"
+      className="w-full px-4 py-2 rounded-md text-sm"
       variant="destructive"
+      size="sm"
     >
       Delete
     </Button>

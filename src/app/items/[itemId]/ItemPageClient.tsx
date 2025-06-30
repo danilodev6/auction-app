@@ -140,9 +140,165 @@ export default function ItemPageClient({
   };
 
   return (
-    <main className="mx-auto container">
-      <h1 className="text-4xl font-bold text-center mb-10">{item.name}</h1>
-      <div className="flex gap-12 w-full justify-center">
+    <main className="container mx-auto p-4">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-6 lg:mb-10">
+        {item.name}
+      </h1>
+
+      {/* Mobile Layout */}
+      <div className="lg:hidden">
+        {/* Item Image */}
+        <div className="mb-6">
+          {item.imageURL ? (
+            <Image
+              className="mx-auto rounded-md w-full max-w-sm"
+              src={item.imageURL}
+              alt={item.name}
+              width={350}
+              height={350}
+              priority
+            />
+          ) : (
+            <div className="mx-auto rounded-md border-2 bg-gray-200 flex items-center justify-center w-full max-w-sm aspect-square">
+              <span className="text-gray-500">No image available</span>
+            </div>
+          )}
+        </div>
+
+        {/* Description */}
+        <div className="mb-6 bg-white rounded-md p-4">
+          <p className="font-semibold mb-2">Descripción:</p>
+          <p>{item.description || "No description available"}</p>
+        </div>
+
+        {/* Bidding/Purchase Section */}
+        <div className="mb-6">
+          {isDirectSale ? (
+            <div className="flex flex-col gap-4">
+              <div
+                className={`rounded-md p-4 text-center ${isSold ? "bg-red-50" : "bg-accent"}`}
+              >
+                <p
+                  className={`font-semibold ${isSold ? "text-red-800" : "text-primary"}`}
+                >
+                  {isSold
+                    ? "Este producto ya fue vendido"
+                    : "Disponible para compra inmediata"}
+                </p>
+              </div>
+              <Button
+                onClick={handlePurchase}
+                disabled={!isSignedIn || isPurchasing || isSold}
+                className={`w-full ${isSold ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed" : ""}`}
+                size="lg"
+              >
+                {isSold
+                  ? "VENDIDO"
+                  : isPurchasing
+                    ? "Procesando..."
+                    : isSignedIn
+                      ? `Comprar ahora por $ ${item.startingPrice}`
+                      : "Inicia sesión para comprar"}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <Button
+                onClick={handleBid}
+                disabled={isBidding || isExpired || !isSignedIn}
+                className="w-full"
+                size="lg"
+              >
+                {isExpired
+                  ? "Subasta Finalizada"
+                  : isBidding
+                    ? "Procesando..."
+                    : isSignedIn
+                      ? `Pujar a $ ${formatToDollar(item.currentBid === 0 ? item.startingPrice : item.currentBid + item.bidInterval)}`
+                      : "Inicia sesión"}
+              </Button>
+
+              {/* Auction Info Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-white rounded-md p-4">
+                  <p className="text-sm text-gray-600">Precio actual</p>
+                  <p className="font-bold text-lg">
+                    $ {formatToDollar(item.currentBid)}
+                  </p>
+                </div>
+                <div className="bg-white rounded-md p-4">
+                  <p className="text-sm text-gray-600">Precio inicio</p>
+                  <p className="font-bold text-lg">
+                    $ {formatToDollar(item.startingPrice)}
+                  </p>
+                </div>
+                <div className="bg-white rounded-md p-4">
+                  <p className="text-sm text-gray-600">Intervalo por puja</p>
+                  <p className="font-bold text-lg">
+                    $ {formatToDollar(item.bidInterval)}
+                  </p>
+                </div>
+                <div className="bg-white rounded-md p-4">
+                  <p className="text-sm text-gray-600">Finaliza</p>
+                  <p className="font-bold text-sm">
+                    {formatSimpleDate(item.bidEndTime)}
+                  </p>
+                  {new Date(item.bidEndTime).getTime() - Date.now() <
+                    24 * 60 * 60 * 1000 && (
+                    <div className="mt-1">
+                      <p className="text-xs text-gray-600">Tiempo restante:</p>
+                      <Countdown endTime={item.bidEndTime.toISOString()} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bids Section for Mobile */}
+        {!isDirectSale && (
+          <div className="bg-white rounded-md p-4">
+            <h2 className="text-xl font-bold text-center mb-4">
+              Lista de últimas pujas
+            </h2>
+            {hasBids ? (
+              <div className="space-y-3">
+                {[...bids].slice(0, 6).map((bid) => (
+                  <div
+                    key={bid.id}
+                    className="border-b border-gray-100 pb-3 last:border-b-0"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-bold text-lg">
+                          $ {formatToDollar(bid.amount)}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          por{" "}
+                          <span className="font-semibold">
+                            {bid.users.name || "Anonymous"}
+                          </span>
+                        </p>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        {formatDate(bid.timestamp)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500">
+                No hay pujas por el momento
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex gap-12 w-full justify-center">
         <div className="w-1/3">
           {item.imageURL ? (
             <Image
@@ -293,12 +449,12 @@ export default function ItemPageClient({
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-60">
-          <div className="bg-white rounded-md p-8 max-w-md mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-md p-6 sm:p-8 max-w-md w-full mx-4">
             <div className="text-center">
               <div className="mb-4">
                 <svg
-                  className="mx-auto h-16 w-16 text-green-500"
+                  className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-green-500"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -311,10 +467,10 @@ export default function ItemPageClient({
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                 Gracias por tu compra!
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 mb-6">
                 Recibimos su orden de compra por <strong>{item.name}</strong>.
                 Nos comunicaremos con usted a la brevedad. Para coordinar el
                 retiro.
