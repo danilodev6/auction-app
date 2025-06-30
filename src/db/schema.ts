@@ -89,6 +89,7 @@ export const items = pgTable("aa_items", {
   bidInterval: integer("bidInterval").notNull().default(1000),
   bidEndTime: timestamp("bidEndTime", { withTimezone: true }).notNull(),
   isFeatured: boolean("isFeatured").notNull().default(false),
+  isAvailable: boolean("isAvailable").notNull().default(true),
   status: text("status").notNull().default("active"),
   soldTo: text("soldTo").references(() => users.id),
   soldAt: timestamp("soldAt", { withTimezone: true }),

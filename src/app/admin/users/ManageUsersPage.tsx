@@ -71,13 +71,14 @@ export default function ManageUsersPage() {
                     handleSearch(); // Refresh user list
                   }}
                 >
-                  {user.role === "admin" ? "Cambiar User" : "Cambiar Admin"}
+                  {user.role === "admin" ? "Hacer User" : "Hacer Admin"}
                 </Button>
 
                 {/* Delete User */}
                 <DeleteUserButton
                   userId={user.id}
                   userName={user.name || "Unnamed"}
+                  onSuccess={handleSearch}
                 />
               </div>
             </div>

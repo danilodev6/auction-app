@@ -1,28 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { deleteUserById } from "./actions"; // your server action
 import { Button } from "@/components/ui/button";
 
 interface DeleteUserButtonProps {
   userId: string;
   userName: string;
+  onSuccess?: () => void;
 }
 
 export default function DeleteUserButton({
   userId,
   userName,
+  onSuccess,
 }: DeleteUserButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const router = useRouter();
 
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
       await deleteUserById(userId);
-      router.refresh(); // Refresh list
+      onSuccess?.();
     } catch (error) {
       console.error("Error deleting user:", error);
       alert("Error deleting user. Please try again.");

@@ -68,6 +68,10 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     return new Date(date).toLocaleString();
   };
 
+  const formatDateShort = (date: Date) => {
+    return new Date(date).toLocaleDateString();
+  };
+
   const getStatusBadge = (
     auctionType: string,
     endTime: Date,
@@ -102,7 +106,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
     return (
       <span
-        className={`px-2 py-1 rounded-md text-white text-xs ${statusColor}`}
+        className={`px-2 py-1 rounded-md text-white text-xs whitespace-nowrap ${statusColor}`}
       >
         {statusText}
       </span>
@@ -143,9 +147,11 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   );
 
   return (
-    <main className="container mx-auto">
+    <main className="container mx-auto px-2 sm:px-4 max-w-full overflow-x-hidden">
       <div className="flex justify-between items-center mb-3">
-        <h1 className="text-3xl font-bold">Manage Items</h1>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+          Manage Items
+        </h1>
       </div>
 
       {/* Client Component for filtering */}
@@ -172,123 +178,300 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
             {/* Select All Header */}
             <SelectAllCheckbox itemCount={filteredItems.length} />
 
-            <div className="grid gap-1">
+            <div className="space-y-2 md:space-y-1">
               {filteredItems.map((item) => {
                 const bidInfo = getBidStatusInfo(item);
 
                 return (
                   <div
                     key={item.id}
-                    className={`bg-white rounded-md py-1 px-2 flex items-center gap-4 ${
+                    className={`bg-white rounded-md p-3 md:py-1 md:px-2 w-full ${
                       item.isFeatured ? "border-purple-400 bg-purple-50" : ""
                     }`}
                   >
-                    {/* Checkbox */}
-                    <ItemCheckbox itemId={item.id} />
+                    {/* Mobile Layout */}
+                    <div className="md:hidden">
+                      <div className="flex items-start gap-3 mb-3">
+                        <ItemCheckbox itemId={item.id} />
 
-                    <div className="w-20 h-20 relative flex-shrink-0">
-                      {item.imageURL ? (
-                        <Image
-                          src={item.imageURL}
-                          alt={item.name}
-                          width={80}
-                          height={80}
-                          className="object-cover rounded-md block"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">
-                            No Image
-                          </span>
+                        <div className="w-16 h-16 relative flex-shrink-0">
+                          {item.imageURL ? (
+                            <Image
+                              src={item.imageURL}
+                              alt={item.name}
+                              width={64}
+                              height={64}
+                              className="object-cover rounded-md block"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">
+                                No Image
+                              </span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
 
-                    <div className="flex-grow">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-lg">{item.name}</h3>
-                        {getStatusBadge(
-                          item.auctionType,
-                          item.bidEndTime,
-                          item.isFeatured,
-                          item.status,
-                        )}
-                        <span className="text-xs mr-4">
-                          Finaliza: {formatDate(item.bidEndTime)}
-                        </span>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base mb-1 truncate">
+                            {item.name}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-1 mb-2">
+                            {getStatusBadge(
+                              item.auctionType,
+                              item.bidEndTime,
+                              item.isFeatured,
+                              item.status,
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-gray-600 text-sm mb-1">
-                        Descripción: {item.description}
-                      </p>
-                      <div className="text-sm text-gray-500">
-                        <span className="mr-4">
-                          Precio inicio: ${item.startingPrice}
-                        </span>
-                        {item.auctionType !== "direct" && (
-                          <span className="mr-4">
-                            Intervalo: ${item.bidInterval}
-                          </span>
+
+                      {/* Mobile Item Details */}
+                      <div className="space-y-2 text-sm">
+                        <div className="text-gray-600 text-sm break-words">
+                          {item.description && item.description.length > 100
+                            ? `${item.description.substring(0, 100)}...`
+                            : item.description}
+                        </div>
+
+                        <div className="flex flex-col space-y-1.5">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 text-xs">
+                              Inicio:
+                            </span>
+                            <span className="font-medium text-sm">
+                              ${item.startingPrice}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 text-xs">
+                              Actual:
+                            </span>
+                            <span
+                              className={`font-semibold text-sm ${bidInfo.color}`}
+                            >
+                              {bidInfo.amount}
+                            </span>
+                          </div>
+                          {item.auctionType !== "direct" && (
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 text-xs">
+                                Intervalo:
+                              </span>
+                              <span className="text-sm">
+                                ${item.bidInterval}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 text-xs">
+                              Finaliza:
+                            </span>
+                            <span className="text-sm">
+                              {formatDateShort(item.bidEndTime)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {bidInfo.display && (
+                          <div className="text-xs text-gray-500 break-words">
+                            {bidInfo.display}
+                          </div>
                         )}
-                        <span className="font-medium">Precio venta: $ </span>
-                        <span className={`mr-4 font-semibold ${bidInfo.color}`}>
-                          {bidInfo.amount}
-                        </span>
-                        <span className="mr-4">{bidInfo.display}</span>
+
+                        {/* Winner/Buyer Info for Mobile */}
                         {item.auctionType !== "direct" &&
                           bidInfo.bidderemail && (
-                            <>
-                              <span className="font-medium mr-4 text-blue-600">
+                            <div className="bg-blue-50 p-2 rounded text-xs w-full">
+                              <div className="font-medium text-blue-800 break-words">
                                 Ganador: {bidInfo.biddername}
-                              </span>
-                              <span className="mr-4">
-                                Contacto: {bidInfo.bidderemail}
-                              </span>
-                              <span className="mr-4">
-                                Cel: {bidInfo.bidderphone || "No phone"}
-                              </span>
-                            </>
+                              </div>
+                              <div className="text-blue-600 break-all">
+                                {bidInfo.bidderemail}
+                              </div>
+                              {bidInfo.bidderphone &&
+                                bidInfo.bidderphone !== "No phone" && (
+                                  <div className="text-blue-600 break-all">
+                                    {bidInfo.bidderphone}
+                                  </div>
+                                )}
+                            </div>
                           )}
+
                         {item.auctionType === "direct" && item.soldToEmail && (
-                          <>
-                            <span className="font-medium mr-4 text-blue-600">
+                          <div className="bg-green-50 p-2 rounded text-xs w-full">
+                            <div className="font-medium text-green-800 break-words">
                               Vendido a: {item.soldToName || item.soldToEmail}
-                            </span>
-                            <span className="mr-4">
-                              Contacto: {item.soldToEmail}
-                            </span>
-                            <span className="mr-4">
-                              Cel: {item.soldToPhone || "No phone"}
-                            </span>
-                          </>
+                            </div>
+                            <div className="text-green-600 break-all">
+                              {item.soldToEmail}
+                            </div>
+                            {item.soldToPhone &&
+                              item.soldToPhone !== "No phone" && (
+                                <div className="text-green-600 break-all">
+                                  {item.soldToPhone}
+                                </div>
+                              )}
+                          </div>
                         )}
+                      </div>
+
+                      {/* Mobile Action Buttons */}
+                      <div className="flex flex-col sm:flex-row gap-2 mt-3 w-full">
+                        {item.auctionType === "live" && (
+                          <form
+                            action={ToggleFeaturedAction.bind(null, item.id)}
+                            className="w-full sm:w-auto"
+                          >
+                            <Button
+                              type="submit"
+                              size="sm"
+                              className={`w-full sm:w-auto text-xs ${
+                                item.isFeatured
+                                  ? "bg-purple-800 hover:bg-purple-700 text-white"
+                                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                              }`}
+                            >
+                              {item.isFeatured ? "Unfeatured" : "Feature"}
+                            </Button>
+                          </form>
+                        )}
+
+                        <Link
+                          href={`/items/edit/${item.id}`}
+                          className="bg-green-800 hover:bg-green-700 text-white px-3 py-2 rounded-md text-xs flex items-center justify-center w-full sm:w-auto"
+                        >
+                          Edit
+                        </Link>
+
+                        <div className="w-full sm:w-auto flex">
+                          <DeleteItemButton
+                            itemId={item.id}
+                            itemName={item.name}
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex-shrink-0 flex gap-2 items-center">
-                      {/* Only show feature toggle for live auctions */}
-                      {item.auctionType === "live" && (
-                        <form action={ToggleFeaturedAction.bind(null, item.id)}>
-                          <Button
-                            type="submit"
-                            className={`px-3 py-2 text-sm font-medium ${
-                              item.isFeatured
-                                ? "bg-purple-800 hover:bg-purple-700 text-white"
-                                : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                            }`}
+                    {/* Desktop Layout */}
+                    <div className="hidden md:flex items-center gap-4">
+                      {/* Checkbox */}
+                      <ItemCheckbox itemId={item.id} />
+
+                      <div className="w-20 h-20 relative flex-shrink-0">
+                        {item.imageURL ? (
+                          <Image
+                            src={item.imageURL}
+                            alt={item.name}
+                            width={80}
+                            height={80}
+                            className="object-cover rounded-md block"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                            <span className="text-gray-400 text-xs">
+                              No Image
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex-grow">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold text-lg">{item.name}</h3>
+                          {getStatusBadge(
+                            item.auctionType,
+                            item.bidEndTime,
+                            item.isFeatured,
+                            item.status,
+                          )}
+                          <span className="text-xs mr-4">
+                            Finaliza: {formatDate(item.bidEndTime)}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-1">
+                          Descripción: {item.description}
+                        </p>
+                        <div className="text-sm text-gray-500">
+                          <span className="mr-4">
+                            Precio inicio: ${item.startingPrice}
+                          </span>
+                          {item.auctionType !== "direct" && (
+                            <span className="mr-4">
+                              Intervalo: ${item.bidInterval}
+                            </span>
+                          )}
+                          <span className="font-medium">Precio venta: $ </span>
+                          <span
+                            className={`mr-4 font-semibold ${bidInfo.color}`}
                           >
-                            {item.isFeatured ? "Unfeatured" : "Feature"}
-                          </Button>
-                        </form>
-                      )}
+                            {bidInfo.amount}
+                          </span>
+                          <span className="mr-4">{bidInfo.display}</span>
+                          {item.auctionType !== "direct" &&
+                            bidInfo.bidderemail && (
+                              <>
+                                <span className="font-medium mr-4 text-blue-600">
+                                  Ganador: {bidInfo.biddername}
+                                </span>
+                                <span className="mr-4">
+                                  Contacto: {bidInfo.bidderemail}
+                                </span>
+                                <span className="mr-4">
+                                  Cel: {bidInfo.bidderphone || "No phone"}
+                                </span>
+                              </>
+                            )}
+                          {item.auctionType === "direct" &&
+                            item.soldToEmail && (
+                              <>
+                                <span className="font-medium mr-4 text-blue-600">
+                                  Vendido a:{" "}
+                                  {item.soldToName || item.soldToEmail}
+                                </span>
+                                <span className="mr-4">
+                                  Contacto: {item.soldToEmail}
+                                </span>
+                                <span className="mr-4">
+                                  Cel: {item.soldToPhone || "No phone"}
+                                </span>
+                              </>
+                            )}
+                        </div>
+                      </div>
 
-                      <Link
-                        href={`/items/edit/${item.id}`}
-                        className="bg-green-800 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm flex items-center"
-                      >
-                        Edit
-                      </Link>
+                      <div className="flex-shrink-0 flex gap-2 items-center">
+                        {/* Only show feature toggle for live auctions */}
+                        {item.auctionType === "live" && (
+                          <form
+                            action={ToggleFeaturedAction.bind(null, item.id)}
+                          >
+                            <Button
+                              type="submit"
+                              className={`px-3 py-2 text-sm font-medium ${
+                                item.isFeatured
+                                  ? "bg-purple-800 hover:bg-purple-700 text-white"
+                                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                              }`}
+                            >
+                              {item.isFeatured ? "Unfeatured" : "Feature"}
+                            </Button>
+                          </form>
+                        )}
 
-                      <DeleteItemButton itemId={item.id} itemName={item.name} />
+                        <Link
+                          href={`/items/edit/${item.id}`}
+                          className="bg-green-800 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm flex items-center"
+                        >
+                          Edit
+                        </Link>
+
+                        <DeleteItemButton
+                          itemId={item.id}
+                          itemName={item.name}
+                        />
+                      </div>
                     </div>
                   </div>
                 );

@@ -102,44 +102,45 @@ export default function BulkDeleteManager({
   };
 
   const bulkDeleteComponent = hasSelection ? (
-    <div className="mb-1 p-2 bg-red-50 border border-red-200 rounded">
-      <div className="flex items-center justify-between">
-        <span className="text-red-800 font-medium">
+    <div className="mb-1 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-md w-full overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+        <span className="text-red-800 font-medium text-sm sm:text-base whitespace-nowrap">
           {selectedItems.size} item{selectedItems.size > 1 ? "s" : ""} selected
         </span>
 
         {!showConfirm ? (
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button
               onClick={() => setSelectedItems(new Set())}
-              className=" rounded text-sm"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-md text-sm w-full sm:w-auto"
             >
               Clear selection
             </Button>
             <Button
               onClick={() => setShowConfirm(true)}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium"
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium w-full sm:w-auto"
             >
               Delete Selected ({selectedItems.size})
             </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <span className="text-red-800 text-sm">
-              Are you sure you want to delete {selectedItems.size} items?
+              Are you sure you want to delete {selectedItems.size} item
+              {selectedItems.size > 1 ? "s" : ""}?
             </span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               <Button
                 onClick={handleBulkDelete}
                 disabled={isDeleting}
-                className="bg-red-800 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-1 rounded text-sm"
+                className="bg-red-800 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-2 rounded text-sm flex-1 sm:flex-none"
               >
                 {isDeleting ? "Deleting..." : "Yes, Delete"}
               </Button>
               <Button
                 onClick={() => setShowConfirm(false)}
                 disabled={isDeleting}
-                className="bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm"
+                className="bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 px-3 py-2 rounded text-sm flex-1 sm:flex-none"
               >
                 Cancel
               </Button>

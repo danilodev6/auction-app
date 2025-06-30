@@ -49,20 +49,20 @@ export function FeaturedIndicatorSign({
   };
 
   return (
-    <div className="fixed bottom-25 right-25 z-50 rounded-md bg-primary shadow-lg p-3">
-      <p className="text-lg text-center font-semibold text-white">
+    <div className="relative mx-auto mt-6 mb-4 max-w-sm lg:fixed lg:bottom-20 lg:right-20 lg:max-w-none z-30 rounded-md bg-accent shadow-lg p-3">
+      <p className="text-lg text-center font-semibold text-primary">
         El próximo VIVO es:
       </p>
 
       {userIsAdmin ? (
         <div className="space-y-2">
-          <p className="text-xl text-center text-white">
+          <p className="text-xl text-center text-primary">
             {nextLiveDate ? formatSimpleDate(nextLiveDate) : "No programado"}
           </p>
 
           <label
             htmlFor="nextLive"
-            className="block text-center text-md text-accent"
+            className="block text-center text-md text-primary"
           >
             Seleccionar fecha
           </label>
@@ -78,15 +78,11 @@ export function FeaturedIndicatorSign({
             <Button
               onClick={() => saveDate(nextLiveDate || null)}
               disabled={isSaving}
-              variant="secondary"
+              variant="light"
             >
               Guardar
             </Button>
-            <Button
-              onClick={handleReset}
-              variant="secondary"
-              disabled={isSaving}
-            >
+            <Button onClick={handleReset} disabled={isSaving} variant="light">
               Quitar fecha
             </Button>
           </div>
@@ -94,16 +90,16 @@ export function FeaturedIndicatorSign({
         </div>
       ) : nextLiveDate ? (
         <div>
-          <p className="text-xl text-center text-white">
+          <p className="text-xl text-center text-primary">
             {formatDate(nextLiveDate)}
           </p>
           <hr className="mx-auto w-1/2 my-1" />
-          <p className="text-xl text-center text-white">
+          <p className="text-xl text-center text-primary">
             {formatSimpleDate(nextLiveDate)}
           </p>
         </div>
       ) : (
-        <p className="text-xl text-center text-white">No programado</p>
+        <p className="text-xl text-center text-primary">No programado</p>
       )}
     </div>
   );

@@ -58,9 +58,9 @@ export default function EditItemForm({ item }: EditItemFormProps) {
   const isLiveAuction = auctionType === "live";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full mx-auto px-4 items-stretch">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full mx-auto px-4">
       <form
-        className="p-4 bg-primary rounded-md space-y-4 w-full h-full"
+        className="p-4 bg-primary rounded-md space-y-4 w-full"
         onSubmit={async (e) => {
           e.preventDefault();
           setIsSubmitting(true);
@@ -73,6 +73,22 @@ export default function EditItemForm({ item }: EditItemFormProps) {
               const localDate = new Date(localDateStr);
               const isoString = localDate.toISOString();
               formData.set("bidEndTime", isoString);
+            }
+
+            // Fix: Handle bidInterval for direct sales
+            if (isDirectSale) {
+              // For direct sales, set bidInterval to 0 or remove it entirely
+              formData.set("bidInterval", "0");
+            } else {
+              // For auction types, ensure bidInterval has a valid value
+              const bidIntervalValue = formData.get("bidInterval")?.toString();
+              if (
+                !bidIntervalValue ||
+                bidIntervalValue === "" ||
+                isNaN(Number(bidIntervalValue))
+              ) {
+                formData.set("bidInterval", item.bidInterval.toString());
+              }
             }
 
             await UpdateItemAction(item.id, formData);
@@ -97,7 +113,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
           <Input
             id="name"
             required
-            className="mt-1"
+            className="mt-1 rounded-md"
             name="name"
             type="text"
             placeholder="Nombra tu item"
@@ -211,6 +227,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
               step="100"
               min="100"
               placeholder="Intervalo de puja de tu item"
+              required
             />
           </div>
         )}
@@ -228,7 +245,7 @@ export default function EditItemForm({ item }: EditItemFormProps) {
             type="file"
             name="file"
             accept="image/*"
-            className="mt-1 bg-white"
+            className="mt-1 rounded-md bg-white"
             onChange={handleFileChange}
           />
         </div>
@@ -272,18 +289,23 @@ export default function EditItemForm({ item }: EditItemFormProps) {
         </div>
       </form>
 
-      {imagePreview && (
-        <div className="flex items-center justify-center w-full h-full bg-white border rounded-md">
-          <div className="relative w-full h-full">
+      {/* Image Preview Section - Now matches CreateItemForm */}
+      <div className="w-full">
+        {imagePreview ? (
+          <div className="w-full h-64 md:h-full bg-white border rounded-md relative min-h-[16rem]">
             <Image
               src={imagePreview}
               alt="Preview"
               fill
-              className="object-contain"
+              className="object-contain rounded-md"
             />
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="w-full h-64 md:h-full bg-gray-100 border rounded-md flex items-center justify-center text-gray-400 min-h-[16rem]">
+            Vista previa de la imagen
+          </div>
+        )}
+      </div>
     </div>
   );
 }

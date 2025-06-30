@@ -33,9 +33,9 @@ export default function CreateItemForm() {
   const isLiveAuction = auctionType === "live";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full mx-auto px-4 items-stretch">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full mx-auto px-4">
       <form
-        className="p-4 bg-primary rounded-md space-y-4 w-full h-full"
+        className="p-4 bg-primary rounded-md space-y-4 w-full"
         onSubmit={async (e) => {
           e.preventDefault();
           setIsSubmitting(true);
@@ -127,28 +127,28 @@ export default function CreateItemForm() {
         </div>
 
         {/* Only show isFeatured option for live auctions */}
-        {auctionType === "live" && (
-          <div>
-            <label
-              htmlFor="isFeatured"
-              className="block text-sm font-medium text-white"
-            >
-              Featured on Live Stream
-            </label>
-            <select
-              id="isFeatured"
-              name="isFeatured"
-              className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
-              defaultValue="false"
-            >
-              <option value="false">No</option>
-              <option value="true">Yes (Feature this item)</option>
-            </select>
-            <p className="text-xs text-gray-200 mt-1">
-              Solo un item puede ser Featured a la vez.
-            </p>
-          </div>
-        )}
+        {/* {auctionType === "live" && ( */}
+        {/*   <div> */}
+        {/*     <label */}
+        {/*       htmlFor="isFeatured" */}
+        {/*       className="block text-sm font-medium text-white" */}
+        {/*     > */}
+        {/*       Featured on Live Stream */}
+        {/*     </label> */}
+        {/*     <select */}
+        {/*       id="isFeatured" */}
+        {/*       name="isFeatured" */}
+        {/*       className="mt-1 block w-full rounded-md border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" */}
+        {/*       defaultValue="false" */}
+        {/*     > */}
+        {/*       <option value="false">No</option> */}
+        {/*       <option value="true">Yes (Feature this item)</option> */}
+        {/*     </select> */}
+        {/*     <p className="text-xs text-gray-200 mt-1"> */}
+        {/*       Solo un item puede ser Featured a la vez. */}
+        {/*     </p> */}
+        {/*   </div> */}
+        {/* )} */}
 
         <div>
           <label
@@ -240,23 +240,23 @@ export default function CreateItemForm() {
         </Button>
       </form>
 
-      {imagePreview && (
-        <div className="flex items-center justify-center w-full h-full bg-white border rounded-md">
-          <div className="relative w-full h-full">
+      {/* Image Preview Section */}
+      <div className="w-full">
+        {imagePreview ? (
+          <div className="w-full h-64 md:h-full bg-white border rounded-md relative min-h-[16rem]">
             <Image
               src={imagePreview}
               alt="Preview"
               fill
-              className="object-contain"
+              className="object-contain rounded-md"
             />
           </div>
-        </div>
-      )}
-      {!imagePreview && (
-        <div className="flex items-center justify-center w-full h-full bg-gray-100 border rounded-md text-gray-400">
-          Vista previa de la imagen
-        </div>
-      )}
+        ) : (
+          <div className="w-full h-64 md:h-full bg-gray-100 border rounded-md flex items-center justify-center text-gray-400 min-h-[16rem]">
+            Vista previa de la imagen
+          </div>
+        )}
+      </div>
     </div>
   );
 }

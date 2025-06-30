@@ -215,7 +215,7 @@ export default function ItemPageClient({
                     ? "Procesando..."
                     : isSignedIn
                       ? `Pujar a $ ${formatToDollar(item.currentBid === 0 ? item.startingPrice : item.currentBid + item.bidInterval)}`
-                      : "Inicia sesión para pujar"}
+                      : "Inicia sesión"}
               </Button>
               <div className="mt-3 w-full bg-white rounded-md p-4">
                 Precio actual:{" "}
