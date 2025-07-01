@@ -70,7 +70,7 @@ export default function DeleteUserButton({
   return (
     <Button
       onClick={() => setShowConfirm(true)}
-      className="w-full px-4 py-2 rounded-md text-sm"
+      className="px-4 py-2 rounded-md text-sm w-full sm:w-auto"
       variant="destructive"
       size="sm"
     >

@@ -6,9 +6,8 @@ import { items } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { eq, sql } from "drizzle-orm";
 import { supabase, BUCKET_NAME } from "@/lib/supabase";
-// import { bids } from "@/db/schema";
-// import { users } from "@/db/schema";
 import { pusherServer } from "@/lib/pusher-server";
+import { Item, ItemUpdate } from "@/types/items";
 
 export async function UpdateItemAction(itemId: number, formData: FormData) {
   const session = await auth();
@@ -87,7 +86,7 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
       startingPrice: parseInt(startingPrice),
       bidInterval: parseInt(bidInterval),
       bidEndTime: new Date(bidEndTime || Date.now()),
-      auctionType: auctionType || "regular",
+      auctionType: auctionType as "live" | "regular",
       isFeatured: isFeatured && auctionType === "live",
     };
 
@@ -311,13 +310,18 @@ export async function DeleteItemAction(itemId: number) {
   }
 }
 
-export async function GetAllItemsWithBidsAction() {
+export async function GetAllItemsWithBidsAction(
+  page: number = 1,
+  pageSize: number = 10,
+): Promise<Item[]> {
   const session = await auth();
   if (!session || !(await isAdmin(session))) {
     throw new Error("You must be an admin to view all items");
   }
 
   try {
+    const offset = (page - 1) * pageSize;
+
     const result = await database.execute(sql`
       SELECT 
         i.*,
@@ -343,10 +347,12 @@ export async function GetAllItemsWithBidsAction() {
       ) bid_counts ON bid_counts."itemId" = i.id
       LEFT JOIN aa_user u ON b."userId" = u.id
       LEFT JOIN aa_user sold ON i."soldTo" = sold.id
-      ORDER BY i.id ASC;
+      ORDER BY i.id ASC
+      LIMIT ${pageSize}
+      OFFSET ${offset};
     `);
 
-    return result;
+    return result as unknown as Item[];
   } catch (error) {
     console.error("Database error:", error);
     throw new Error(
@@ -355,6 +361,51 @@ export async function GetAllItemsWithBidsAction() {
   }
 }
 
+// export async function GetAllItemsWithBidsAction() {
+//   const session = await auth();
+//   if (!session || !(await isAdmin(session))) {
+//     throw new Error("You must be an admin to view all items");
+//   }
+//
+//   try {
+//     const result = await database.execute(sql`
+//       SELECT
+//         i.*,
+//         b.amount AS "currentBid",
+//         b.timestamp AS "bidTime",
+//         u.name AS "bidderName",
+//         u.email AS "bidderEmail",
+//         u.phone AS "bidderPhone",
+//         sold.name AS "soldToName",
+//         sold.email AS "soldToEmail",
+//         sold.phone AS "soldToPhone",
+//         bid_counts.total_bids AS "totalBids"
+//       FROM aa_items i
+//       LEFT JOIN (
+//         SELECT DISTINCT ON ("itemId") *
+//         FROM aa_bids
+//         ORDER BY "itemId", timestamp DESC
+//       ) b ON b."itemId" = i.id
+//       LEFT JOIN (
+//         SELECT "itemId", COUNT(*) AS total_bids
+//         FROM aa_bids
+//         GROUP BY "itemId"
+//       ) bid_counts ON bid_counts."itemId" = i.id
+//       LEFT JOIN aa_user u ON b."userId" = u.id
+//       LEFT JOIN aa_user sold ON i."soldTo" = sold.id
+//       ORDER BY i.id ASC;
+//     `);
+//
+//     return result;
+//   } catch (error) {
+//     console.error("Database error:", error);
+//     throw new Error(
+//       `Failed to fetch items with bids: ${error instanceof Error ? error.message : "Unknown error"}`,
+//     );
+//   }
+// }
+
+// export async function GetAllItemsWithBidsAction() {
 //   const session = await auth();
 //
 //   if (!session) {
