@@ -86,7 +86,7 @@ export function FeaturedIndicatorSign({
               Quitar fecha
             </Button>
           </div>
-          {isSaving && <p className="text-md text-accent">Guardando...</p>}
+          {isSaving && <p className="text-md text-primary">Guardando...</p>}
         </div>
       ) : nextLiveDate ? (
         <div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatToDollar } from "@/util/currency";
 import { Countdown } from "@/components/Countdown";
 import Image from "next/image";
-import Pusher from "pusher-js";
+import { pusherClient } from "@/lib/pusher-client";
 import { createBidAction } from "./actions";
 import { purchaseItemAction } from "./actions";
 import { formatSimpleDate } from "@/util/date2";
@@ -68,12 +68,7 @@ export default function ItemPageClient({
     // Only set up Pusher for auction items, not direct sales
     if (isDirectSale) return;
 
-    // Set up Pusher for real-time updates
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
-    });
-
-    const channel = pusher.subscribe(`item-${item.id}`);
+    const channel = pusherClient.subscribe(`item-${item.id}`);
 
     channel.bind("new-bid", (data: { bid: Bid; currentBid: number }) => {
       // Update bids
@@ -87,7 +82,7 @@ export default function ItemPageClient({
     });
 
     return () => {
-      pusher.unsubscribe(`item-${item.id}`);
+      pusherClient.unsubscribe(`item-${item.id}`);
     };
   }, [item.id, isDirectSale]);
 
@@ -197,7 +192,7 @@ export default function ItemPageClient({
                   : isPurchasing
                     ? "Procesando..."
                     : isSignedIn
-                      ? `Comprar ahora por $ ${item.startingPrice}`
+                      ? `Comprar ahora por $ ${formatToDollar(item.startingPrice)}`
                       : "Inicia sesión para comprar"}
               </Button>
             </div>
@@ -354,7 +349,7 @@ export default function ItemPageClient({
                   : isPurchasing
                     ? "Procesando..."
                     : isSignedIn
-                      ? `Comprar ahora por $ ${item.startingPrice}`
+                      ? `Comprar ahora por $ ${formatToDollar(item.startingPrice)}`
                       : "Inicia sesión para comprar"}
               </Button>
             </div>

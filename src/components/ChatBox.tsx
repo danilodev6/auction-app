@@ -48,9 +48,7 @@ export default function ChatBox({ itemId }: { itemId: number }) {
   };
 
   return (
-    <div className="mt-6 pt-4">
-      <h3 className="font-bold mb-2">Live Chat</h3>
-
+    <div className="pt-4">
       <div className="h-104 overflow-y-auto bg-white p-3 rounded-md text-sm">
         {[...messages].reverse().map((msg, idx) => (
           <div key={idx} className="mb-2">

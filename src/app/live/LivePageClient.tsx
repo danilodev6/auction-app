@@ -460,6 +460,7 @@ export default function LivePage({
       <div className="hidden lg:flex lg:flex-row gap-6">
         {/* Left: Chat section */}
         <div className="lg:w-1/4 p-4">
+          <h3 className="text-xl font-bold">Chat</h3>
           {featuredItem ? (
             <ChatBox itemId={featuredItem.id} />
           ) : (
