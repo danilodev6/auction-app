@@ -33,6 +33,7 @@ interface CustomUser {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   adapter: DrizzleAdapter(database, {
     usersTable: users,
     accountsTable: accounts,
