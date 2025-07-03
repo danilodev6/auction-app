@@ -18,7 +18,7 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
   // If 4 or fewer items, show them centered without carousel
   if (items.length <= 4) {
     return (
-      <div className="w-full flex justify-center">
+      <div className="w-full flex justify-center animate-fade-in delay-200">
         <div className="flex flex-wrap justify-center gap-4 max-w-6xl px-4">
           {items.map((item) => (
             <ItemCard key={item.id} item={item} />
@@ -30,7 +30,7 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
 
   // If more than 4 items, use carousel with responsive behavior
   return (
-    <div className="w-full px-4">
+    <div className="w-full px-4 animate-fade-in delay-200">
       <Carousel
         opts={{
           align: "start",

@@ -30,8 +30,8 @@ export default async function HomePage() {
 
   return (
     <main className="container flex flex-col place-items-center">
-      <div className="relative flex place-items-center">
-        <h1 className="text-3xl font-bold mx-4 mb-2">Subastas virtuales</h1>
+      <div className="relative flex place-items-center animate-fade-in delay-200">
+        <h1 className="text-3xl font-bold mx-4 mb-2 ">Subastas virtuales</h1>
         <Link href="/reg-auct" className="absolute -right-13">
           <Button size={"sm"} className="text-xs">
             ver todo
@@ -46,7 +46,7 @@ export default async function HomePage() {
 
       <ItemCarousel items={regularItems} />
 
-      <div className="flex relative place-items-center mt-3">
+      <div className="flex relative place-items-center mt-3 animate-fade-in delay-200">
         <h2 className="text-3xl font-bold mx-4 mb-2">Venta directa</h2>
         <Link href="/direct" className="absolute -right-13">
           <Button size={"sm"} className="text-xs">

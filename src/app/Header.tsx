@@ -11,7 +11,7 @@ export async function Header() {
   const userIsAdmin = await isAdmin(session);
 
   return (
-    <header className="sticky top-0 z-50 bg-transparent pt-4 px-4">
+    <header className="sticky top-0 z-50 bg-transparent pt-4 px-4 animate-fade-in-down delay-100">
       <div className="relative max-w-screen-2xl mx-auto flex items-center justify-between h-14">
         {/* Logo + Brand capsule */}
         <Link href="/" className="absolute left-0">
