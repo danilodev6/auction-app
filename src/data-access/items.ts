@@ -12,3 +12,9 @@ export async function getItem(itemId: number) {
 export async function getAllItems() {
   return await database.query.items.findMany();
 }
+
+export async function getLiveItems() {
+  return database.query.items.findMany({
+    where: (item, { eq }) => eq(item.auctionType, "live"),
+  });
+}

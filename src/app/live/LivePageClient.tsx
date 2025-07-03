@@ -99,13 +99,13 @@ export default function LivePage({
     };
   }, [pusher]);
 
-  // Pusher for bids
+  //Pusher for bids and availability
   useEffect(() => {
     if (!featuredItem?.id || !pusher) return;
 
     const channel = pusher.subscribe(`item-${featuredItem.id}`);
 
-    channel.bind("new-bid", (data: { bid: Bid; currentBid: number }) => {
+    const handleNewBid = (data: { bid: Bid; currentBid: number }) => {
       setBids((prev) => {
         const exists = prev.some((b) => b.id === data.bid.id);
         return exists ? prev : [data.bid, ...prev];
@@ -124,26 +124,68 @@ export default function LivePage({
           ? { ...prev, currentBid: data.currentBid }
           : prev,
       );
-    });
-
-    return () => {
-      pusher.unsubscribe(`item-${featuredItem.id}`);
     };
-  }, [featuredItem?.id, pusher]);
 
-  useEffect(() => {
-    if (!featuredItem?.id || !pusher) return;
-
-    const channel = pusher.subscribe(`item-${featuredItem.id}`);
-
-    channel.bind("availability-changed", (data: { isAvailable: boolean }) => {
+    const handleAvailabilityChange = (data: { isAvailable: boolean }) => {
       setIsAvailable(data.isAvailable);
-    });
+    };
+
+    // Bind multiple events to the same channel
+    channel.bind("new-bid", handleNewBid);
+    channel.bind("availability-changed", handleAvailabilityChange);
 
     return () => {
+      channel.unbind("new-bid", handleNewBid);
+      channel.unbind("availability-changed", handleAvailabilityChange);
       pusher.unsubscribe(`item-${featuredItem.id}`);
     };
   }, [featuredItem?.id, pusher]);
+
+  // Pusher for bids
+  // useEffect(() => {
+  //   if (!featuredItem?.id || !pusher) return;
+  //
+  //   const channel = pusher.subscribe(`item-${featuredItem.id}`);
+  //
+  //   channel.bind("new-bid", (data: { bid: Bid; currentBid: number }) => {
+  //     setBids((prev) => {
+  //       const exists = prev.some((b) => b.id === data.bid.id);
+  //       return exists ? prev : [data.bid, ...prev];
+  //     });
+  //
+  //     setItems((prev) =>
+  //       prev.map((item) =>
+  //         item.id === featuredItem.id
+  //           ? { ...item, currentBid: data.currentBid }
+  //           : item,
+  //       ),
+  //     );
+  //
+  //     setFeaturedItem((prev) =>
+  //       prev && prev.id === featuredItem.id
+  //         ? { ...prev, currentBid: data.currentBid }
+  //         : prev,
+  //     );
+  //   });
+  //
+  //   return () => {
+  //     pusher.unsubscribe(`item-${featuredItem.id}`);
+  //   };
+  // }, [featuredItem?.id, pusher]);
+  //
+  // useEffect(() => {
+  //   if (!featuredItem?.id || !pusher) return;
+  //
+  //   const channel = pusher.subscribe(`item-${featuredItem.id}`);
+  //
+  //   channel.bind("availability-changed", (data: { isAvailable: boolean }) => {
+  //     setIsAvailable(data.isAvailable);
+  //   });
+  //
+  //   return () => {
+  //     pusher.unsubscribe(`item-${featuredItem.id}`);
+  //   };
+  // }, [featuredItem?.id, pusher]);
 
   const handleAvailabilityChange = async (checked: boolean) => {
     setIsAvailable(checked);

@@ -1,4 +1,4 @@
-import { getAllItems } from "@/data-access/items";
+import { getLiveItems } from "@/data-access/items";
 import { auth } from "@/auth";
 import LivePage from "./LivePageClient";
 import { requireNotBlocked } from "@/lib/auth-helpers";
@@ -13,7 +13,7 @@ export default async function LivePageWrapper() {
       : false;
 
   const isSignedIn = !!session?.user?.id;
-  const allItems = await getAllItems();
+  const allItems = await getLiveItems();
 
   return (
     <LivePage
