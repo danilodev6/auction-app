@@ -7,8 +7,8 @@ import { formatToDollar } from "@/util/currency";
 import { createBidAction } from "@/app/items/[itemId]/actions";
 import ChatBox from "@/components/ChatBox";
 import { Switch } from "@/components/ui/switch";
-import { usePusherClient } from "@/hooks/usePusherClient";
 import { useClientOnly } from "@/hooks/useClientOnly";
+import { pusherClient } from "@/lib/pusher-client";
 
 type Item = {
   id: number;
@@ -21,6 +21,7 @@ type Item = {
   description: string | null;
   auctionType: string;
   isFeatured: boolean;
+  isAvailable: boolean;
 };
 
 type Bid = {
@@ -49,7 +50,8 @@ export default function LivePage({
 
   // Use the custom hooks
   const isClient = useClientOnly();
-  const { pusher, isReady } = usePusherClient();
+  // const { pusher, isReady } = usePusherClient();
+  const pusher = pusherClient;
 
   // Filter items for live streaming
   const liveItems = items.filter((item) => item.auctionType === "live");
@@ -77,7 +79,7 @@ export default function LivePage({
 
   // Pusher for featured item changes
   useEffect(() => {
-    if (!pusher || !isReady) return;
+    if (!pusher) return;
 
     const channel = pusher.subscribe("live-auction");
 
@@ -95,11 +97,11 @@ export default function LivePage({
     return () => {
       pusher.unsubscribe("live-auction");
     };
-  }, [pusher, isReady]);
+  }, [pusher]);
 
   // Pusher for bids
   useEffect(() => {
-    if (!featuredItem?.id || !pusher || !isReady) return;
+    if (!featuredItem?.id || !pusher) return;
 
     const channel = pusher.subscribe(`item-${featuredItem.id}`);
 
@@ -127,10 +129,10 @@ export default function LivePage({
     return () => {
       pusher.unsubscribe(`item-${featuredItem.id}`);
     };
-  }, [featuredItem?.id, pusher, isReady]);
+  }, [featuredItem?.id, pusher]);
 
   useEffect(() => {
-    if (!featuredItem?.id || !pusher || !isReady) return;
+    if (!featuredItem?.id || !pusher) return;
 
     const channel = pusher.subscribe(`item-${featuredItem.id}`);
 
@@ -141,7 +143,7 @@ export default function LivePage({
     return () => {
       pusher.unsubscribe(`item-${featuredItem.id}`);
     };
-  }, [featuredItem?.id, pusher, isReady]);
+  }, [featuredItem?.id, pusher]);
 
   const handleAvailabilityChange = async (checked: boolean) => {
     setIsAvailable(checked);

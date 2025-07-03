@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Pusher from "pusher-js";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { pusherClient } from "@/lib/pusher-client";
+import { useSession } from "next-auth/react";
 
 type ChatMessage = { user: string; message: string; timestamp: string };
 
@@ -10,12 +11,10 @@ export default function ChatBox({ itemId }: { itemId: number }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
 
+  const { data: session } = useSession();
   useEffect(() => {
-    const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
-      cluster: "sa1",
-    });
+    const channel = pusherClient.subscribe(`chat-${itemId}`);
 
-    const channel = pusher.subscribe(`chat-${itemId}`);
     channel.bind("new-message", (data: ChatMessage) => {
       setMessages((prev) => [...prev, data]);
     });
@@ -29,10 +28,20 @@ export default function ChatBox({ itemId }: { itemId: number }) {
   const sendMessage = async () => {
     if (!input.trim()) return;
 
+    const userName = session?.user?.name || session?.user?.email || "Anon";
+
     await fetch("/api/pusher", {
       method: "POST",
-      body: JSON.stringify({ message: input, itemId }),
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        channel: `chat-${itemId}`,
+        event: "new-message",
+        data: {
+          user: userName,
+          message: input.trim(),
+          timestamp: new Date().toISOString(),
+        },
+      }),
     });
 
     setInput("");
@@ -63,8 +72,16 @@ export default function ChatBox({ itemId }: { itemId: number }) {
           placeholder="Type your message..."
           className="bg-white p-2 flex-1 rounded-md"
         />
-        <Button onClick={sendMessage}>Enviar</Button>
+        <Button onClick={sendMessage} disabled={!session}>
+          Enviar
+        </Button>
       </div>
+
+      {!session && (
+        <div className="text-center text-sm text-gray-500 mt-2">
+          Inicia sesión para participar en el chat
+        </div>
+      )}
     </div>
   );
 }

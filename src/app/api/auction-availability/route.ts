@@ -7,7 +7,6 @@ import { pusherServer } from "@/lib/pusher-server";
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if user is authenticated and is admin
     const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -41,6 +40,7 @@ export async function POST(request: NextRequest) {
       isAvailable: isAvailable,
     });
   } catch {
+    console.error("Error updating auction availability:", Error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

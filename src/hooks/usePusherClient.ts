@@ -1,4 +1,3 @@
-// hooks/usePusherClient.ts
 import { useEffect, useState } from "react";
 import type Pusher from "pusher-js";
 
