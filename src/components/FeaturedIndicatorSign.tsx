@@ -49,7 +49,7 @@ export function FeaturedIndicatorSign({
   };
 
   return (
-    <div className="relative mx-auto animate-fade-right delay-100 mt-6 mb-4 max-w-sm lg:fixed lg:bottom-20 lg:right-20 lg:max-w-none z-30 rounded-md bg-accent shadow-lg p-3">
+    <div className="relative mx-auto mt-6 mb-4 max-w-sm lg:fixed lg:bottom-20 lg:right-20 lg:max-w-none z-30 rounded-md bg-accent shadow-lg p-3">
       <p className="text-lg text-center font-semibold text-primary">
         El próximo VIVO es:
       </p>

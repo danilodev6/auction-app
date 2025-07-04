@@ -37,7 +37,7 @@ export default function RootLayout({
         <Header />
         <SessionProvider>
           <PhoneCheckWrapper>
-            <div className="mx-auto px-4 py-4 overflow-x-hidden min-h-[calc(100vh-6rem)]">
+            <div className="mx-auto px-4 py-4 overflow-x-hidden">
               {children}
             </div>
           </PhoneCheckWrapper>
