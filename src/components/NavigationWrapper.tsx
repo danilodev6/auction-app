@@ -18,21 +18,21 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
       {/* Mobile Hamburger Button - show below 1278px (xl breakpoint) */}
       <button
         onClick={toggleMenu}
-        className="xl:hidden flex flex-col justify-center items-center px-4 h-14 bg-primary text-white rounded-md shadow z-50"
+        className="xl:hidden flex flex-col justify-center items-center px-5 h-14 bg-primary text-white rounded-md shadow z-50"
         aria-label="Toggle menu"
       >
         <span
-          className={`block w-5 h-0.5 bg-white transition-all duration-300 ${
+          className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
             isOpen ? "rotate-45 translate-y-1" : ""
           }`}
         />
         <span
-          className={`block w-5 h-0.5 bg-white transition-all duration-300 mt-1 ${
+          className={`block w-6 h-0.5 bg-white transition-all duration-300 mt-1 ${
             isOpen ? "opacity-0" : ""
           }`}
         />
         <span
-          className={`block w-5 h-0.5 bg-white transition-all duration-300 mt-1 ${
+          className={`block w-6 h-0.5 bg-white transition-all duration-300 mt-1 ${
             isOpen ? "-rotate-45 -translate-y-1" : ""
           }`}
         />
@@ -48,7 +48,7 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 max-w-[100vw] bg-primary text-white z-50 transform transition-transform duration-300 xl:hidden ${
+        className={`fixed top-0 right-0 h-full w-70 max-w-[100vw] bg-primary text-white z-50 transform transition-transform duration-300 xl:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
