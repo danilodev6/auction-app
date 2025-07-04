@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/util/date";
 import { formatSimpleDate } from "@/util/date2";
+import { motion } from "motion/react";
 
 interface FeaturedIndicatorSignProps {
   userIsAdmin: boolean;
@@ -49,7 +50,12 @@ export function FeaturedIndicatorSign({
   };
 
   return (
-    <div className="relative mx-auto mt-6 mb-4 max-w-sm lg:fixed lg:bottom-20 lg:right-20 lg:max-w-none z-30 rounded-md bg-accent shadow-lg p-3">
+    <motion.div
+      initial={{ x: 320 }}
+      animate={{ x: 0 }}
+      transition={{ duration: 1.3, ease: "easeOut", delay: 0.8 }}
+      className="relative mx-auto mt-6 mb-4 max-w-sm lg:fixed lg:bottom-20 lg:right-20 lg:max-w-none z-30 rounded-md bg-accent shadow-lg p-3"
+    >
       <p className="text-lg text-center font-semibold text-primary">
         El próximo VIVO es:
       </p>
@@ -101,6 +107,6 @@ export function FeaturedIndicatorSign({
       ) : (
         <p className="text-xl text-center text-primary">No programado</p>
       )}
-    </div>
+    </motion.div>
   );
 }

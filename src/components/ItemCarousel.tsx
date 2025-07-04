@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { motion } from "motion/react";
 
 interface ItemCarouselProps {
   items: Item[];
@@ -30,7 +31,19 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
 
   // If more than 4 items, use carousel with responsive behavior
   return (
-    <div className="w-full px-4">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: 0.2,
+          },
+        },
+      }}
+      className="w-full px-4"
+    >
       <Carousel
         opts={{
           align: "start",
@@ -53,7 +66,7 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
         <CarouselPrevious className="left-2" />
         <CarouselNext className="right-2" />
       </Carousel>
-    </div>
+    </motion.div>
   );
 }
 
