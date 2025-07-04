@@ -48,7 +48,7 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-screen min-h-screen w-64 bg-primary text-white z-50 transform transition-transform duration-300 xl:hidden ${
+        className={`fixed top-0 right-0 h-screen w-64 max-w-[100vw] bg-primary text-white z-50 transform transition-transform duration-300 xl:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
