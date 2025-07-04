@@ -12,7 +12,7 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-transparent pt-4 px-4 ">
-      <div className="relative max-w-screen-2xl mx-auto flex items-center justify-between h-14 animate-fade-in-down delay-100">
+      <div className="relative max-w-screen-2xl mx-auto flex items-center justify-between h-14">
         {/* Logo + Brand capsule */}
         <Link href="/" className="absolute left-0">
           <div className="flex items-center gap-2 bg-primary text-accent px-4 sm:px-9 h-14 rounded-md shadow">
@@ -36,7 +36,7 @@ export async function Header() {
         </Link>
 
         {/* Desktop Navigation with FeaturedIndicator - show at 1278px+ (xl breakpoint) */}
-        <nav className="hidden xl:flex absolute left-1/2 -translate-x-1/2 bg-primary text-white px-9 h-14 rounded-md shadow items-center space-x-9 lg:text-base animate-fade-in-down delay-100">
+        <nav className="hidden xl:flex absolute left-1/2 -translate-x-1/2 bg-primary text-white px-9 h-14 rounded-md shadow items-center space-x-9 lg:text-base">
           <Link href="/" className="hover:text-accent hover-nav-link px-3 py-2">
             Home
           </Link>
@@ -79,7 +79,7 @@ export async function Header() {
           <NavigationWrapper userIsAdmin={userIsAdmin} />
 
           {/* User Info capsule */}
-          <div className="flex items-center gap-2 sm:gap-3 bg-primary text-white px-3 sm:px-9 h-14 rounded-md shadow animate-fade-in-down delay-100">
+          <div className="flex items-center gap-2 sm:gap-3 bg-primary text-white px-3 sm:px-9 h-14 rounded-md shadow">
             {session?.user?.image && (
               <Image
                 src={session.user.image}

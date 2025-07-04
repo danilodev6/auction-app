@@ -29,7 +29,7 @@ export default async function HomePage() {
   const directItems = allItems.filter((item) => item.auctionType === "direct");
 
   return (
-    <main className="container flex flex-col place-items-center animate-fade-in delay-200">
+    <main className="container flex flex-col place-items-center">
       <div className="relative flex place-items-center">
         <h1 className="text-3xl font-bold mx-4 mb-2">Subastas virtuales</h1>
         <Link href="/reg-auct" className="absolute -right-13">
