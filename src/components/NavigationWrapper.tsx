@@ -18,7 +18,7 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
       {/* Mobile Hamburger Button - show below 1278px (xl breakpoint) */}
       <button
         onClick={toggleMenu}
-        className="xl:hidden flex flex-col justify-center items-center px-4 h-14 bg-primary text-white rounded-md shadow"
+        className="xl:hidden flex flex-col justify-center items-center px-4 h-14 bg-primary text-white rounded-md shadow z-50"
         aria-label="Toggle menu"
       >
         <span
@@ -41,21 +41,21 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
       {/* Mobile Menu Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 h-screen min-h-screen w-screen bg-black bg-opacity-50 z-40 xl:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
           onClick={closeMenu}
         />
       )}
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-screen w-64 max-w-[100vw] bg-primary text-white z-50 transform transition-transform duration-300 xl:hidden ${
+        className={`fixed top-0 right-0 h-full w-64 max-w-[100vw] bg-primary text-white z-50 transform transition-transform duration-300 xl:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="p-4">
+        <div className="p-4 h-full overflow-y-auto">
           <button
             onClick={closeMenu}
-            className="absolute top-4 right-4 text-white text-2xl"
+            className="absolute top-4 right-4 text-white text-2xl hover:text-gray-300"
           >
             ×
           </button>
@@ -63,7 +63,7 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
           <nav className="mt-12 space-y-4">
             <Link
               href="/"
-              className="block hover:text-accent px-3 py-2 text-lg"
+              className="block hover:text-accent px-3 py-2 text-lg transition-colors"
               onClick={closeMenu}
             >
               Home
@@ -71,7 +71,7 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
 
             <Link
               href="/live"
-              className="block hover:text-accent px-3 py-2 text-lg"
+              className="block hover:text-accent px-3 py-2 text-lg transition-colors"
               onClick={closeMenu}
             >
               Live
@@ -81,21 +81,21 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
               <>
                 <Link
                   href="/items/create"
-                  className="block hover:text-accent px-3 py-2 text-lg"
+                  className="block hover:text-accent px-3 py-2 text-lg transition-colors"
                   onClick={closeMenu}
                 >
                   Crear
                 </Link>
                 <Link
                   href="/items/manage"
-                  className="block hover:text-accent px-3 py-2 text-lg"
+                  className="block hover:text-accent px-3 py-2 text-lg transition-colors"
                   onClick={closeMenu}
                 >
                   Items
                 </Link>
                 <Link
                   href="/admin/users"
-                  className="block hover:text-accent px-3 py-2 text-lg"
+                  className="block hover:text-accent px-3 py-2 text-lg transition-colors"
                   onClick={closeMenu}
                 >
                   Users

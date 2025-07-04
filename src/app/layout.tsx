@@ -30,14 +30,14 @@ export default function RootLayout({
     <html lang="es" className="scroll-smooth">
       <body
         className={cn(
-          "min-h-screen bg-secondary font-sans antialiased pb-28 sm:pb-16 select-none overflow-x-hidden",
+          "min-h-screen bg-secondary font-sans antialiased pb-24 sm:pb-20 select-none overflow-x-hidden",
           fontSans.variable,
         )}
       >
         <Header />
         <SessionProvider>
           <PhoneCheckWrapper>
-            <div className="mx-auto px-4 py-4 overflow-x-hidden">
+            <div className="mx-auto px-4 py-4 overflow-x-hidden min-h-[calc(100vh-6rem)]">
               {children}
             </div>
           </PhoneCheckWrapper>
