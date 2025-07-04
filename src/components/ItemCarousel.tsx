@@ -19,13 +19,25 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
   // If 4 or fewer items, show them centered without carousel
   if (items.length <= 4) {
     return (
-      <div className="w-full flex justify-center">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.8,
+            },
+          },
+        }}
+        className="w-full flex justify-center"
+      >
         <div className="flex flex-wrap justify-center gap-4 max-w-6xl px-4">
           {items.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -38,7 +50,7 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.2,
+            staggerChildren: 0.8,
           },
         },
       }}

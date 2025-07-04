@@ -51,7 +51,7 @@ export function FeaturedIndicatorSign({
 
   return (
     <motion.div
-      initial={{ x: 320 }}
+      initial={{ x: 450 }}
       animate={{ x: 0 }}
       transition={{ duration: 1.3, ease: "easeOut", delay: 0.8 }}
       className="relative mx-auto mt-6 mb-4 max-w-sm lg:fixed lg:bottom-20 lg:right-20 lg:max-w-none z-30 rounded-md bg-accent shadow-lg p-3"
