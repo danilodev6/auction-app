@@ -9,7 +9,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { motion } from "motion/react";
 
 interface ItemCarouselProps {
   items: Item[];
@@ -20,23 +19,11 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
   if (items.length <= 4) {
     return (
       <div className="w-full flex justify-center">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: 0.8,
-              },
-            },
-          }}
-          className="flex flex-wrap justify-center gap-4 max-w-6xl px-4"
-        >
+        <div className="flex flex-wrap justify-center gap-4 max-w-6xl px-4">
           {items.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -56,21 +43,9 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
               key={item.id}
               className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 flex-shrink-0"
             >
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                variants={{
-                  hidden: {},
-                  visible: {
-                    transition: {
-                      staggerChildren: 0.8,
-                    },
-                  },
-                }}
-                className="flex justify-center"
-              >
+              <div className="flex justify-center">
                 <ItemCard item={item} />
-              </motion.div>
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>
