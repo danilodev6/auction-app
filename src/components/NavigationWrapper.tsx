@@ -41,14 +41,14 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
       {/* Mobile Menu Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-60 xl:hidden"
           onClick={closeMenu}
         />
       )}
 
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-primary text-white z-50 transform transition-transform duration-300 xl:hidden ${
+        className={`fixed top-0 right-0 h-full w-64 bg-primary text-white z-70 transform transition-transform duration-300 xl:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
