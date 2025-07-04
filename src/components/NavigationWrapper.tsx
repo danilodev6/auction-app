@@ -41,7 +41,7 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
       {/* Mobile Menu Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
+          className="fixed inset-0 h-screen min-h-screen w-screen bg-black bg-opacity-50 z-40 xl:hidden"
           onClick={closeMenu}
         />
       )}
