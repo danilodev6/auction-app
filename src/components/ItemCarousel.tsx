@@ -19,43 +19,31 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
   // If 4 or fewer items, show them centered without carousel
   if (items.length <= 4) {
     return (
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: {},
-          visible: {
-            transition: {
-              staggerChildren: 0.8,
+      <div className="w-full flex justify-center">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.8,
+              },
             },
-          },
-        }}
-        className="w-full flex justify-center"
-      >
-        <div className="flex flex-wrap justify-center gap-4 max-w-6xl px-4">
+          }}
+          className="flex flex-wrap justify-center gap-4 max-w-6xl px-4"
+        >
           {items.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     );
   }
 
   // If more than 4 items, use carousel with responsive behavior
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: 0.8,
-          },
-        },
-      }}
-      className="w-full px-4"
-    >
+    <div className="w-full px-4">
       <Carousel
         opts={{
           align: "start",
@@ -68,9 +56,21 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
               key={item.id}
               className="pl-4 basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 flex-shrink-0"
             >
-              <div className="flex justify-center">
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  hidden: {},
+                  visible: {
+                    transition: {
+                      staggerChildren: 0.8,
+                    },
+                  },
+                }}
+                className="flex justify-center"
+              >
                 <ItemCard item={item} />
-              </div>
+              </motion.div>
             </CarouselItem>
           ))}
         </CarouselContent>
@@ -78,7 +78,7 @@ export function ItemCarousel({ items }: ItemCarouselProps) {
         <CarouselPrevious className="left-2" />
         <CarouselNext className="right-2" />
       </Carousel>
-    </motion.div>
+    </div>
   );
 }
 
