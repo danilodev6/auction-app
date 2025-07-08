@@ -1,26 +1,30 @@
 import { NextResponse } from "next/server";
-import PDFDocument from "pdfkit";
+import { jsPDF } from "jspdf";
 import { GetAllItemsWithBidsAction } from "@/app/items/manage/actions";
 import { Item } from "@/types/items";
 
-function createPDFBuffer(items: Item[]): Promise<Buffer> {
-  return new Promise((resolve) => {
-    const doc = new PDFDocument();
-    const chunks: Uint8Array[] = [];
+export async function GET() {
+  try {
+    const items: Item[] = await GetAllItemsWithBidsAction(1, 999);
 
-    doc.on("data", (chunk) => chunks.push(chunk));
-    doc.on("end", () => {
-      const result = Buffer.concat(chunks);
-      resolve(result);
-    });
+    // Create PDF
+    const doc = new jsPDF();
 
-    doc.fontSize(20).text("🏆 Reporte de Ganadores de Subasta", {
-      align: "center",
-    });
+    // Set font and title
+    doc.setFontSize(20);
+    doc.text("🏆 Reporte de Ganadores de Subasta", 20, 20);
 
-    doc.moveDown();
+    let yPosition = 40;
+    const lineHeight = 6;
+    const pageHeight = doc.internal.pageSize.height;
 
     items.forEach((item: Item, index: number) => {
+      // Check if we need a new page
+      if (yPosition > pageHeight - 50) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
       const price = item.currentBid || item.startingPrice;
       const buyer =
         item.auctionType === "direct"
@@ -31,30 +35,39 @@ function createPDFBuffer(items: Item[]): Promise<Buffer> {
       const phone =
         item.auctionType === "direct" ? item.soldToPhone : item.bidderPhone;
 
-      doc
-        .fontSize(12)
-        .text(`${index + 1}. ${item.name}`)
-        .text(`   Precio final: $${price}`)
-        .text(`   Comprador: ${buyer}`)
-        .text(`   Email: ${email}`)
-        .text(`   Teléfono: ${phone || "Sin teléfono"}`)
-        .text(`   Retirado: ________`)
-        .moveDown();
+      // Item details
+      doc.setFontSize(12);
+      doc.text(`${index + 1}. ${item.name}`, 20, yPosition);
+      yPosition += lineHeight;
+
+      doc.setFontSize(10);
+      doc.text(`   Precio final: $${price}`, 20, yPosition);
+      yPosition += lineHeight;
+
+      doc.text(`   Comprador: ${buyer}`, 20, yPosition);
+      yPosition += lineHeight;
+
+      doc.text(`   Email: ${email || "Sin email"}`, 20, yPosition);
+      yPosition += lineHeight;
+
+      doc.text(`   Teléfono: ${phone || "Sin teléfono"}`, 20, yPosition);
+      yPosition += lineHeight;
+
+      doc.text(`   Retirado: ________`, 20, yPosition);
+      yPosition += lineHeight * 2; // Extra space between items
     });
 
-    doc.end();
-  });
-}
+    // Get PDF as buffer
+    const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
 
-export async function GET() {
-  const items: Item[] = await GetAllItemsWithBidsAction(1, 999);
-
-  const buffer = await createPDFBuffer(items);
-
-  return new NextResponse(buffer, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=ganadores.pdf",
-    },
-  });
+    return new NextResponse(pdfBuffer, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "attachment; filename=ganadores.pdf",
+      },
+    });
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    return new NextResponse("Error generating PDF", { status: 500 });
+  }
 }
