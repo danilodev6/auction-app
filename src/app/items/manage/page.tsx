@@ -184,8 +184,10 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                 return (
                   <div
                     key={item.id}
-                    className={`bg-white rounded-md p-3 md:py-1 md:px-2 w-full ${
-                      item.isFeatured ? "border-purple-400 bg-purple-50" : ""
+                    className={`rounded-md p-3 md:py-1 md:px-2 w-full ${
+                      item.isFeatured
+                        ? "border border-purple-400 bg-purple-50"
+                        : "bg-white"
                     }`}
                   >
                     {/* Mobile Layout */}
