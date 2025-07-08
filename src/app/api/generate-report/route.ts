@@ -47,7 +47,7 @@ export async function GET() {
 
       doc.setFontSize(10);
       doc.text(
-        `Precio final: $ ${formatToDollar(price)} Comprador: ${buyer} Email: ${email || "Sin email"} Teléfono: ${phone || "Sin teléfono"}`,
+        `Precio final:$ ${formatToDollar(price)} Comprador:${buyer} Email:${email || "Sin email"} Teléfono:${phone || "Sin teléfono"}`,
         20,
         yPosition,
       );
