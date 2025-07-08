@@ -39,23 +39,18 @@ export async function GET() {
       // Item details
       doc.setFontSize(12);
       doc.text(
-        `${index + 1}. ${item.name} - tipo: ${item.auctionType}`,
+        `${index + 1}. ${item.name} - ( ${item.auctionType} )`,
         20,
         yPosition,
       );
       yPosition += lineHeight;
 
       doc.setFontSize(10);
-      doc.text(`   Precio final: $ ${formatToDollar(price)}`, 20, yPosition);
-      yPosition += lineHeight;
-
-      doc.text(`   Comprador: ${buyer}`, 20, yPosition);
-      yPosition += lineHeight;
-
-      doc.text(`   Email: ${email || "Sin email"}`, 20, yPosition);
-      yPosition += lineHeight;
-
-      doc.text(`   Teléfono: ${phone || "Sin teléfono"}`, 20, yPosition);
+      doc.text(
+        `Precio final: $ ${formatToDollar(price)} Comprador: ${buyer} Email: ${email || "Sin email"} Teléfono: ${phone || "Sin teléfono"}`,
+        20,
+        yPosition,
+      );
       yPosition += lineHeight;
 
       doc.text(`   Retirado: ________`, 20, yPosition);
