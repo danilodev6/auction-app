@@ -11,6 +11,7 @@ import BulkDeleteManager, {
   SelectAllCheckbox,
   ItemCheckbox,
 } from "./BulkDeleteManager";
+import FeatureToggleButton from "./FeatureToggleButton";
 import Pagination from "./Pagination";
 import { Item, AuctionType } from "@/types/items";
 
@@ -321,22 +322,13 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                       {/* Mobile Action Buttons */}
                       <div className="flex flex-col sm:flex-row gap-2 mt-3 w-full">
                         {item.auctionType === "live" && (
-                          <form
-                            action={ToggleFeaturedAction.bind(null, item.id)}
-                            className="w-full sm:w-auto"
-                          >
-                            <Button
-                              type="submit"
-                              size="sm"
-                              className={`w-full sm:w-auto text-xs ${
-                                item.isFeatured
-                                  ? "bg-purple-800 hover:bg-purple-700 text-white"
-                                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                              }`}
-                            >
-                              {item.isFeatured ? "Unfeatured" : "Feature"}
-                            </Button>
-                          </form>
+                          <div className="w-full sm:w-auto">
+                            <FeatureToggleButton
+                              itemId={item.id}
+                              isFeatured={item.isFeatured}
+                              className="w-full sm:w-auto text-xs px-3 py-2"
+                            />
+                          </div>
                         )}
 
                         <Link
@@ -446,20 +438,11 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                       <div className="flex-shrink-0 flex gap-2 items-center">
                         {/* Only show feature toggle for live auctions */}
                         {item.auctionType === "live" && (
-                          <form
-                            action={ToggleFeaturedAction.bind(null, item.id)}
-                          >
-                            <Button
-                              type="submit"
-                              className={`px-3 py-2 text-sm font-medium ${
-                                item.isFeatured
-                                  ? "bg-purple-800 hover:bg-purple-700 text-white"
-                                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-                              }`}
-                            >
-                              {item.isFeatured ? "Unfeatured" : "Feature"}
-                            </Button>
-                          </form>
+                          <FeatureToggleButton
+                            itemId={item.id}
+                            isFeatured={item.isFeatured}
+                            className="px-3 py-2 text-sm font-medium"
+                          />
                         )}
 
                         <Link
