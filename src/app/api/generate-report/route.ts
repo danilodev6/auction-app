@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { jsPDF } from "jspdf";
 import { GetAllItemsWithBidsAction } from "@/app/items/manage/actions";
 import { Item } from "@/types/items";
+import { formatToDollar } from "@/util/currency";
 
 export async function GET() {
   try {
@@ -12,7 +13,7 @@ export async function GET() {
 
     // Set font and title
     doc.setFontSize(20);
-    doc.text("🏆 Reporte de Ganadores de Subasta", 20, 20);
+    doc.text("Reporte de Subasta", 20, 20);
 
     let yPosition = 40;
     const lineHeight = 6;
@@ -37,11 +38,15 @@ export async function GET() {
 
       // Item details
       doc.setFontSize(12);
-      doc.text(`${index + 1}. ${item.name}`, 20, yPosition);
+      doc.text(
+        `${index + 1}. ${item.name} - tipo: ${item.auctionType}`,
+        20,
+        yPosition,
+      );
       yPosition += lineHeight;
 
       doc.setFontSize(10);
-      doc.text(`   Precio final: $${price}`, 20, yPosition);
+      doc.text(`   Precio final: $ ${formatToDollar(price)}`, 20, yPosition);
       yPosition += lineHeight;
 
       doc.text(`   Comprador: ${buyer}`, 20, yPosition);
