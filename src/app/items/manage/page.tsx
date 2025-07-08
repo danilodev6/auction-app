@@ -13,6 +13,7 @@ import BulkDeleteManager, {
 import FeatureToggleButton from "./FeatureToggleButton";
 import Pagination from "./Pagination";
 import { Item, AuctionType } from "@/types/items";
+import GeneratePDFButton from "@/components/GeneratePDFButton";
 
 interface SearchParams {
   page?: string;
@@ -151,6 +152,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
           Manage Items
         </h1>
+        <GeneratePDFButton />
       </div>
 
       {/* Client Component for filtering */}
@@ -244,7 +246,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                               Inicio:
                             </span>
                             <span className="font-medium text-sm">
-                              ${item.startingPrice}
+                              $ {formatToDollar(item.startingPrice)}
                             </span>
                           </div>
                           <div className="flex justify-between">
@@ -254,7 +256,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                             <span
                               className={`font-semibold text-sm ${bidInfo.color}`}
                             >
-                              {bidInfo.amount}
+                              $ {bidInfo.amount}
                             </span>
                           </div>
                           {item.auctionType !== "direct" && (
@@ -263,7 +265,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                                 Intervalo:
                               </span>
                               <span className="text-sm">
-                                ${item.bidInterval}
+                                $ {formatToDollar(item.bidInterval)}
                               </span>
                             </div>
                           )}
