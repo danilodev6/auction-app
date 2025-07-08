@@ -396,11 +396,12 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                         </p>
                         <div className="text-sm text-gray-500">
                           <span className="mr-4">
-                            Precio inicio: ${item.startingPrice}
+                            Precio inicio: ${" "}
+                            {formatToDollar(item.startingPrice)}
                           </span>
                           {item.auctionType !== "direct" && (
                             <span className="mr-4">
-                              Intervalo: ${item.bidInterval}
+                              Intervalo: $ {formatToDollar(item.bidInterval)}
                             </span>
                           )}
                           <span className="font-medium">Precio venta: $ </span>

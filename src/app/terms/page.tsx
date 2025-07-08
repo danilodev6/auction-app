@@ -8,6 +8,10 @@ export default function Terms() {
 
         <div className="space-y-8">
           <div>
+            <h2>
+              Administradora del sitio: Teresita Bogliacino MP Comper N1188 -
+              Ccpier N 800
+            </h2>
             <h3 className="text-xl font-semibold text-gray-900">
               1. Generalidades
             </h3>

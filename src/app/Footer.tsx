@@ -9,10 +9,13 @@ export default function Footer() {
         <p className="text-sm sm:text-base whitespace-nowrap">
           tbsubastas@gmail.com
         </p>
-        <p className="text-sm sm:text-base whitespace-nowrap">+3446 66 33 76</p>
+        <p className="text-sm sm:text-base whitespace-nowrap">+3446 663376</p>
+        <p className="text-sm sm:text-base whitespace-nowrap">
+          MP Comper N1188
+        </p>
         <div className="text-sm sm:text-base">
           <Link href="/terms" className="hover-nav-link whitespace-nowrap">
-            Términos y condiciones
+            Térm. y cond.
           </Link>
         </div>
       </div>
