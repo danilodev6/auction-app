@@ -318,7 +318,7 @@ export default function LivePage({
           </h1>
           <div className="w-full aspect-video rounded-md overflow-hidden mb-4">
             <iframe
-              src="https://player.twitch.tv/?channel=tbsubastas2&parent=localhost"
+              src="https://player.twitch.tv/?channel=tbsubastas2&parent=https://www.tbsubastas.com/"
               allowFullScreen
               className="w-full h-full"
             />
@@ -517,7 +517,7 @@ export default function LivePage({
           <h1 className="text-center text-primary text-3xl">Subasta en VIVO</h1>
           <div className="w-full max-w-[960px] mx-auto aspect-video mt-2 rounded-md overflow-hidden">
             <iframe
-              src="https://player.twitch.tv/?channel=tbsubastas2&parent=localhost"
+              src="https://player.twitch.tv/?channel=tbsubastas2&parent=https://www.tbsubastas.com/"
               allowFullScreen
               className="w-full h-full"
             />
