@@ -27,23 +27,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="scroll-smooth">
-      <body
-        className={cn(
-          "min-h-screen bg-secondary font-sans antialiased pb-34 sm:pb-20 select-none overflow-x-hidden",
-          fontSans.variable,
-        )}
-      >
-        <Header />
-        <SessionProvider>
-          <PhoneCheckWrapper>
-            <div className="mx-auto px-4 py-4 overflow-x-hidden">
-              {children}
-            </div>
-          </PhoneCheckWrapper>
-        </SessionProvider>
-        <Footer />
-      </body>
-    </html>
+    <div
+      className={cn(
+        "min-h-screen bg-secondary font-sans antialiased pb-34 sm:pb-20 select-none overflow-x-hidden",
+        fontSans.variable,
+      )}
+    >
+      <Header />
+      <SessionProvider>
+        <PhoneCheckWrapper>
+          <div className="mx-auto px-4 py-4 overflow-x-hidden">{children}</div>
+        </PhoneCheckWrapper>
+      </SessionProvider>
+      <Footer />
+    </div>
   );
 }
