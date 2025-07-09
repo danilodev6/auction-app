@@ -13,6 +13,28 @@ export default function CompleteProfile() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const validatePhone = (phoneNumber: string): boolean => {
+    // Remove all non-digit characters except + at the beginning
+    const cleaned = phoneNumber.trim();
+
+    // Check if empty
+    if (!cleaned) return false;
+
+    // Simple validation: allow + at start, then digits, spaces, hyphens, parentheses
+    const phonePattern = /^[\+]?[\d\s\-\(\)]{8,20}$/;
+
+    if (!phonePattern.test(cleaned)) return false;
+
+    // Count only digits (excluding +)
+    const digitsOnly = cleaned
+      .split("")
+      .filter((char) => /\d/.test(char))
+      .join("");
+
+    // Should have between 8-15 digits
+    return digitsOnly.length >= 8 && digitsOnly.length <= 15;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -25,9 +47,8 @@ export default function CompleteProfile() {
       return;
     }
 
-    // Optional: Add more phone validation
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    if (!phoneRegex.test(phone.replace(/\s/g, ""))) {
+    // Validate phone format
+    if (!validatePhone(phone)) {
       setError("Por favor, ingresa un número de teléfono válido");
       setIsLoading(false);
       return;
