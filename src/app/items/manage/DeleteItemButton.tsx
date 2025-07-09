@@ -66,7 +66,7 @@ export default function DeleteItemButton({
   return (
     <Button
       onClick={() => setShowConfirm(true)}
-      className="bg-red-800 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm w-full sm:w-auto"
+      className="bg-red-800 hover:bg-red-700 text-white hover:text-white px-3 py-2 rounded-md text-sm w-full sm:w-auto"
     >
       Delete
     </Button>

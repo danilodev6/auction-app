@@ -46,7 +46,7 @@ export default function FeatureToggleButton({
       className={`${className} ${
         isFeatured
           ? "bg-purple-800 hover:bg-purple-700 text-white"
-          : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+          : "bg-gray-200 hover:bg-primary hover:text-accent text-primary"
       } ${isLoading || timeoutActive ? "opacity-50 cursor-not-allowed" : ""}`}
     >
       {isLoading ? "Loading..." : isFeatured ? "Unfeatured" : "Feature"}
