@@ -44,7 +44,7 @@ export function ItemCard({ item }: { item: Item }) {
       )}
 
       <Button asChild className="m-2" disabled={isSold}>
-        <Link href={`/items/${item.id}`}>Ver item</Link>
+        <Link href={`/items/${item.id}`}>Pujar aquí</Link>
       </Button>
     </div>
   );
