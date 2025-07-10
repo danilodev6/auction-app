@@ -44,7 +44,9 @@ export function ItemCard({ item }: { item: Item }) {
       )}
 
       <Button asChild className="m-2" disabled={isSold}>
-        <Link href={`/items/${item.id}`}>Pujar aquí</Link>
+        <Link href={`/items/${item.id}`}>
+          {item.auctionType === "direct" ? "Comprar aquí" : "Pujar aquí"}
+        </Link>
       </Button>
     </div>
   );
