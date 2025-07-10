@@ -7,4 +7,4 @@ export const supabaseKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-export const BUCKET_NAME = "auction-items";
+export const BUCKET_NAME = "tbsubastas-images";
