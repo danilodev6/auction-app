@@ -26,7 +26,8 @@ export default function FacebookBrowserHandler() {
       // Show fallback message after a delay
       setTimeout(() => {
         const shouldShowAlert = confirm(
-          'For the best experience, please open this link in your browser app.\n\nTap the three dots (...) menu and select "Open in Browser".\n\nClick OK to try again.',
+          // 'For the best experience, please open this link in your browser app.\n\nTap the three dots (...) menu and select "Open in Browser".\n\nClick OK to try again.',
+          'Para una mejor experiencia, abre el link en tu navegador Chrome.\n\nPresiona "OK" y luego "CONTINUAR".',
         );
 
         if (shouldShowAlert) {
