@@ -9,7 +9,7 @@ export function ItemCard({ item }: { item: Item }) {
   const isSold = isDirectSale && item.status !== "active";
 
   return (
-    <div className="flex flex-col h-[295px] w-48 px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
+    <div className="flex flex-col h-[295px] w-54 px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-48 h-48 rounded-md overflow-hidden z-10 mt-1.5">
         {item.imageURL ? (
           <Image
