@@ -349,7 +349,7 @@ export default function ItemPageClient({
                   : isPurchasing
                     ? "Procesando..."
                     : isSignedIn
-                      ? `Comprar ahora por $ ${formatToDollar(item.startingPrice)}`
+                      ? `Confirmar compra por $ ${formatToDollar(item.startingPrice)}`
                       : "Inicia sesión para comprar"}
               </Button>
             </div>
