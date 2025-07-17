@@ -4,14 +4,21 @@ import { useEffect } from "react";
 
 export default function FacebookBrowserHandler() {
   useEffect(() => {
-    // Check if the server detected Facebook browser
-    const isFacebookBrowser = document.querySelector(
-      'meta[name="facebook-browser"]',
-    );
+    // Direct client-side detection of Facebook browser
+    const userAgent = navigator.userAgent || "";
+    const isFacebookBrowser =
+      userAgent.includes("FBAN") ||
+      userAgent.includes("FBAV") ||
+      userAgent.includes("Instagram");
+
+    console.log("User Agent:", userAgent); // For debugging
+    console.log("Is Facebook Browser:", isFacebookBrowser); // For debugging
 
     if (isFacebookBrowser) {
       const currentUrl = window.location.href;
       const domain = currentUrl.replace(/https?:\/\//, "");
+
+      console.log("Attempting redirect for:", domain); // For debugging
 
       // Try to open in Chrome for Android
       window.location.href = `intent://${domain}#Intent;scheme=https;package=com.android.chrome;end;`;

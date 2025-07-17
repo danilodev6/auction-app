@@ -7,7 +7,6 @@ import PhoneCheckWrapper from "@/components/PhoneCheckWrapper";
 import FacebookBrowserHandler from "@/components/FacebookBrowserHandler";
 import { SessionProvider } from "next-auth/react";
 import Footer from "./Footer";
-import { headers } from "next/headers";
 
 const fontSans = Barlow({
   subsets: ["latin"],
@@ -23,20 +22,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Check if server detected Facebook browser
-  const headersList = await headers();
-  const isFacebookBrowser = headersList.get("x-facebook-browser") === "true";
-
   return (
     <html lang="en">
-      <head>
-        {isFacebookBrowser && <meta name="facebook-browser" content="true" />}
-      </head>
       <body
         className={cn(
           "min-h-screen bg-secondary font-sans antialiased pb-34 sm:pb-20 select-none overflow-x-hidden",
