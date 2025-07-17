@@ -9,7 +9,7 @@ export function ItemCard({ item }: { item: Item }) {
   const isSold = isDirectSale && item.status !== "active";
 
   return (
-    <div className="flex flex-col h-[295px] px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
+    <div className="flex flex-col h-[295px] w-48 px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-48 h-48 rounded-md overflow-hidden z-10 mt-1.5">
         {item.imageURL ? (
           <Image
@@ -32,13 +32,15 @@ export function ItemCard({ item }: { item: Item }) {
         )}
       </div>
 
-      <p className="text-lg font-semibold">{item.name}</p>
+      <p className="text-lg font-semibold text-center px-2 leading-tight">
+        {item.name}
+      </p>
       {isDirectSale ? (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 text-center">
           {isSold ? "Producto vendido" : "Ingresa para comprar"}
         </p>
       ) : (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 text-center">
           Finaliza: {formatSimpleDate(item.bidEndTime)}
         </p>
       )}

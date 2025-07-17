@@ -197,14 +197,14 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                       <div className="flex items-start gap-3 mb-3">
                         <ItemCheckbox itemId={item.id} />
 
-                        <div className="w-16 h-16 relative flex-shrink-0">
+                        <div className="w-16 h-16 relative flex-shrink-0 overflow-hidden">
                           {item.imageURL ? (
                             <Image
                               src={item.imageURL}
                               alt={item.name}
-                              width={64}
-                              height={64}
-                              className="object-cover rounded-md block"
+                              fill
+                              className="object-cover rounded-md"
+                              sizes="64px"
                             />
                           ) : (
                             <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
@@ -355,14 +355,14 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                       {/* Checkbox */}
                       <ItemCheckbox itemId={item.id} />
 
-                      <div className="w-20 h-20 relative flex-shrink-0">
+                      <div className="w-20 h-20 relative flex-shrink-0 overflow-hidden">
                         {item.imageURL ? (
                           <Image
                             src={item.imageURL}
                             alt={item.name}
-                            width={80}
-                            height={80}
-                            className="object-cover rounded-md block"
+                            fill
+                            className="object-cover rounded-md"
+                            sizes="80px"
                           />
                         ) : (
                           <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
