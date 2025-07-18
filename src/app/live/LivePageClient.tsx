@@ -56,6 +56,11 @@ export default function LivePage({
   // Filter items for live streaming
   const liveItems = items.filter((item) => item.auctionType === "live");
 
+  const getProxyImageUrl = (imageUrl: string | null) => {
+    if (!imageUrl) return null;
+    return `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`;
+  };
+
   useEffect(() => {
     const featured = liveItems.find((item) => item.isFeatured) || null;
     setFeaturedItem(featured);
@@ -431,7 +436,7 @@ export default function LivePage({
                 <div className="order-2 sm:order-2 flex justify-center">
                   {featuredItem.imageURL ? (
                     <Image
-                      src={featuredItem.imageURL}
+                      src={getProxyImageUrl(featuredItem.imageURL) || ""}
                       alt={featuredItem.name}
                       width={200}
                       height={200}
