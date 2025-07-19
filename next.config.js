@@ -7,12 +7,12 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "oegkjipmpbucywefggtm.supabase.co",
-        pathname: "/storage/v1/object/public/**",
+        pathname: "/storage/**",
       },
       {
         protocol: "https",
         hostname: "ik.imagekit.io",
-        pathname: "/hhewzuqdk/**",
+        pathname: "/**",
       },
       {
         protocol: "https",

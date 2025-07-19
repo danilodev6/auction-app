@@ -6,10 +6,13 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatSimpleDate } from "@/util/date2";
 import { getImageKitUrl, getOptimizedImageUrl } from "@/lib/imagekit";
+import { useState } from "react";
 
 export function ItemCard({ item }: { item: Item }) {
   const isDirectSale = item.auctionType === "direct";
   const isSold = isDirectSale && item.status !== "active";
+  const [imageError, setImageError] = useState(false);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string>("");
 
   // Get optimized image URL with transformations
   const optimizedImageUrl = getOptimizedImageUrl(item.imageURL, {
@@ -24,6 +27,10 @@ export function ItemCard({ item }: { item: Item }) {
   // Fallback to basic ImageKit URL
   const basicImageKitUrl = getImageKitUrl(item.imageURL);
 
+  // Initialize image URL
+  const initialImageUrl =
+    optimizedImageUrl || basicImageKitUrl || item.imageURL;
+
   // Debug logging
   if (process.env.NODE_ENV === "development") {
     console.log("Original URL:", item.imageURL);
@@ -31,42 +38,59 @@ export function ItemCard({ item }: { item: Item }) {
     console.log("Optimized URL:", optimizedImageUrl);
   }
 
+  const handleImageError = () => {
+    console.error("Image failed to load:", currentImageUrl || initialImageUrl);
+
+    // Prevent infinite loops by tracking what we've tried
+    if (!currentImageUrl) {
+      // First fallback: basic ImageKit URL
+      if (basicImageKitUrl && basicImageKitUrl !== initialImageUrl) {
+        console.log("Trying basic ImageKit URL:", basicImageKitUrl);
+        setCurrentImageUrl(basicImageKitUrl);
+        return;
+      }
+    }
+
+    if (currentImageUrl === basicImageKitUrl) {
+      // Second fallback: original Supabase URL
+      if (item.imageURL && item.imageURL !== currentImageUrl) {
+        console.log("Trying original Supabase URL:", item.imageURL);
+        setCurrentImageUrl(item.imageURL);
+        return;
+      }
+    }
+
+    // All URLs failed, show error state
+    console.error("All image URLs failed");
+    setImageError(true);
+  };
+
+  const finalImageUrl = currentImageUrl || initialImageUrl;
+
   return (
     <div className="flex flex-col h-[295px] w-54 px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-48 h-48 rounded-md overflow-hidden z-10 mt-1.5">
-        {optimizedImageUrl ? (
+        {!imageError && finalImageUrl ? (
           <Image
-            src={optimizedImageUrl}
+            src={finalImageUrl}
             alt={item.name}
             fill
             className="object-cover rounded"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={item.isFeatured}
-            onError={(e) => {
-              console.error(
-                "Optimized ImageKit URL failed, trying basic ImageKit URL:",
-                optimizedImageUrl,
-              );
-              const target = e.target as HTMLImageElement;
-              // First try basic ImageKit URL
-              if (basicImageKitUrl && target.src !== basicImageKitUrl) {
-                target.src = basicImageKitUrl;
-              }
-              // Then fallback to original Supabase URL
-              else if (item.imageURL && target.src !== item.imageURL) {
-                target.src = item.imageURL;
-              }
-            }}
+            onError={handleImageError}
             onLoad={() => {
-              console.log(
-                "✅ ImageKit URL loaded successfully:",
-                optimizedImageUrl,
-              );
+              if (process.env.NODE_ENV === "development") {
+                console.log("✅ Image loaded successfully:", finalImageUrl);
+              }
             }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400">
-            No image available
+          <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 rounded">
+            <div className="text-center">
+              <div className="text-2xl mb-2">📷</div>
+              <div className="text-xs">No image available</div>
+            </div>
           </div>
         )}
 
