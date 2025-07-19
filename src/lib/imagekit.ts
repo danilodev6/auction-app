@@ -1,4 +1,4 @@
-// lib/imagekit.ts - Updated
+// lib/imagekit.ts
 export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   if (!supabaseImageUrl) return "";
 
@@ -38,4 +38,44 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   // Fallback to original URL
   console.warn("Could not convert to ImageKit URL:", supabaseImageUrl);
   return supabaseImageUrl;
+};
+
+export const getOptimizedImageUrl = (
+  supabaseImageUrl: string | null,
+  transformations?: {
+    width?: number;
+    height?: number;
+    quality?: number;
+    format?: "webp" | "jpg" | "png" | "avif";
+    crop?: "maintain_ratio" | "force" | "at_least" | "at_max";
+    focus?: "auto" | "face" | "center";
+  },
+): string => {
+  if (!supabaseImageUrl) return "";
+
+  const imagekitUrl = getImageKitUrl(supabaseImageUrl);
+
+  if (!transformations || !imagekitUrl.includes("ik.imagekit.io")) {
+    return imagekitUrl;
+  }
+
+  // Build transformation string
+  const transforms: string[] = [];
+
+  if (transformations.width) transforms.push(`w-${transformations.width}`);
+  if (transformations.height) transforms.push(`h-${transformations.height}`);
+  if (transformations.quality) transforms.push(`q-${transformations.quality}`);
+  if (transformations.format) transforms.push(`f-${transformations.format}`);
+  if (transformations.crop) transforms.push(`c-${transformations.crop}`);
+  if (transformations.focus) transforms.push(`fo-${transformations.focus}`);
+
+  if (transforms.length === 0) return imagekitUrl;
+
+  const transformString = `tr:${transforms.join(",")}`;
+
+  // Insert transformation string after the endpoint
+  return imagekitUrl.replace(
+    "https://ik.imagekit.io/hhewzuqdk/",
+    `https://ik.imagekit.io/hhewzuqdk/${transformString}/`,
+  );
 };
