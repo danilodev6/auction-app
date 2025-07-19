@@ -6,6 +6,7 @@ import { GetAllItemsWithBidsAction } from "./actions";
 import DeleteItemButton from "./DeleteItemButton";
 import { formatToDollar } from "@/util/currency";
 import AuctionFilter from "./AuctionFilter";
+import ItemSearch from "./ItemSearch";
 import BulkDeleteManager, {
   SelectAllCheckbox,
   ItemCheckbox,
@@ -19,6 +20,7 @@ interface SearchParams {
   page?: string;
   pageSize?: string;
   type?: string;
+  search?: string;
 }
 
 interface PageProps {
@@ -34,7 +36,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
   // Await searchParams to access its properties
   const resolvedSearchParams = await searchParams;
-  const { page = "1", pageSize = "10", type } = resolvedSearchParams;
+  const { page = "1", pageSize = "10", type, search } = resolvedSearchParams;
   const currentPage = parseInt(page, 10);
   const currentPageSize = parseInt(pageSize, 10);
 
@@ -50,9 +52,21 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
   // Filter items based on search params
   const selectedType = type as AuctionType | undefined;
-  const filteredItems = selectedType
+  let filteredItems = selectedType
     ? sortedItems.filter((item: Item) => item.auctionType === selectedType)
     : sortedItems;
+
+  // Add search filtering
+  if (search && search.trim()) {
+    const searchLower = search.trim().toLowerCase();
+    filteredItems = filteredItems.filter((item: Item) => {
+      const nameMatch = item.name?.toLowerCase().includes(searchLower);
+      const descriptionMatch = item.description
+        ?.toLowerCase()
+        .includes(searchLower);
+      return nameMatch || descriptionMatch;
+    });
+  }
 
   const formatDate = (date: Date): string => {
     return new Date(date).toLocaleString();
@@ -155,6 +169,12 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
         <GeneratePDFButton />
       </div>
 
+      {/* Add the search component */}
+      <ItemSearch
+        totalItems={items.length}
+        filteredCount={filteredItems.length}
+      />
+
       {/* Client Component for filtering */}
       <AuctionFilter
         auctionTypes={auctionTypes}
@@ -169,9 +189,16 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
         {filteredItems.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">
-              {selectedType
-                ? `No ${selectedType} items found`
-                : "No items found"}
+              {search ? (
+                <>
+                  No se encontraron items para `${search}`
+                  {selectedType && <span> en {selectedType} auctions</span>}
+                </>
+              ) : selectedType ? (
+                `No ${selectedType} items found`
+              ) : (
+                "No items found"
+              )}
             </p>
           </div>
         ) : (
