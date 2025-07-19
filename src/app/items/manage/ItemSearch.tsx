@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 
@@ -19,19 +19,29 @@ export default function ItemSearch({
     searchParams.get("search") || "",
   );
 
+  // Use a ref to track the previous search term
+  const prevSearchTermRef = useRef(searchTerm);
+
   // Update URL when search term changes (with debounce)
   useEffect(() => {
     const timer = setTimeout(() => {
       const params = new URLSearchParams(searchParams);
+      const trimmedSearchTerm = searchTerm.trim();
+      const prevSearchTerm = prevSearchTermRef.current;
 
-      if (searchTerm.trim()) {
-        params.set("search", searchTerm.trim());
+      if (trimmedSearchTerm) {
+        params.set("search", trimmedSearchTerm);
       } else {
         params.delete("search");
       }
 
-      // Reset to first page when searching
-      params.set("page", "1");
+      // Only reset to first page when the search term actually changes
+      if (trimmedSearchTerm !== prevSearchTerm) {
+        params.set("page", "1");
+      }
+
+      // Update the ref to the current search term
+      prevSearchTermRef.current = trimmedSearchTerm;
 
       router.push(`?${params.toString()}`);
     }, 300); // 300ms debounce
