@@ -19,6 +19,12 @@ export function ItemCard({ item }: { item: Item }) {
     focus: "auto",
   });
 
+  // Debug logging
+  if (process.env.NODE_ENV === "development") {
+    console.log("Original URL:", item.imageURL);
+    console.log("Optimized URL:", optimizedImageUrl);
+  }
+
   return (
     <div className="flex flex-col h-[295px] w-54 px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-48 h-48 rounded-md overflow-hidden z-10 mt-1.5">
@@ -30,6 +36,17 @@ export function ItemCard({ item }: { item: Item }) {
             className="object-cover rounded"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority={item.isFeatured} // Load featured items with priority
+            onError={(e) => {
+              console.error(
+                "ImageKit URL failed, falling back to original:",
+                optimizedImageUrl,
+              );
+              // Fallback to original Supabase URL
+              const target = e.target as HTMLImageElement;
+              if (item.imageURL && target.src !== item.imageURL) {
+                target.src = item.imageURL;
+              }
+            }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
