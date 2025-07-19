@@ -43,7 +43,7 @@ export default function ItemSearch({
       // Update the ref to the current search term
       prevSearchTermRef.current = trimmedSearchTerm;
 
-      router.push(`?${params.toString()}`);
+      router.push(`?${params.toString()}`, { scroll: false });
     }, 300); // 300ms debounce
 
     return () => clearTimeout(timer);
@@ -82,7 +82,7 @@ export default function ItemSearch({
             <>
               Mostrando {filteredCount} de {totalItems} items
               {searchTerm && (
-                <span className="font-medium"> para `${searchTerm}`</span>
+                <span className="font-medium"> para `{searchTerm}`</span>
               )}
             </>
           ) : (

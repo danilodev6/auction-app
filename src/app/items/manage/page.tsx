@@ -191,7 +191,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
             <p className="text-gray-500 mb-4">
               {search ? (
                 <>
-                  No se encontraron items para `${search}`
+                  No se encontraron items para `{search}`
                   {selectedType && <span> en {selectedType} auctions</span>}
                 </>
               ) : selectedType ? (
