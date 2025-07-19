@@ -3,21 +3,33 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatSimpleDate } from "@/util/date2";
+import { getOptimizedImageUrl } from "@/lib/imagekit";
 
 export function ItemCard({ item }: { item: Item }) {
   const isDirectSale = item.auctionType === "direct";
   const isSold = isDirectSale && item.status !== "active";
 
+  // Get optimized image URL with transformations
+  const optimizedImageUrl = getOptimizedImageUrl(item.imageURL, {
+    width: 384, // 48 * 8 (w-48 in Tailwind)
+    height: 384, // h-48 in Tailwind
+    quality: 80,
+    format: "webp",
+    crop: "maintain_ratio",
+    focus: "auto",
+  });
+
   return (
     <div className="flex flex-col h-[295px] w-54 px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-48 h-48 rounded-md overflow-hidden z-10 mt-1.5">
-        {item.imageURL ? (
+        {optimizedImageUrl ? (
           <Image
-            src={item.imageURL}
+            src={optimizedImageUrl}
             alt={item.name}
             fill
-            className="object-fit rounded"
+            className="object-cover rounded"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority={item.isFeatured} // Load featured items with priority
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">
