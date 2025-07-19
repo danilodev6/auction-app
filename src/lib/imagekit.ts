@@ -9,7 +9,6 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
     return supabaseImageUrl;
   }
 
-  // Extract path from Supabase public URL
   const supabaseStoragePrefix = `${supabaseUrl}/storage/v1/object/public/tbsubastas-images/`;
 
   if (supabaseImageUrl.startsWith(supabaseStoragePrefix)) {

@@ -5,8 +5,8 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatSimpleDate } from "@/util/date2";
-import { getCloudinaryUrl, getOptimizedCloudinaryUrl } from "@/lib/cloudinary";
 import { useState } from "react";
+import { getImageKitUrl, getOptimizedImageUrl } from "@/lib/imagekit";
 
 export function ItemCard({ item }: { item: Item }) {
   const isDirectSale = item.auctionType === "direct";
@@ -15,17 +15,15 @@ export function ItemCard({ item }: { item: Item }) {
   const [currentImageUrl, setCurrentImageUrl] = useState<string>("");
 
   // Get optimized Cloudinary URL
-  const optimizedImageUrl = getOptimizedCloudinaryUrl(item.imageURL, {
+  const optimizedImageUrl = getOptimizedImageUrl(item.imageURL, {
     width: 384,
     height: 384,
-    quality: "auto",
     format: "auto",
     crop: "fill",
-    gravity: "auto",
   });
 
   // Fallback to basic Cloudinary URL
-  const basicCloudinaryUrl = getCloudinaryUrl(item.imageURL);
+  const basicCloudinaryUrl = getImageKitUrl(item.imageURL);
 
   // Initialize image URL
   const initialImageUrl =
