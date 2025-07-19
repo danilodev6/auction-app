@@ -1,4 +1,4 @@
-// lib/imagekit.ts
+// src/lib/imagekit.ts
 export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   if (!supabaseImageUrl) return "";
 
@@ -6,37 +6,17 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   if (!imagekitEndpoint || !supabaseUrl) {
-    console.warn(
-      "ImageKit or Supabase URL not configured, returning original URL",
-    );
     return supabaseImageUrl;
   }
 
-  // If it's already an ImageKit URL, return as is
-  if (supabaseImageUrl.includes("ik.imagekit.io")) {
-    return supabaseImageUrl;
-  }
-
-  // Extract the path from the Supabase URL
+  // Extract path from Supabase public URL
   const supabaseStoragePrefix = `${supabaseUrl}/storage/v1/object/public/tbsubastas-images/`;
 
   if (supabaseImageUrl.startsWith(supabaseStoragePrefix)) {
     const imagePath = supabaseImageUrl.replace(supabaseStoragePrefix, "");
-
-    // ✅ CORRECT: Remove the /tbsubastas-images/ prefix since it's already configured as the folder
-    const cleanImageKitUrl = `${imagekitEndpoint}/${imagePath}`;
-
-    console.log("Converting Supabase URL to ImageKit:", {
-      original: supabaseImageUrl,
-      imagePath: imagePath,
-      imagekit: cleanImageKitUrl,
-    });
-
-    return cleanImageKitUrl;
+    return `${imagekitEndpoint}/${imagePath}`;
   }
 
-  // Fallback to original URL
-  console.warn("Could not convert to ImageKit URL:", supabaseImageUrl);
   return supabaseImageUrl;
 };
 
@@ -46,36 +26,28 @@ export const getOptimizedImageUrl = (
     width?: number;
     height?: number;
     quality?: number;
-    format?: "webp" | "jpg" | "png" | "avif";
-    crop?: "maintain_ratio" | "force" | "at_least" | "at_max";
-    focus?: "auto" | "face" | "center";
+    format?: string;
+    crop?: string;
+    focus?: string;
   },
 ): string => {
   if (!supabaseImageUrl) return "";
 
   const imagekitUrl = getImageKitUrl(supabaseImageUrl);
+  if (!imagekitUrl.includes("ik.imagekit.io")) return imagekitUrl;
 
-  if (!transformations || !imagekitUrl.includes("ik.imagekit.io")) {
-    return imagekitUrl;
-  }
-
-  // Build transformation string
   const transforms: string[] = [];
+  if (transformations?.width) transforms.push(`w-${transformations.width}`);
+  if (transformations?.height) transforms.push(`h-${transformations.height}`);
+  if (transformations?.quality) transforms.push(`q-${transformations.quality}`);
+  if (transformations?.format) transforms.push(`f-${transformations.format}`);
+  if (transformations?.crop) transforms.push(`c-${transformations.crop}`);
+  if (transformations?.focus) transforms.push(`fo-${transformations.focus}`);
 
-  if (transformations.width) transforms.push(`w-${transformations.width}`);
-  if (transformations.height) transforms.push(`h-${transformations.height}`);
-  if (transformations.quality) transforms.push(`q-${transformations.quality}`);
-  if (transformations.format) transforms.push(`f-${transformations.format}`);
-  if (transformations.crop) transforms.push(`c-${transformations.crop}`);
-  if (transformations.focus) transforms.push(`fo-${transformations.focus}`);
-
-  if (transforms.length === 0) return imagekitUrl;
-
-  const transformString = `tr:${transforms.join(",")}`;
-
-  // Insert transformation string after the endpoint
+  const transformString =
+    transforms.length > 0 ? `tr:${transforms.join(",")}/` : "";
   return imagekitUrl.replace(
-    "https://ik.imagekit.io/hhewzuqdk/",
-    `https://ik.imagekit.io/hhewzuqdk/${transformString}/`,
+    "ik.imagekit.io/",
+    `ik.imagekit.io/${transformString}`,
   );
 };

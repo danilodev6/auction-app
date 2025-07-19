@@ -39,7 +39,7 @@ export async function CreateItemAction(formData: FormData) {
     try {
       const fileExtension = file.name.split(".").pop();
       const fileName = `${crypto.randomUUID()}.${fileExtension}`;
-      const filePath = `${user.id}/${fileName}`;
+      const filePath = `images/${fileName}`;
 
       console.log(`Attempting to upload file to ${BUCKET_NAME}/${filePath}`);
 
@@ -102,4 +102,3 @@ export async function CreateItemAction(formData: FormData) {
     );
   }
 }
-

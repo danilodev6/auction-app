@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatSimpleDate } from "@/util/date2";
-import { getImageKitUrl, getOptimizedImageUrl } from "@/lib/imagekit";
+import { getCloudinaryUrl, getOptimizedCloudinaryUrl } from "@/lib/cloudinary";
 import { useState } from "react";
 
 export function ItemCard({ item }: { item: Item }) {
@@ -14,45 +14,35 @@ export function ItemCard({ item }: { item: Item }) {
   const [imageError, setImageError] = useState(false);
   const [currentImageUrl, setCurrentImageUrl] = useState<string>("");
 
-  // Get optimized image URL with transformations
-  const optimizedImageUrl = getOptimizedImageUrl(item.imageURL, {
+  // Get optimized Cloudinary URL
+  const optimizedImageUrl = getOptimizedCloudinaryUrl(item.imageURL, {
     width: 384,
     height: 384,
-    quality: 80,
-    format: "webp",
-    crop: "maintain_ratio",
-    focus: "auto",
+    quality: "auto",
+    format: "auto",
+    crop: "fill",
+    gravity: "auto",
   });
 
-  // Fallback to basic ImageKit URL
-  const basicImageKitUrl = getImageKitUrl(item.imageURL);
+  // Fallback to basic Cloudinary URL
+  const basicCloudinaryUrl = getCloudinaryUrl(item.imageURL);
 
   // Initialize image URL
   const initialImageUrl =
-    optimizedImageUrl || basicImageKitUrl || item.imageURL;
-
-  // Debug logging
-  if (process.env.NODE_ENV === "development") {
-    console.log("Original URL:", item.imageURL);
-    console.log("Basic ImageKit URL:", basicImageKitUrl);
-    console.log("Optimized URL:", optimizedImageUrl);
-  }
+    optimizedImageUrl || basicCloudinaryUrl || item.imageURL;
 
   const handleImageError = () => {
     console.error("Image failed to load:", currentImageUrl || initialImageUrl);
 
-    // Prevent infinite loops by tracking what we've tried
     if (!currentImageUrl) {
-      // First fallback: basic ImageKit URL
-      if (basicImageKitUrl && basicImageKitUrl !== initialImageUrl) {
-        console.log("Trying basic ImageKit URL:", basicImageKitUrl);
-        setCurrentImageUrl(basicImageKitUrl);
+      if (basicCloudinaryUrl && basicCloudinaryUrl !== initialImageUrl) {
+        console.log("Trying basic Cloudinary URL:", basicCloudinaryUrl);
+        setCurrentImageUrl(basicCloudinaryUrl);
         return;
       }
     }
 
-    if (currentImageUrl === basicImageKitUrl) {
-      // Second fallback: original Supabase URL
+    if (currentImageUrl === basicCloudinaryUrl) {
       if (item.imageURL && item.imageURL !== currentImageUrl) {
         console.log("Trying original Supabase URL:", item.imageURL);
         setCurrentImageUrl(item.imageURL);
@@ -60,7 +50,6 @@ export function ItemCard({ item }: { item: Item }) {
       }
     }
 
-    // All URLs failed, show error state
     console.error("All image URLs failed");
     setImageError(true);
   };
