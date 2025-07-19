@@ -3,13 +3,15 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   if (!supabaseImageUrl) return "";
 
   const imagekitEndpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-  if (!imagekitEndpoint || !supabaseUrl) {
+  if (!imagekitEndpoint) {
+    console.warn("ImageKit endpoint not configured");
     return supabaseImageUrl;
   }
 
-  const supabaseStoragePrefix = `${supabaseUrl}/storage/v1/object/public/tbsubastas-images/`;
+  // Extract path from Supabase URL
+  const supabaseStoragePrefix =
+    "https://oegkjipmpbucywefggtm.supabase.co/storage/v1/object/public/tbsubastas-images/images/";
 
   if (supabaseImageUrl.startsWith(supabaseStoragePrefix)) {
     const imagePath = supabaseImageUrl.replace(supabaseStoragePrefix, "");
@@ -24,10 +26,9 @@ export const getOptimizedImageUrl = (
   transformations?: {
     width?: number;
     height?: number;
-    quality?: number;
+    quality?: string;
     format?: string;
     crop?: string;
-    focus?: string;
   },
 ): string => {
   if (!supabaseImageUrl) return "";
@@ -35,18 +36,20 @@ export const getOptimizedImageUrl = (
   const imagekitUrl = getImageKitUrl(supabaseImageUrl);
   if (!imagekitUrl.includes("ik.imagekit.io")) return imagekitUrl;
 
+  // Build transformation string correctly
   const transforms: string[] = [];
   if (transformations?.width) transforms.push(`w-${transformations.width}`);
   if (transformations?.height) transforms.push(`h-${transformations.height}`);
-  if (transformations?.quality) transforms.push(`q-${transformations.quality}`);
   if (transformations?.format) transforms.push(`f-${transformations.format}`);
   if (transformations?.crop) transforms.push(`c-${transformations.crop}`);
-  if (transformations?.focus) transforms.push(`fo-${transformations.focus}`);
+  if (transformations?.quality) transforms.push(`q-${transformations.quality}`);
 
   const transformString =
     transforms.length > 0 ? `tr:${transforms.join(",")}/` : "";
+
+  // Correct ImageKit transformation format
   return imagekitUrl.replace(
-    "ik.imagekit.io/",
-    `ik.imagekit.io/${transformString}`,
+    `https://ik.imagekit.io/hhewzuqdk/`,
+    `https://ik.imagekit.io/hhewzuqdk/${transformString}`,
   );
 };
