@@ -3,9 +3,12 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   if (!supabaseImageUrl) return "";
 
   const imagekitEndpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-  if (!imagekitEndpoint) {
-    console.warn("ImageKit URL not configured, returning original URL");
+  if (!imagekitEndpoint || !supabaseUrl) {
+    console.warn(
+      "ImageKit or Supabase URL not configured, returning original URL",
+    );
     return supabaseImageUrl;
   }
 
@@ -14,15 +17,29 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
     return supabaseImageUrl;
   }
 
-  // For Web Folder origin, we need to pass the full Supabase URL to ImageKit
-  const imageKitUrl = `${imagekitEndpoint}/${supabaseImageUrl}`;
+  // Extract the path from the Supabase URL for S3-Compatible storage
+  // Example: https://oegkjipmpbucywefggtm.supabase.co/storage/v1/object/public/tbsubastas-images/c67f9280-1148-4be4-8029-d60758453f6c/image.jpg
+  // Should become: https://ik.imagekit.io/hhewzuqdk/c67f9280-1148-4be4-8029-d60758453f6c/image.jpg
+  // Note: ImageKit bucket is configured with folder "/images" so the path will be images/c67f9280-1148-4be4-8029-d60758453f6c/image.jpg
+  const supabaseStoragePrefix = `${supabaseUrl}/storage/v1/object/public/tbsubastas-images/`;
 
-  console.log("Converting Supabase URL to ImageKit (Web Folder):", {
-    original: supabaseImageUrl,
-    imagekit: imageKitUrl,
-  });
+  if (supabaseImageUrl.startsWith(supabaseStoragePrefix)) {
+    const imagePath = supabaseImageUrl.replace(supabaseStoragePrefix, "");
+    // Since ImageKit bucket folder is "/images", we need to include that in the path
+    const cleanImageKitUrl = `${imagekitEndpoint}/images/${imagePath}`;
 
-  return imageKitUrl;
+    console.log("Converting Supabase URL to ImageKit (S3-Compatible):", {
+      original: supabaseImageUrl,
+      imagePath: imagePath,
+      imagekit: cleanImageKitUrl,
+    });
+
+    return cleanImageKitUrl;
+  }
+
+  // Fallback to original URL
+  console.warn("Could not convert to ImageKit URL:", supabaseImageUrl);
+  return supabaseImageUrl;
 };
 
 export const getOptimizedImageUrl = (
@@ -58,10 +75,9 @@ export const getOptimizedImageUrl = (
 
   const transformString = `tr:${transforms.join(",")}`;
 
-  // For Web Folder origin, insert transformations after the endpoint but before the source URL
-  // Example: https://ik.imagekit.io/hhewzuqdk/tr:w-400,h-400/https://...
+  // Insert transformation string after the endpoint
   return imagekitUrl.replace(
-    `${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}/`,
-    `${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}/${transformString}/`,
+    "https://ik.imagekit.io/hhewzuqdk/",
+    `https://ik.imagekit.io/hhewzuqdk/${transformString}/`,
   );
 };

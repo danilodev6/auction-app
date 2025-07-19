@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatSimpleDate } from "@/util/date2";
-import { getOptimizedImageUrl } from "@/lib/imagekit";
+import { getImageKitUrl, getOptimizedImageUrl } from "@/lib/imagekit";
 
 export function ItemCard({ item }: { item: Item }) {
   const isDirectSale = item.auctionType === "direct";
@@ -13,17 +13,21 @@ export function ItemCard({ item }: { item: Item }) {
 
   // Get optimized image URL with transformations
   const optimizedImageUrl = getOptimizedImageUrl(item.imageURL, {
-    width: 384, // 48 * 8 (w-48 in Tailwind)
-    height: 384, // h-48 in Tailwind
+    width: 384,
+    height: 384,
     quality: 80,
     format: "webp",
     crop: "maintain_ratio",
     focus: "auto",
   });
 
+  // Fallback to basic ImageKit URL
+  const basicImageKitUrl = getImageKitUrl(item.imageURL);
+
   // Debug logging
   if (process.env.NODE_ENV === "development") {
     console.log("Original URL:", item.imageURL);
+    console.log("Basic ImageKit URL:", basicImageKitUrl);
     console.log("Optimized URL:", optimizedImageUrl);
   }
 
@@ -37,17 +41,27 @@ export function ItemCard({ item }: { item: Item }) {
             fill
             className="object-cover rounded"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={item.isFeatured} // Load featured items with priority
+            priority={item.isFeatured}
             onError={(e) => {
               console.error(
-                "ImageKit URL failed, falling back to original:",
+                "Optimized ImageKit URL failed, trying basic ImageKit URL:",
                 optimizedImageUrl,
               );
-              // Fallback to original Supabase URL
               const target = e.target as HTMLImageElement;
-              if (item.imageURL && target.src !== item.imageURL) {
+              // First try basic ImageKit URL
+              if (basicImageKitUrl && target.src !== basicImageKitUrl) {
+                target.src = basicImageKitUrl;
+              }
+              // Then fallback to original Supabase URL
+              else if (item.imageURL && target.src !== item.imageURL) {
                 target.src = item.imageURL;
               }
+            }}
+            onLoad={() => {
+              console.log(
+                "✅ ImageKit URL loaded successfully:",
+                optimizedImageUrl,
+              );
             }}
           />
         ) : (
