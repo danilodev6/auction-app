@@ -3,12 +3,9 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   if (!supabaseImageUrl) return "";
 
   const imagekitEndpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT;
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
-  if (!imagekitEndpoint || !supabaseUrl) {
-    console.warn(
-      "ImageKit or Supabase URL not configured, returning original URL",
-    );
+  if (!imagekitEndpoint) {
+    console.warn("ImageKit URL not configured, returning original URL");
     return supabaseImageUrl;
   }
 
@@ -17,27 +14,15 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
     return supabaseImageUrl;
   }
 
-  // Extract the path from the Supabase URL
-  // Example: https://oegkjipmpbucywefggtm.supabase.co/storage/v1/object/public/tbsubastas-images/folder/image.jpg
-  // Should become: tbsubastas-images/folder/image.jpg
-  const supabaseStoragePrefix = `${supabaseUrl}/storage/v1/object/public/`;
+  // For Web Folder origin, we need to pass the full Supabase URL to ImageKit
+  const imageKitUrl = `${imagekitEndpoint}/${supabaseImageUrl}`;
 
-  if (supabaseImageUrl.startsWith(supabaseStoragePrefix)) {
-    const imagePath = supabaseImageUrl.replace(supabaseStoragePrefix, "");
-    const cleanImageKitUrl = `${imagekitEndpoint}/${imagePath}`;
+  console.log("Converting Supabase URL to ImageKit (Web Folder):", {
+    original: supabaseImageUrl,
+    imagekit: imageKitUrl,
+  });
 
-    console.log("Converting Supabase URL to ImageKit:", {
-      original: supabaseImageUrl,
-      imagePath: imagePath,
-      imagekit: cleanImageKitUrl,
-    });
-
-    return cleanImageKitUrl;
-  }
-
-  // Fallback to original URL
-  console.warn("Could not convert to ImageKit URL:", supabaseImageUrl);
-  return supabaseImageUrl;
+  return imageKitUrl;
 };
 
 export const getOptimizedImageUrl = (
@@ -73,9 +58,10 @@ export const getOptimizedImageUrl = (
 
   const transformString = `tr:${transforms.join(",")}`;
 
-  // Insert transformation string after the endpoint
+  // For Web Folder origin, insert transformations after the endpoint but before the source URL
+  // Example: https://ik.imagekit.io/hhewzuqdk/tr:w-400,h-400/https://...
   return imagekitUrl.replace(
-    "https://ik.imagekit.io/hhewzuqdk/",
-    `https://ik.imagekit.io/hhewzuqdk/${transformString}/`,
+    `${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}/`,
+    `${process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}/${transformString}/`,
   );
 };

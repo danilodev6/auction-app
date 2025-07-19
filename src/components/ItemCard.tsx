@@ -5,60 +5,49 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { formatSimpleDate } from "@/util/date2";
-import { getImageKitUrl } from "@/lib/imagekit";
-// import { getOptimizedImageUrl } from "@/lib/imagekit";
+import { getOptimizedImageUrl } from "@/lib/imagekit";
 
 export function ItemCard({ item }: { item: Item }) {
   const isDirectSale = item.auctionType === "direct";
   const isSold = isDirectSale && item.status !== "active";
 
-  // Test with basic ImageKit URL first (no transformations)
-  const basicImageKitUrl = getImageKitUrl(item.imageURL);
-
-  // Get optimized image URL with transformations (temporarily disabled)
-  // const optimizedImageUrl = getOptimizedImageUrl(item.imageURL, {
-  //   width: 384,
-  //   height: 384,
-  //   quality: 80,
-  //   format: 'webp',
-  //   crop: 'maintain_ratio',
-  //   focus: 'auto'
-  // });
+  // Get optimized image URL with transformations
+  const optimizedImageUrl = getOptimizedImageUrl(item.imageURL, {
+    width: 384, // 48 * 8 (w-48 in Tailwind)
+    height: 384, // h-48 in Tailwind
+    quality: 80,
+    format: "webp",
+    crop: "maintain_ratio",
+    focus: "auto",
+  });
 
   // Debug logging
   if (process.env.NODE_ENV === "development") {
     console.log("Original URL:", item.imageURL);
-    console.log("Basic ImageKit URL:", basicImageKitUrl);
-    // console.log('Optimized URL:', optimizedImageUrl);
+    console.log("Optimized URL:", optimizedImageUrl);
   }
 
   return (
     <div className="flex flex-col h-[295px] w-54 px-3 items-center rounded-md shadow-md bg-card text-card-foreground border-border">
       <div className="relative w-48 h-48 rounded-md overflow-hidden z-10 mt-1.5">
-        {basicImageKitUrl ? (
+        {optimizedImageUrl ? (
           <Image
-            src={basicImageKitUrl}
+            src={optimizedImageUrl}
             alt={item.name}
             fill
             className="object-cover rounded"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={item.isFeatured}
+            priority={item.isFeatured} // Load featured items with priority
             onError={(e) => {
               console.error(
-                "Basic ImageKit URL failed, falling back to original:",
-                basicImageKitUrl,
+                "ImageKit URL failed, falling back to original:",
+                optimizedImageUrl,
               );
               // Fallback to original Supabase URL
               const target = e.target as HTMLImageElement;
               if (item.imageURL && target.src !== item.imageURL) {
                 target.src = item.imageURL;
               }
-            }}
-            onLoad={() => {
-              console.log(
-                "✅ ImageKit URL loaded successfully:",
-                basicImageKitUrl,
-              );
             }}
           />
         ) : (
