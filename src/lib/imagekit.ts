@@ -24,10 +24,10 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
     const imagePath = supabaseImageUrl.replace(supabaseStoragePrefix, "");
 
     // OPTION 1: Try without any prefix first (based on your curl test results)
-    const cleanImageKitUrl = `${imagekitEndpoint}/${imagePath}`;
+    // const cleanImageKitUrl = `${imagekitEndpoint}/${imagePath}`;
 
     // OPTION 2: If that doesn't work, try with the full bucket path
-    // let cleanImageKitUrl = `${imagekitEndpoint}/tbsubastas-images/${imagePath}`;
+    const cleanImageKitUrl = `${imagekitEndpoint}/tbsubastas-images/${imagePath}`;
 
     console.log("Converting Supabase URL to ImageKit:", {
       original: supabaseImageUrl,
