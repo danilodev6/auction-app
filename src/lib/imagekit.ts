@@ -17,18 +17,19 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
     return supabaseImageUrl;
   }
 
-  // Extract the path from the Supabase URL for S3-Compatible storage
-  // Example: https://oegkjipmpbucywefggtm.supabase.co/storage/v1/object/public/tbsubastas-images/c67f9280-1148-4be4-8029-d60758453f6c/image.jpg
-  // Should become: https://ik.imagekit.io/hhewzuqdk/c67f9280-1148-4be4-8029-d60758453f6c/image.jpg
-  // Note: ImageKit bucket is configured with folder "/images" so the path will be images/c67f9280-1148-4be4-8029-d60758453f6c/image.jpg
+  // Extract the path from the Supabase URL
   const supabaseStoragePrefix = `${supabaseUrl}/storage/v1/object/public/tbsubastas-images/`;
 
   if (supabaseImageUrl.startsWith(supabaseStoragePrefix)) {
     const imagePath = supabaseImageUrl.replace(supabaseStoragePrefix, "");
-    // Since ImageKit bucket folder is "/images", we need to include that in the path
-    const cleanImageKitUrl = `${imagekitEndpoint}/images/${imagePath}`;
 
-    console.log("Converting Supabase URL to ImageKit (S3-Compatible):", {
+    // OPTION 1: Try without any prefix first (based on your curl test results)
+    const cleanImageKitUrl = `${imagekitEndpoint}/${imagePath}`;
+
+    // OPTION 2: If that doesn't work, try with the full bucket path
+    // let cleanImageKitUrl = `${imagekitEndpoint}/tbsubastas-images/${imagePath}`;
+
+    console.log("Converting Supabase URL to ImageKit:", {
       original: supabaseImageUrl,
       imagePath: imagePath,
       imagekit: cleanImageKitUrl,
@@ -42,6 +43,7 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
   return supabaseImageUrl;
 };
 
+// Updated function with better error handling
 export const getOptimizedImageUrl = (
   supabaseImageUrl: string | null,
   transformations?: {
