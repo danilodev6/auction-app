@@ -12,17 +12,31 @@ export const getImageKitUrl = (supabaseImageUrl: string | null): string => {
     return supabaseImageUrl;
   }
 
+  // If it's already an ImageKit URL, return as is
+  if (supabaseImageUrl.includes("ik.imagekit.io")) {
+    return supabaseImageUrl;
+  }
+
   // Extract the path from the Supabase URL
-  // Example: https://oegkjipmpbucywefggtm.supabase.co/storage/v1/object/public/tbsubastas-images/image.jpg
-  // Should become: tbsubastas-images/image.jpg
+  // Example: https://oegkjipmpbucywefggtm.supabase.co/storage/v1/object/public/tbsubastas-images/folder/image.jpg
+  // Should become: tbsubastas-images/folder/image.jpg
   const supabaseStoragePrefix = `${supabaseUrl}/storage/v1/object/public/`;
 
   if (supabaseImageUrl.startsWith(supabaseStoragePrefix)) {
     const imagePath = supabaseImageUrl.replace(supabaseStoragePrefix, "");
-    return `${imagekitEndpoint}/${imagePath}`;
+    const cleanImageKitUrl = `${imagekitEndpoint}/${imagePath}`;
+
+    console.log("Converting Supabase URL to ImageKit:", {
+      original: supabaseImageUrl,
+      imagePath: imagePath,
+      imagekit: cleanImageKitUrl,
+    });
+
+    return cleanImageKitUrl;
   }
 
-  // If it's already an ImageKit URL or different format, return as is
+  // Fallback to original URL
+  console.warn("Could not convert to ImageKit URL:", supabaseImageUrl);
   return supabaseImageUrl;
 };
 
