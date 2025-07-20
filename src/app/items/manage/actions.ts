@@ -163,35 +163,67 @@ export async function GetAllItemsAction() {
   }
 }
 
-export async function GetItemsCountAction(): Promise<number> {
-  const session = await auth();
-  if (!session || !(await isAdmin(session))) {
-    throw new Error("You must be an admin to view items count");
+export async function GetItemsCountAction(search: string): Promise<number> {
+  const result = await database.execute(sql`
+    SELECT COUNT(*) as count
+    FROM aa_items
+    WHERE name ILIKE ${"%" + search + "%"} OR description ILIKE ${"%" + search + "%"}
+  `);
+  const row = result[0] as Record<string, unknown>;
+  const rawCount = row.count;
+
+  let count: number;
+
+  if (typeof rawCount === "string") {
+    count = parseInt(rawCount, 10);
+  } else if (typeof rawCount === "number") {
+    count = rawCount;
+  } else {
+    throw new Error("Invalid count result from database");
   }
 
-  try {
-    const result = await database.execute(sql`
-      SELECT COUNT(*) as count FROM aa_items
-    `);
+  return count;
+}
 
-    const row = result[0] as Record<string, unknown>;
-    const rawCount = row.count;
-
-    // 👇 Forzar conversión segura a número
-    const count =
-      typeof rawCount === "string" ? parseInt(rawCount, 10) : rawCount;
-
-    if (typeof count !== "number" || isNaN(count)) {
-      throw new Error("Invalid count result from database");
-    }
-
-    return count;
-  } catch (error) {
-    console.error("Database error:", error);
-    throw new Error(
-      `Failed to fetch items count: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
-  }
+export async function searchItemsPaginated({
+  search,
+  limit,
+  offset,
+}: {
+  search: string;
+  limit: number;
+  offset: number;
+}): Promise<Item[]> {
+  return (await database.execute(sql`
+    SELECT 
+      i.*,
+      b.amount AS "currentBid",
+      b.timestamp AS "bidTime",
+      u.name AS "bidderName",
+      u.email AS "bidderEmail",
+      u.phone AS "bidderPhone",
+      sold.name AS "soldToName",
+      sold.email AS "soldToEmail",
+      sold.phone AS "soldToPhone",
+      bid_counts.total_bids AS "totalBids"
+    FROM aa_items i
+    LEFT JOIN (
+      SELECT DISTINCT ON ("itemId") *
+      FROM aa_bids
+      ORDER BY "itemId", timestamp DESC
+    ) b ON b."itemId" = i.id
+    LEFT JOIN (
+      SELECT "itemId", COUNT(*) AS total_bids
+      FROM aa_bids
+      GROUP BY "itemId"
+    ) bid_counts ON bid_counts."itemId" = i.id
+    LEFT JOIN aa_user u ON b."userId" = u.id
+    LEFT JOIN aa_user sold ON i."soldTo" = sold.id
+    WHERE i.name ILIKE ${"%" + search + "%"} OR i.description ILIKE ${"%" + search + "%"}
+    ORDER BY i.id ASC
+    LIMIT ${limit}
+    OFFSET ${offset};
+  `)) as unknown as Item[];
 }
 
 export async function ToggleFeaturedAction(itemId: number) {

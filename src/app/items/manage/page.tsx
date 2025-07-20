@@ -2,8 +2,7 @@ import { redirect } from "next/navigation";
 import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
 import Image from "next/image";
-import { GetAllItemsWithBidsAction, GetItemsCountAction } from "./actions";
-import { searchItemsByNameOrDescription } from "@/data-access/items";
+import { GetItemsCountAction, searchItemsPaginated } from "./actions";
 import DeleteItemButton from "./DeleteItemButton";
 import { formatToDollar } from "@/util/currency";
 import AuctionFilter from "./AuctionFilter";
@@ -45,25 +44,13 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   let totalItemsCount = 0;
 
   if (search && search.trim()) {
-    // When searching, get all matching items first
-    const searchResults = await searchItemsByNameOrDescription(search.trim());
+    totalItemsCount = await GetItemsCountAction(search.trim());
 
-    if (searchResults.length > 0) {
-      // Get full bid info for ALL search results (not paginated)
-      allItems = await GetAllItemsWithBidsAction(1, searchResults.length);
-      // Filter to only include items that match the search
-      const searchIds = searchResults.map((item) => item.id);
-      allItems = allItems.filter((item) => searchIds.includes(item.id));
-    } else {
-      allItems = [];
-    }
-    totalItemsCount = allItems.length;
-  } else {
-    // When not searching, get total count first
-    totalItemsCount = await GetItemsCountAction();
-
-    // Then get only the items for current page
-    allItems = await GetAllItemsWithBidsAction(currentPage, currentPageSize);
+    allItems = await searchItemsPaginated({
+      search: search.trim(),
+      limit: currentPageSize,
+      offset: (currentPage - 1) * currentPageSize,
+    });
   }
 
   // Sort items consistently by ID to maintain original order
@@ -78,40 +65,10 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     : sortedItems;
 
   // Calculate pagination info properly
-  let paginatedItems = filteredItems;
-  let displayTotalCount = totalItemsCount;
-  let displayFilteredCount = filteredItems.length;
-  let totalPages = 1;
-
-  if (search && search.trim()) {
-    // When searching, we have all matching items, so paginate them
-    displayTotalCount = sortedItems.length; // Total matching search
-    displayFilteredCount = filteredItems.length; // After type filter
-
-    // Calculate pagination for search results
-    totalPages = Math.ceil(displayFilteredCount / currentPageSize);
-
-    // Apply pagination to filtered results
-    const startIndex = (currentPage - 1) * currentPageSize;
-    const endIndex = startIndex + currentPageSize;
-    paginatedItems = filteredItems.slice(startIndex, endIndex);
-  } else {
-    // When not searching, items are already paginated from database
-    displayTotalCount = totalItemsCount;
-
-    if (selectedType) {
-      // If filtering by type, we need to calculate total pages differently
-      // This is a limitation - we don't know total count for filtered type
-      // For now, estimate based on current page results
-      displayFilteredCount = filteredItems.length;
-      totalPages = Math.ceil(totalItemsCount / currentPageSize); // Rough estimate
-    } else {
-      displayFilteredCount = filteredItems.length;
-      totalPages = Math.ceil(totalItemsCount / currentPageSize);
-    }
-
-    paginatedItems = filteredItems;
-  }
+  const paginatedItems = filteredItems;
+  const displayTotalCount = totalItemsCount;
+  const displayFilteredCount = filteredItems.length;
+  const totalPages = 1;
 
   const hasNextPage = currentPage < totalPages;
   const hasPrevPage = currentPage > 1;
