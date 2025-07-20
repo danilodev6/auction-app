@@ -163,6 +163,33 @@ export async function GetAllItemsAction() {
   }
 }
 
+export async function GetItemsCountAction(): Promise<number> {
+  const session = await auth();
+  if (!session || !(await isAdmin(session))) {
+    throw new Error("You must be an admin to view items count");
+  }
+
+  try {
+    const result = await database.execute(sql`
+      SELECT COUNT(*) as count FROM aa_items
+    `);
+
+    const row = result[0] as Record<string, unknown>;
+    const count = row.count;
+
+    if (typeof count !== "number") {
+      throw new Error("Invalid count result from database");
+    }
+
+    return count;
+  } catch (error) {
+    console.error("Database error:", error);
+    throw new Error(
+      `Failed to fetch items count: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
+}
+
 export async function ToggleFeaturedAction(itemId: number) {
   const session = await auth();
 

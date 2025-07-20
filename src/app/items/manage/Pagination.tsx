@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 interface PaginationProps {
   currentPage: number;
   pageSize: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 }
 
 const Pagination: React.FC<PaginationProps> = ({ currentPage, pageSize }) => {

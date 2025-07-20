@@ -338,7 +338,7 @@ export default function ItemPageClient({
                 </p>
               </div>
               <Button
-                onClick={handlePurchase}
+                onClick={() => setShowConfirmModal(true)}
                 disabled={!isSignedIn || isPurchasing || isSold}
                 className={
                   isSold

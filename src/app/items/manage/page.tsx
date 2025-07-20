@@ -41,39 +41,66 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   const currentPage = parseInt(page, 10);
   const currentPageSize = parseInt(pageSize, 10);
 
-  let items: Item[] = [];
   let allItems: Item[] = [];
+  let totalItemsCount = 0;
 
-  // Fetch items differently based on whether we're searching
+  // Always get ALL items first to have accurate counts and for search
   if (search && search.trim()) {
-    // Search only by name and description (no bid info)
+    // When searching, get all matching items
     const searchResults = await searchItemsByNameOrDescription(search.trim());
 
-    // Get full bid info for the search results
     if (searchResults.length > 0) {
-      const searchIds = searchResults.map((item) => item.id);
+      // Get full bid info for ALL search results (not paginated)
       allItems = await GetAllItemsWithBidsAction(1, searchResults.length);
-      items = allItems.filter((item) => searchIds.includes(item.id));
+      // Filter to only include items that match the search
+      const searchIds = searchResults.map((item) => item.id);
+      allItems = allItems.filter((item) => searchIds.includes(item.id));
     } else {
-      items = [];
       allItems = [];
     }
+    totalItemsCount = allItems.length;
   } else {
-    // Regular paginated fetch
-    items = await GetAllItemsWithBidsAction(currentPage, currentPageSize);
-    allItems = items;
+    // When not searching, we need to get total count first
+    // First get a large number to know total count (you might want to add a count-only action)
+    const allItemsForCount = await GetAllItemsWithBidsAction(1, 10000); // Large number to get all
+    totalItemsCount = allItemsForCount.length;
+
+    // Then get only the items for current page
+    allItems = await GetAllItemsWithBidsAction(currentPage, currentPageSize);
   }
 
-  // Sort items consistently by ID to maintain original order (no featured reordering)
-  const sortedItems = items.sort((a: Item, b: Item) => {
-    return a.id - b.id; // Assuming ID is numeric, use a.id.localeCompare(b.id) if string
+  // Sort items consistently by ID to maintain original order
+  const sortedItems = allItems.sort((a: Item, b: Item) => {
+    return a.id - b.id;
   });
 
-  // Filter items based on search params - only filter by type now
+  // Filter items based on auction type
   const selectedType = type as AuctionType | undefined;
   const filteredItems = selectedType
     ? sortedItems.filter((item: Item) => item.auctionType === selectedType)
     : sortedItems;
+
+  // For pagination display, we need different logic for search vs non-search
+  let paginatedItems = filteredItems;
+  let displayTotalCount = totalItemsCount;
+  let displayFilteredCount = filteredItems.length;
+
+  const totalPages = Math.ceil(displayFilteredCount / currentPageSize);
+
+  if (search && search.trim()) {
+    // When searching, apply pagination to the filtered results
+    const startIndex = (currentPage - 1) * currentPageSize;
+    const endIndex = startIndex + currentPageSize;
+    paginatedItems = filteredItems.slice(startIndex, endIndex);
+    displayTotalCount = totalItemsCount; // Total matching search
+    displayFilteredCount = filteredItems.length; // After type filter
+  } else {
+    // When not searching, items are already paginated from the database
+    paginatedItems = filteredItems;
+    // For non-search, we show the current page info differently
+    displayTotalCount = totalItemsCount;
+    displayFilteredCount = filteredItems.length;
+  }
 
   const formatDate = (date: Date): string => {
     return new Date(date).toLocaleString();
@@ -162,10 +189,16 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     };
   };
 
-  // Get unique auction types for filter options
+  // Get unique auction types for filter options from a sample of all items
+  // Note: This might need to be optimized to get all unique types without fetching all items
   const auctionTypes: string[] = Array.from(
     new Set(allItems.map((item: Item) => item.auctionType)),
   );
+
+  // Calculate pagination info
+  const totalPages = Math.ceil(displayFilteredCount / currentPageSize);
+  const hasNextPage = currentPage < totalPages;
+  const hasPrevPage = currentPage > 1;
 
   return (
     <main className="container mx-auto px-2 sm:px-4 max-w-full overflow-x-hidden">
@@ -178,22 +211,22 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
       {/* Add the search component */}
       <ItemSearch
-        totalItems={allItems.length}
-        filteredCount={filteredItems.length}
+        totalItems={displayTotalCount}
+        filteredCount={displayFilteredCount}
       />
 
       {/* Client Component for filtering */}
       <AuctionFilter
         auctionTypes={auctionTypes}
-        totalItems={allItems.length}
-        filteredCount={filteredItems.length}
+        totalItems={displayTotalCount}
+        filteredCount={displayFilteredCount}
       />
 
       <BulkDeleteManager
-        totalItems={filteredItems.length}
-        allItemIds={filteredItems.map((item: Item) => item.id)}
+        totalItems={paginatedItems.length}
+        allItemIds={paginatedItems.map((item: Item) => item.id)}
       >
-        {filteredItems.length === 0 ? (
+        {paginatedItems.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">
               {search ? (
@@ -211,10 +244,10 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
         ) : (
           <>
             {/* Select All Header */}
-            <SelectAllCheckbox itemCount={filteredItems.length} />
+            <SelectAllCheckbox itemCount={paginatedItems.length} />
 
             <div className="space-y-2 md:space-y-1">
-              {filteredItems.map((item: Item) => {
+              {paginatedItems.map((item: Item) => {
                 const bidInfo = getBidStatusInfo(item);
 
                 return (
@@ -499,12 +532,46 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                 );
               })}
             </div>
+
+            {/* Pagination info */}
+            <div className="mt-4 text-sm text-gray-600 text-center">
+              {search ? (
+                <span>
+                  Mostrando{" "}
+                  {Math.min(
+                    currentPageSize * (currentPage - 1) + 1,
+                    displayFilteredCount,
+                  )}{" "}
+                  -{" "}
+                  {Math.min(
+                    currentPageSize * currentPage,
+                    displayFilteredCount,
+                  )}{" "}
+                  de {displayFilteredCount} resultados
+                  {selectedType && <span> ({selectedType} auctions)</span>}
+                </span>
+              ) : (
+                <span>
+                  Página {currentPage} de {totalPages}
+                  {selectedType && <span> - {selectedType} auctions</span>}
+                  <span className="ml-2">
+                    ({displayFilteredCount} total items)
+                  </span>
+                </span>
+              )}
+            </div>
           </>
         )}
       </BulkDeleteManager>
 
       {/* Pagination Controls */}
-      <Pagination currentPage={currentPage} pageSize={currentPageSize} />
+      <Pagination
+        currentPage={currentPage}
+        pageSize={currentPageSize}
+        totalPages={totalPages}
+        hasNextPage={hasNextPage}
+        hasPrevPage={hasPrevPage}
+      />
     </main>
   );
 }
