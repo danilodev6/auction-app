@@ -57,6 +57,8 @@ export default function ItemPageClient({
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isBidding, setIsBidding] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const router = useRouter();
 
   const isExpired = new Date(item.bidEndTime) < new Date();
@@ -182,7 +184,7 @@ export default function ItemPageClient({
                 </p>
               </div>
               <Button
-                onClick={handlePurchase}
+                onClick={() => setShowConfirmModal(true)}
                 disabled={!isSignedIn || isPurchasing || isSold}
                 className={`w-full ${isSold ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed" : ""}`}
                 size="lg"
@@ -349,9 +351,13 @@ export default function ItemPageClient({
                   : isPurchasing
                     ? "Procesando..."
                     : isSignedIn
-                      ? `Confirmar compra por $ ${formatToDollar(item.startingPrice)}`
+                      ? `Reservar este producto por $ ${formatToDollar(item.startingPrice)}`
                       : "Inicia sesión para comprar"}
               </Button>
+              <p className="text-sm text-gray-600 text-center">
+                * Al hacer clic en reservar, este producto quedará marcado como
+                vendido. Lo pagarás y retirarás en persona.
+              </p>
             </div>
           ) : (
             <>
@@ -463,12 +469,12 @@ export default function ItemPageClient({
                 </svg>
               </div>
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-                Gracias por tu compra!
+                Reserva realizada!
               </h3>
               <p className="text-sm sm:text-base text-gray-600 mb-6">
-                Recibimos su orden de compra por <strong>{item.name}</strong>.
-                Nos comunicaremos con usted a la brevedad. Para coordinar el
-                retiro.
+                El producto <strong>{item.name}</strong> ha sido marcado como{" "}
+                <strong>VENDIDO</strong> a tu nombre. Nos comunicaremos con vos
+                para coordinar el retiro y pago en persona.
               </p>
               <Button
                 onClick={() => setShowSuccessModal(false)}
@@ -476,6 +482,39 @@ export default function ItemPageClient({
               >
                 Cerrar
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 p-4">
+          <div className="bg-white rounded-md p-6 sm:p-8 max-w-md w-full mx-4">
+            <div className="text-center">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+                ¿Confirmar reserva?
+              </h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-4">
+                Este producto se marcará como <strong>VENDIDO</strong> a tu
+                nombre y no podrá ser comprado por otro usuario.
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                <Button
+                  onClick={() => {
+                    setShowConfirmModal(false);
+                    handlePurchase();
+                  }}
+                  className="w-full sm:w-auto"
+                >
+                  Sí, reservar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowConfirmModal(false)}
+                  className="w-full sm:w-auto"
+                >
+                  Cancelar
+                </Button>
+              </div>
             </div>
           </div>
         </div>
