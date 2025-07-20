@@ -194,7 +194,7 @@ export default function ItemPageClient({
                   : isPurchasing
                     ? "Procesando..."
                     : isSignedIn
-                      ? `Comprar ahora por $ ${formatToDollar(item.startingPrice)}`
+                      ? `Reservar este producto por $ ${formatToDollar(item.startingPrice)}`
                       : "Inicia sesión para comprar"}
               </Button>
             </div>

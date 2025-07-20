@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
 import Image from "next/image";
-import { GetAllItemsWithBidsAction } from "./actions";
+import { GetAllItemsWithBidsAction, GetItemsCountAction } from "./actions";
 import { searchItemsByNameOrDescription } from "@/data-access/items";
 import DeleteItemButton from "./DeleteItemButton";
 import { formatToDollar } from "@/util/currency";
@@ -44,9 +44,8 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   let allItems: Item[] = [];
   let totalItemsCount = 0;
 
-  // Always get ALL items first to have accurate counts and for search
   if (search && search.trim()) {
-    // When searching, get all matching items
+    // When searching, get all matching items first
     const searchResults = await searchItemsByNameOrDescription(search.trim());
 
     if (searchResults.length > 0) {
@@ -60,10 +59,8 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     }
     totalItemsCount = allItems.length;
   } else {
-    // When not searching, we need to get total count first
-    // First get a large number to know total count (you might want to add a count-only action)
-    const allItemsForCount = await GetAllItemsWithBidsAction(1, 10000); // Large number to get all
-    totalItemsCount = allItemsForCount.length;
+    // When not searching, get total count first
+    totalItemsCount = await GetItemsCountAction();
 
     // Then get only the items for current page
     allItems = await GetAllItemsWithBidsAction(currentPage, currentPageSize);
@@ -80,30 +77,44 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     ? sortedItems.filter((item: Item) => item.auctionType === selectedType)
     : sortedItems;
 
-  // For pagination display, we need different logic for search vs non-search
+  // Calculate pagination info properly
   let paginatedItems = filteredItems;
   let displayTotalCount = totalItemsCount;
   let displayFilteredCount = filteredItems.length;
-
-  // Calculate pagination info
-  const totalPages = Math.ceil(displayFilteredCount / currentPageSize);
-  const hasNextPage = currentPage < totalPages;
-  const hasPrevPage = currentPage > 1;
+  let totalPages = 1;
 
   if (search && search.trim()) {
-    // When searching, apply pagination to the filtered results
+    // When searching, we have all matching items, so paginate them
+    displayTotalCount = sortedItems.length; // Total matching search
+    displayFilteredCount = filteredItems.length; // After type filter
+
+    // Calculate pagination for search results
+    totalPages = Math.ceil(displayFilteredCount / currentPageSize);
+
+    // Apply pagination to filtered results
     const startIndex = (currentPage - 1) * currentPageSize;
     const endIndex = startIndex + currentPageSize;
     paginatedItems = filteredItems.slice(startIndex, endIndex);
-    displayTotalCount = totalItemsCount; // Total matching search
-    displayFilteredCount = filteredItems.length; // After type filter
   } else {
-    // When not searching, items are already paginated from the database
-    paginatedItems = filteredItems;
-    // For non-search, we show the current page info differently
+    // When not searching, items are already paginated from database
     displayTotalCount = totalItemsCount;
-    displayFilteredCount = filteredItems.length;
+
+    if (selectedType) {
+      // If filtering by type, we need to calculate total pages differently
+      // This is a limitation - we don't know total count for filtered type
+      // For now, estimate based on current page results
+      displayFilteredCount = filteredItems.length;
+      totalPages = Math.ceil(totalItemsCount / currentPageSize); // Rough estimate
+    } else {
+      displayFilteredCount = filteredItems.length;
+      totalPages = Math.ceil(totalItemsCount / currentPageSize);
+    }
+
+    paginatedItems = filteredItems;
   }
+
+  const hasNextPage = currentPage < totalPages;
+  const hasPrevPage = currentPage > 1;
 
   const formatDate = (date: Date): string => {
     return new Date(date).toLocaleString();
@@ -192,10 +203,10 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
     };
   };
 
-  // Get unique auction types for filter options from a sample of all items
-  // Note: This might need to be optimized to get all unique types without fetching all items
+  // Get unique auction types for filter options
+  // For search, use all found items; for non-search, we'll need a separate query or estimation
   const auctionTypes: string[] = Array.from(
-    new Set(allItems.map((item: Item) => item.auctionType)),
+    new Set(sortedItems.map((item: Item) => item.auctionType)),
   );
 
   return (
@@ -553,7 +564,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                   Página {currentPage} de {totalPages}
                   {selectedType && <span> - {selectedType} auctions</span>}
                   <span className="ml-2">
-                    ({displayFilteredCount} total items)
+                    ({displayTotalCount} total items)
                   </span>
                 </span>
               )}
