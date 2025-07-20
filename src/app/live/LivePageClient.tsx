@@ -334,7 +334,7 @@ export default function LivePage({
               <div className="flex flex-col sm:flex-row sm:items-center bg-primary text-white rounded-md p-4 mb-4 gap-4">
                 <div className="flex items-center gap-2">
                   <span className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
-                    🟢 LIVE
+                    🟢 VIVO
                   </span>
                   <p className="font-semibold">Subastando:</p>
                   <p className="text-lg font-bold">{featuredItem.name}</p>
@@ -532,7 +532,7 @@ export default function LivePage({
             <div className="flex place-items-center bg-primary text-white rounded-md m-4 p-4 min-h-[5rem]">
               <div className="flex mx-auto place-items-center gap-2">
                 <span className="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">
-                  🟢 LIVE
+                  🟢 VIVO
                 </span>
                 <p className="font-semibold">Subastando:</p>
                 <p className="text-lg font-bold">{featuredItem.name}</p>

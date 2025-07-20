@@ -74,7 +74,7 @@ export function NavigationWrapper({ userIsAdmin }: NavigationWrapperProps) {
               className="block hover:text-accent px-3 py-2 text-lg transition-colors"
               onClick={closeMenu}
             >
-              Live
+              Vivo
             </Link>
 
             {userIsAdmin && (
