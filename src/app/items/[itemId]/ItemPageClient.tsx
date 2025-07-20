@@ -500,8 +500,8 @@ export default function ItemPageClient({
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Button
                   onClick={() => {
-                    setShowConfirmModal(false);
-                    handlePurchase();
+                    setShowConfirmModal(false); // close the modal
+                    handlePurchase(); // ← actually buy
                   }}
                   className="w-full sm:w-auto"
                 >

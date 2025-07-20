@@ -3,6 +3,7 @@ import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { GetAllItemsWithBidsAction } from "./actions";
+import { searchItemsByNameOrDescription } from "@/data-access/items";
 import DeleteItemButton from "./DeleteItemButton";
 import { formatToDollar } from "@/util/currency";
 import AuctionFilter from "./AuctionFilter";
@@ -40,33 +41,39 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   const currentPage = parseInt(page, 10);
   const currentPageSize = parseInt(pageSize, 10);
 
-  const items: Item[] = await GetAllItemsWithBidsAction(
-    currentPage,
-    currentPageSize,
-  );
+  let items: Item[] = [];
+  let allItems: Item[] = [];
+
+  // Fetch items differently based on whether we're searching
+  if (search && search.trim()) {
+    // Search only by name and description (no bid info)
+    const searchResults = await searchItemsByNameOrDescription(search.trim());
+
+    // Get full bid info for the search results
+    if (searchResults.length > 0) {
+      const searchIds = searchResults.map((item) => item.id);
+      allItems = await GetAllItemsWithBidsAction(1, searchResults.length);
+      items = allItems.filter((item) => searchIds.includes(item.id));
+    } else {
+      items = [];
+      allItems = [];
+    }
+  } else {
+    // Regular paginated fetch
+    items = await GetAllItemsWithBidsAction(currentPage, currentPageSize);
+    allItems = items;
+  }
 
   // Sort items consistently by ID to maintain original order (no featured reordering)
   const sortedItems = items.sort((a: Item, b: Item) => {
     return a.id - b.id; // Assuming ID is numeric, use a.id.localeCompare(b.id) if string
   });
 
-  // Filter items based on search params
+  // Filter items based on search params - only filter by type now
   const selectedType = type as AuctionType | undefined;
-  let filteredItems = selectedType
+  const filteredItems = selectedType
     ? sortedItems.filter((item: Item) => item.auctionType === selectedType)
     : sortedItems;
-
-  // Add search filtering
-  if (search && search.trim()) {
-    const searchLower = search.trim().toLowerCase();
-    filteredItems = filteredItems.filter((item: Item) => {
-      const nameMatch = item.name?.toLowerCase().includes(searchLower);
-      const descriptionMatch = item.description
-        ?.toLowerCase()
-        .includes(searchLower);
-      return nameMatch || descriptionMatch;
-    });
-  }
 
   const formatDate = (date: Date): string => {
     return new Date(date).toLocaleString();
@@ -157,7 +164,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
   // Get unique auction types for filter options
   const auctionTypes: string[] = Array.from(
-    new Set(items.map((item: Item) => item.auctionType)),
+    new Set(allItems.map((item: Item) => item.auctionType)),
   );
 
   return (
@@ -171,14 +178,14 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
       {/* Add the search component */}
       <ItemSearch
-        totalItems={items.length}
+        totalItems={allItems.length}
         filteredCount={filteredItems.length}
       />
 
       {/* Client Component for filtering */}
       <AuctionFilter
         auctionTypes={auctionTypes}
-        totalItems={items.length}
+        totalItems={allItems.length}
         filteredCount={filteredItems.length}
       />
 
