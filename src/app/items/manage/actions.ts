@@ -175,9 +175,13 @@ export async function GetItemsCountAction(): Promise<number> {
     `);
 
     const row = result[0] as Record<string, unknown>;
-    const count = row.count;
+    const rawCount = row.count;
 
-    if (typeof count !== "number") {
+    // 👇 Forzar conversión segura a número
+    const count =
+      typeof rawCount === "string" ? parseInt(rawCount, 10) : rawCount;
+
+    if (typeof count !== "number" || isNaN(count)) {
       throw new Error("Invalid count result from database");
     }
 
