@@ -51,6 +51,14 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
       limit: currentPageSize,
       offset: (currentPage - 1) * currentPageSize,
     });
+  } else {
+    totalItemsCount = await GetItemsCountAction("");
+
+    allItems = await searchItemsPaginated({
+      search: "",
+      limit: currentPageSize,
+      offset: (currentPage - 1) * currentPageSize,
+    });
   }
 
   // Sort items consistently by ID to maintain original order
