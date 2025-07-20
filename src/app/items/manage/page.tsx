@@ -85,7 +85,10 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   let displayTotalCount = totalItemsCount;
   let displayFilteredCount = filteredItems.length;
 
+  // Calculate pagination info
   const totalPages = Math.ceil(displayFilteredCount / currentPageSize);
+  const hasNextPage = currentPage < totalPages;
+  const hasPrevPage = currentPage > 1;
 
   if (search && search.trim()) {
     // When searching, apply pagination to the filtered results
@@ -194,11 +197,6 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   const auctionTypes: string[] = Array.from(
     new Set(allItems.map((item: Item) => item.auctionType)),
   );
-
-  // Calculate pagination info
-  const totalPages = Math.ceil(displayFilteredCount / currentPageSize);
-  const hasNextPage = currentPage < totalPages;
-  const hasPrevPage = currentPage > 1;
 
   return (
     <main className="container mx-auto px-2 sm:px-4 max-w-full overflow-x-hidden">
