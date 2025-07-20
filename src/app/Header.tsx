@@ -42,7 +42,7 @@ export async function Header() {
           </Link>
           <div className="relative">
             <Link
-              href="/Vivo"
+              href="/live"
               className="hover:text-accent hover-nav-link px-3 py-2"
             >
               Vivo
