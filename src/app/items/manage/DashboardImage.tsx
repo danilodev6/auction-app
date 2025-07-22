@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { getImageKitUrl, getOptimizedImageUrl } from "@/lib/imagekit";
 
 interface DashboardImageProps {
   src: string;
@@ -27,7 +28,16 @@ export function DashboardImage({
     setImageError(true);
   };
 
-  // If there's an error or no src, show fallback
+  const optimizedSrc =
+    getOptimizedImageUrl(src, {
+      width,
+      height,
+      format: "auto",
+      crop: "fill",
+    }) ||
+    getImageKitUrl(src) ||
+    src;
+
   if (imageError || !src) {
     return (
       <div
@@ -41,22 +51,15 @@ export function DashboardImage({
 
   return (
     <Image
-      src={src}
+      src={optimizedSrc}
       alt={alt}
       width={width}
       height={height}
       className={className}
       sizes={sizes}
       onError={handleImageError}
-      onLoad={() => {
-        if (process.env.NODE_ENV === "development") {
-          console.log("✅ Dashboard image loaded successfully:", src);
-        }
-      }}
-      // Add these props to help with loading
-      priority={false}
       placeholder="blur"
-      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+      blurDataURL="data:image/jpeg;base64,..."
     />
   );
 }
