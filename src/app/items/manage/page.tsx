@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth, isAdmin } from "@/auth";
 import Link from "next/link";
-import Image from "next/image";
 import { GetItemsCountAction, searchItemsPaginated } from "./actions";
 import DeleteItemButton from "./DeleteItemButton";
 import { formatToDollar } from "@/util/currency";
@@ -15,6 +14,7 @@ import FeatureToggleButton from "./FeatureToggleButton";
 import Pagination from "./Pagination";
 import { Item, AuctionType } from "@/types/items";
 import GeneratePDFButton from "@/components/GeneratePDFButton";
+import { DashboardImage } from "./DashboardImage";
 
 interface SearchParams {
   page?: string;
@@ -240,10 +240,11 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
                         <div className="w-16 h-16 relative flex-shrink-0 overflow-hidden">
                           {item.imageURL ? (
-                            <Image
+                            <DashboardImage
                               src={item.imageURL}
                               alt={item.name}
-                              fill
+                              width={64}
+                              height={64}
                               className="object-cover rounded-md"
                               sizes="64px"
                             />
@@ -255,7 +256,6 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
                             </div>
                           )}
                         </div>
-
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-base mb-1 truncate">
                             {item.name}
@@ -398,10 +398,11 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
 
                       <div className="w-20 h-20 relative flex-shrink-0 overflow-hidden">
                         {item.imageURL ? (
-                          <Image
+                          <DashboardImage
                             src={item.imageURL}
                             alt={item.name}
-                            fill
+                            width={80}
+                            height={80}
                             className="object-cover rounded-md"
                             sizes="80px"
                           />
