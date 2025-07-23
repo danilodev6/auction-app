@@ -9,6 +9,7 @@ import ChatBox from "@/components/ChatBox";
 import { Switch } from "@/components/ui/switch";
 import { useClientOnly } from "@/hooks/useClientOnly";
 import { pusherClient } from "@/lib/pusher-client";
+import { getOptimizedImageUrl, getImageKitUrl } from "@/lib/imagekit";
 
 type Item = {
   id: number;
@@ -56,9 +57,22 @@ export default function LivePage({
   // Filter items for live streaming
   const liveItems = items.filter((item) => item.auctionType === "live");
 
-  const getProxyImageUrl = (imageUrl: string | null) => {
+  // const getProxyImageUrl = (imageUrl: string | null) => {
+  //   if (!imageUrl) return null;
+  //   return `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`;
+  // };
+
+  const getImageKitSrc = (imageUrl: string | null) => {
     if (!imageUrl) return null;
-    return `/api/image-proxy?url=${encodeURIComponent(imageUrl)}`;
+
+    return (
+      getOptimizedImageUrl(imageUrl, {
+        width: 400,
+        height: 400,
+        format: "auto",
+        crop: "fill",
+      }) || getImageKitUrl(imageUrl)
+    );
   };
 
   useEffect(() => {
@@ -436,7 +450,7 @@ export default function LivePage({
                 <div className="order-2 sm:order-2 flex justify-center">
                   {featuredItem.imageURL ? (
                     <Image
-                      src={getProxyImageUrl(featuredItem.imageURL) || ""}
+                      src={getImageKitSrc(featuredItem.imageURL) || ""}
                       alt={featuredItem.name}
                       width={200}
                       height={200}

@@ -76,7 +76,7 @@ export default async function ManageItemsPage({ searchParams }: PageProps) {
   const paginatedItems = filteredItems;
   const displayTotalCount = totalItemsCount;
   const displayFilteredCount = filteredItems.length;
-  const totalPages = 1;
+  const totalPages = Math.ceil(displayTotalCount / 10);
 
   const hasNextPage = currentPage < totalPages;
   const hasPrevPage = currentPage > 1;
