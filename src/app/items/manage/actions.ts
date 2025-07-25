@@ -37,6 +37,14 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
 
   let imageURL: string | undefined;
 
+  const oldItem = await database
+    .select()
+    .from(items)
+    .where(eq(items.id, itemId))
+    .limit(1);
+
+  const oldImageURL = oldItem[0]?.imageURL;
+
   // Only process image if a new file was uploaded
   if (file && file.size > 0) {
     try {
@@ -66,6 +74,21 @@ export async function UpdateItemAction(itemId: number, formData: FormData) {
 
       console.log("Public URL:", publicUrl);
       imageURL = publicUrl;
+      if (oldImageURL) {
+        try {
+          const url = new URL(oldImageURL);
+          const pathParts = url.pathname.split("/");
+          const bucketIndex = pathParts.indexOf("public");
+          if (bucketIndex !== -1 && bucketIndex + 2 < pathParts.length) {
+            const oldFilePath = pathParts.slice(bucketIndex + 2).join("/");
+
+            await supabase.storage.from(BUCKET_NAME).remove([oldFilePath]);
+          }
+        } catch (err) {
+          console.warn("Failed to delete old image:", err);
+          // non-blocking
+        }
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
       throw new Error(
@@ -300,8 +323,7 @@ export async function ToggleFeaturedAction(itemId: number) {
   } catch (dbError) {
     console.error("Database error:", dbError);
     throw new Error(
-      `Failed to toggle featured status: ${
-        dbError instanceof Error ? dbError.message : "Unknown error"
+      `Failed to toggle featured status: ${dbError instanceof Error ? dbError.message : "Unknown error"
       }`,
     );
   }
